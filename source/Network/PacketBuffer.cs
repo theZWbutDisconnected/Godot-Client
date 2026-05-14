@@ -85,8 +85,7 @@ public class PacketBuffer(Stream stream)
             throw new InvalidOperationException(
                 $"String too big (was {abyte.Length} bytes encoded, max 32767)");
 
-        WriteVarInt(abyte.Length);
-        stream.Write(abyte, 0, abyte.Length); // 直接写字节，不走WriteBytes（WriteBytes会多写一次长度）
+        WriteBytes(abyte);
     }
 
     public string ReadChatComponent()
