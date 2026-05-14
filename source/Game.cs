@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using Godot;
+using TestClient.Source.World.Entity;
 using TestClient.Source.Network;
 using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
+using TestClient.Source.World;
 
 namespace TestClient.Source;
 
@@ -15,13 +17,19 @@ public partial class Game : Node
 
     private readonly NetworkSystem _network = new();
     private readonly Timer _timer = new(20);
+    private Level _level;
+    private Player _player;
+    
     private string _fpsString = "0 fps";
-
     private int _frames;
     private long _lastTime = (long)Time.GetTicksMsec();
 
     public override void _Ready()
     {
+        _level = new Level();
+        _player = new Player(_level);
+        AddChild(_level);
+        AddChild(_player);
         NetworkInitialize();
     }
 
@@ -53,6 +61,7 @@ public partial class Game : Node
     private void Tick()
     {
         if (_network.IsConnected()) _network.StreamProcess();
+        _player.Tick();
     }
 
     private void Render(float alpha)
