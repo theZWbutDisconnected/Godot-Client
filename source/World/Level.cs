@@ -1,12 +1,54 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using Godot;
 using TestClient.Source.Physics;
+using TestClient.Source.Render;
+using TestClient.Source.World.Tile;
 
 namespace TestClient.Source.World;
 
 public partial class Level : Node3D
 {
     private readonly Dictionary<string, ChunkData> _chunks = new();
+
+    public void AddChunk(ChunkData chunk)
+    {
+        string key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
+        _chunks[key] = chunk;
+        RenderChunk(chunk);
+    }
+
+    public void RenderChunk(ChunkData chunk)
+    {
+        var tessellator = new Tessellator();
+        tessellator.Initialize();
+
+        int startX = chunk.ChunkX * ChunkData.Width;
+        int startZ = chunk.ChunkZ * ChunkData.Depth;
+
+        for (int y = 0; y < ChunkData.Height; y++)
+        {
+            for (int x = 0; x < ChunkData.Width; x++)
+            {
+                for (int z = 0; z < ChunkData.Depth; z++)
+                {
+                    int worldX = startX + x;
+                    int worldY = y;
+                    int worldZ = startZ + z;
+
+                    if (chunk.HasBlock(worldX, worldY, worldZ))
+                    {
+                        Blocks.Rock.Render(tessellator, this, 0, worldX, worldY, worldZ);
+                    }
+                }
+            }
+        }
+
+        var meshInstance = tessellator.BuildMeshInstance();
+        if (meshInstance != null)
+        {
+            AddChild(meshInstance);
+        }
+    }
 
     public ChunkData GetOrCreateChunk(int chunkX, int chunkZ)
     {

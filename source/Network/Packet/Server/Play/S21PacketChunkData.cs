@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using TestClient.Source.World;
 
@@ -19,6 +20,7 @@ public class S21PacketChunkData : IPacket
         var data = buf.ReadBytes(buf.ReadVarInt());
 
         Chunk = ParseChunkData(ChunkX, ChunkZ, sectionBitmask, GroundUpContinuous, data);
+        Console.WriteLine("Dispatching 0x21");
     }
 
     public void Write(PacketBuffer buf)

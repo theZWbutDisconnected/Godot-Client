@@ -31,7 +31,9 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
     {
         var brandBuf = new PacketBuffer(new MemoryStream());
         brandBuf.WriteString("vanilla");
+        _networkSystem.SendPacket(new C15ClientSettings());
         _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
+        
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");
@@ -70,6 +72,26 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
             entityplayer.Yaw, entityplayer.Pitch, false));
         GD.Print("Server position set: x -", entityplayer.X, "y -", entityplayer.Y, "z -", entityplayer.Z, "yaw -",
             entityplayer.Yaw, "pitch -", entityplayer.Pitch);
+    }
+
+    public void HandleChunkData(S21PacketChunkData packetIn)
+    {
+        var level = Game.Singleton.Level;
+        if (packetIn.Chunk != null)
+        {
+            level.AddChunk(packetIn.Chunk);
+            GD.Print("Chunk received: (" + packetIn.ChunkX + ", " + packetIn.ChunkZ + "), GroundUp: " + packetIn.GroundUpContinuous);
+        }
+    }
+
+    public void HandleMapChunkBulk(S26PacketMapChunkBulk packetIn)
+    {
+        var level = Game.Singleton.Level;
+        foreach (var chunk in packetIn.Chunks)
+        {
+            level.AddChunk(chunk);
+        }
+        GD.Print("MapChunkBulk received: " + packetIn.Chunks.Count + " chunks, Overworld: " + packetIn.IsOverworld);
     }
 
     public void HandleDisconnect(S40Disconnect packetIn)
