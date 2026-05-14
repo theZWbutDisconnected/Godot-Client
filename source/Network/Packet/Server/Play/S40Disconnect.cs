@@ -2,24 +2,24 @@ namespace TestClient.Source.Network.Packet.Server.Play;
 
 public class S40Disconnect : IPacket
 {
-    public S40Disconnect()
-    {
-    }
+	public S40Disconnect()
+	{
+	}
 
-    public S40Disconnect(string reasonIn)
-    {
-        Reason = reasonIn;
-    }
+	public S40Disconnect(string reasonIn)
+	{
+		Reason = reasonIn;
+	}
 
-    public string Reason { get; private set; }
+	public string Reason { get; private set; }
 
-    public void Read(PacketBuffer buf)
-    {
-        Reason = buf.ReadChatComponent();
-    }
+	public void Read(PacketBuffer buf)
+	{
+		Reason = buf.ReadChatComponent();
+	}
 
-    public void Write(PacketBuffer buf)
-    {
-        /* S2C only, no need to write */
-    }
+	public void Write(PacketBuffer buf)
+	{
+		/* S2C only, no need to write */
+	}
 }
