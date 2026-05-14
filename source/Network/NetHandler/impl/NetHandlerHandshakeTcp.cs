@@ -1,7 +1,7 @@
 ﻿using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.NetHandler;
 
-namespace TestClient.Source.Network.Packet.Client;
+namespace TestClient.Source.Network.NetHandler.impl;
 
 public class NetHandlerHandshakeTcp : INetHandlerHandshake
 {

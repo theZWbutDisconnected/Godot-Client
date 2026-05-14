@@ -4,7 +4,7 @@ using TestClient.Source.Network.Packet.Client.Login;
 using TestClient.Source.Network.Packet.NetHandler;
 using TestClient.Source.Network.Packet.Server.Login;
 
-namespace TestClient.Source.Network.Packet.Client;
+namespace TestClient.Source.Network.NetHandler.impl;
 
 public class NetHandlerLoginClient : INetHandlerLoginClient
 {

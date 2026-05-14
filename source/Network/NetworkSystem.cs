@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -128,28 +128,43 @@ public class NetworkSystem
         var handler = _manager.PacketListener;
         if (handler == null) return;
 
-        switch (State, packet)
+        switch (State)
         {
-            case (ConnectionState.Login, S00Disconnect p):
-                ((INetHandlerLoginClient)handler).HandleDisconnect(p);
+            case ConnectionState.Login:
+                var loginClient = (INetHandlerLoginClient)handler;
+                switch (packet)
+                {
+                    case S00Disconnect p:
+                        loginClient.HandleDisconnect(p);
+                        break;
+                    case S01EncryptionRequest p:
+                        loginClient.HandleEncryptionRequest(p);
+                        break;
+                    case S02LoginSuccess p:
+                        loginClient.HandleLoginSuccess(p);
+                        break;
+                    case S03EnableCompression p:
+                        loginClient.HandleEnableCompression(p);
+                        break;
+                }
                 break;
-            case (ConnectionState.Login, S01EncryptionRequest p):
-                ((INetHandlerLoginClient)handler).HandleEncryptionRequest(p);
+            case ConnectionState.Play:
+                var playClient = (INetHandlerPlayClient)handler;
+                switch (packet)
+                {
+                    case S00KeepAlive p:
+                        playClient.HandleKeepAlive(p);
+                        break;
+                    case S01JoinGame p:
+                        playClient.HandleJoinGame(p);
+                        break;
+                    case S40Disconnect p:
+                        playClient.HandleDisconnect(p);
+                        break;
+                }
                 break;
-            case (ConnectionState.Login, S02LoginSuccess p):
-                ((INetHandlerLoginClient)handler).HandleLoginSuccess(p);
-                break;
-            case (ConnectionState.Login, S03EnableCompression p):
-                ((INetHandlerLoginClient)handler).HandleEnableCompression(p);
-                break;
-            case (ConnectionState.Play, S00KeepAlive p):
-                ((INetHandlerPlayClient)handler).HandleKeepAlive(p);
-                break;
-            case (ConnectionState.Play, S01JoinGame p):
-                ((INetHandlerPlayClient)handler).HandleJoinGame(p);
-                break;
-            case (ConnectionState.Play, S40Disconnect p):
-                ((INetHandlerPlayClient)handler).HandleDisconnect(p);
+            default:
+                GD.Print("Unpatch state: " + State);
                 break;
         }
     }

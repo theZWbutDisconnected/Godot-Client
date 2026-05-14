@@ -1,6 +1,6 @@
 using Godot;
 using TestClient.Source.Network;
-using TestClient.Source.Network.Packet.Client;
+using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
 

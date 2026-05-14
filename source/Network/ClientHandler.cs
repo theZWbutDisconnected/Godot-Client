@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using TestClient.Source.Network.Packet.NetHandler;
 

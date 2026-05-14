@@ -1,4 +1,4 @@
-﻿namespace TestClient.Source.Network.Packet;
+namespace TestClient.Source.Network.Packet;
 
 public interface IPacket
 {

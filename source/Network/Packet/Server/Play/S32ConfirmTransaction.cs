@@ -1,4 +1,4 @@
-﻿namespace TestClient.Source.Network.Packet.Server.Play;
+namespace TestClient.Source.Network.Packet.Server.Play;
 
 public class S32ConfirmTransaction : IPacket
 {

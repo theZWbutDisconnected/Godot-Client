@@ -1,4 +1,4 @@
-﻿namespace TestClient.Source.Network.Packet.Server.Login;
+namespace TestClient.Source.Network.Packet.Server.Login;
 
 public class S00Disconnect : IPacket
 {
