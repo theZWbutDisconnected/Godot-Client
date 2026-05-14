@@ -5,7 +5,9 @@ using TestClient.Source.Network;
 using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
+using TestClient.Source.Render;
 using TestClient.Source.World;
+using TestClient.Source.World.Tile;
 
 namespace TestClient.Source;
 
@@ -38,8 +40,14 @@ public partial class Game : Node
 		NetworkInitialize();
 		Level = new Level();
 		Player = new Player(Level, _network);
+		
+		var t = new Tessellator();
+		t.Initialize();
+		Blocks.Rock.Render(t, Level, 0, 0, 0, 0);
+		
 		AddChild(Level);
 		AddChild(Player);
+		AddChild(t.BuildMeshInstance());
 	}
 
 	private async Task NetworkInitialize()

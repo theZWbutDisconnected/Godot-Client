@@ -37,6 +37,7 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x08, () => new S08PlayerPosLook());
 		RegisterInbound(ConnectionState.Play, 0x32, () => new S32ConfirmTransaction());
 		RegisterInbound(ConnectionState.Play, 0x40, () => new S40Disconnect());
+		RegisterInbound(ConnectionState.Play, 0x21, () => new S21PacketChunkData());
 	}
 
 	private static void RegisterOutbound(ConnectionState state, string className, int packetId)
