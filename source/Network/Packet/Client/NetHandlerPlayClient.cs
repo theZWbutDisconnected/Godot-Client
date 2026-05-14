@@ -11,10 +11,10 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
     private readonly NetworkSystem _networkSystem;
     private readonly string _username;
 
-    public NetHandlerPlayClient(NetworkSystem networkSystem, string username)
+    public NetHandlerPlayClient(NetworkSystem networkSystem)
     {
         _networkSystem = networkSystem;
-        _username = username;
+        _username = networkSystem.Username;
     }
 
     public void HandleKeepAlive(S00KeepAlive packetIn)
@@ -22,11 +22,17 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         _networkSystem.SendPacket(new C00KeepAlive(packetIn.KeepAliveId));
     }
 
-    public async void HandleJoinGame(S01JoinGame packetIn)
+    public void HandleConfirmTransaction(S32ConfirmTransaction packetIn)
+    {
+        if (!packetIn.Accepted)
+            _networkSystem.SendPacket(new C0FConfirmTransaction(packetIn.WindowId, packetIn.ActionNumber, true));
+    }
+
+    public void HandleJoinGame(S01JoinGame packetIn)
     {
         var brandBuf = new PacketBuffer(new MemoryStream());
         brandBuf.WriteString("vanilla");
-        await _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
+        _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");

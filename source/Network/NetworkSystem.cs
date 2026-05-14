@@ -4,7 +4,6 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Godot;
 using TestClient.Source.Network.Packet;
-using TestClient.Source.Network.Packet.Client;
 using TestClient.Source.Network.Packet.NetHandler;
 using TestClient.Source.Network.Packet.Server.Login;
 using TestClient.Source.Network.Packet.Server.Play;
@@ -18,13 +17,13 @@ public class NetworkSystem
     private int _compressionThreshold = -1; // -1 is unenabled
     private bool _isDead;
     private bool _isReading;
-    private string _username = "LocalPlayer";
+    public string Username { get; private set; }
 
     public ConnectionState State { get; private set; } = ConnectionState.HandShaking;
 
     public void SetUsername(string username)
     {
-        _username = username;
+        Username = username;
     }
 
     public void SetCompressionThreshold(int threshold)
@@ -49,23 +48,12 @@ public class NetworkSystem
     public NetworkSystem SetState(ConnectionState state)
     {
         State = state;
-        switch (state)
-        {
-            case ConnectionState.HandShaking:
-                _manager.SetNetHandler(new NetHandlerHandshakeTcp());
-                break;
-            case ConnectionState.Login:
-                _manager.SetNetHandler(new NetHandlerLoginClient(this, _username));
-                break;
-            case ConnectionState.Play:
-                _manager.SetNetHandler(new NetHandlerPlayClient(this, _username));
-                break;
-            case ConnectionState.Status:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException("Invalid connection state.");
-        }
+        return this;
+    }
 
+    public NetworkSystem SetHandler(INetHandler handler)
+    {
+        _manager.SetNetHandler(handler);
         return this;
     }
 

@@ -5,9 +5,6 @@ namespace TestClient.Source.Network.Packet.Client.Play;
 
 public class C17CustomPayload : IPacket
 {
-    public string Channel { get; }
-    public byte[] Data { get; }
-
     public C17CustomPayload()
     {
         Channel = "";
@@ -26,7 +23,13 @@ public class C17CustomPayload : IPacket
         Data = ((MemoryStream)dataBuffer.GetInternalStream()).ToArray();
     }
 
-    public void Read(PacketBuffer buf) { /* C2S only, no need to read */ }
+    public string Channel { get; }
+    public byte[] Data { get; }
+
+    public void Read(PacketBuffer buf)
+    {
+        /* C2S only, no need to read */
+    }
 
     public void Write(PacketBuffer buf)
     {

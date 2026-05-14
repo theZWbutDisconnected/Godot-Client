@@ -6,7 +6,11 @@ namespace TestClient.Source.Network;
 
 public class PacketBuffer(Stream stream)
 {
-    public Stream GetInternalStream() => stream;
+    public Stream GetInternalStream()
+    {
+        return stream;
+    }
+
     public static int GetVarIntSize(int input)
     {
         for (var i = 1; i < 5; ++i)
@@ -16,9 +20,9 @@ public class PacketBuffer(Stream stream)
         return 5;
     }
 
-    public void WriteByte(byte value)
+    public void WriteByte(int value)
     {
-        stream.WriteByte(value);
+        stream.WriteByte((byte)value);
     }
 
     public int ReadByte()
@@ -123,6 +127,11 @@ public class PacketBuffer(Stream stream)
         bytes[0] = (byte)((value >> 8) & 0xFF);
         bytes[1] = (byte)(value & 0xFF);
         stream.Write(bytes, 0, 2);
+    }
+
+    public void WriteBoolean(bool boolean)
+    {
+        WriteByte(boolean ? 1 : 0);
     }
 
     public int ReadShort()

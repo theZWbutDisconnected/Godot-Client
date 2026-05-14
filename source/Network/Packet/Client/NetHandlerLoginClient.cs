@@ -11,10 +11,10 @@ public class NetHandlerLoginClient : INetHandlerLoginClient
     private readonly NetworkSystem _networkSystem;
     private readonly string _username;
 
-    public NetHandlerLoginClient(NetworkSystem networkSystem, string username)
+    public NetHandlerLoginClient(NetworkSystem networkSystem)
     {
         _networkSystem = networkSystem;
-        _username = username;
+        _username = networkSystem.Username;
     }
 
     public void HandleEncryptionRequest(S01EncryptionRequest @in)
@@ -32,7 +32,7 @@ public class NetHandlerLoginClient : INetHandlerLoginClient
     {
         GD.Print($"UUID: {@in.Uuid}, Username: {@in.Username}");
         _networkSystem.SetUsername(@in.Username);
-        _networkSystem.SetState(ConnectionState.Play);
+        _networkSystem.SetState(ConnectionState.Play).SetHandler(new NetHandlerPlayClient(_networkSystem));
     }
 
     public void HandleDisconnect(S00Disconnect packetIn)

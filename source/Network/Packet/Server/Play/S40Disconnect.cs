@@ -2,8 +2,6 @@
 
 public class S40Disconnect : IPacket
 {
-    public string Reason { get; private set; }
-
     public S40Disconnect()
     {
     }
@@ -12,6 +10,8 @@ public class S40Disconnect : IPacket
     {
         Reason = reasonIn;
     }
+
+    public string Reason { get; private set; }
 
     public void Read(PacketBuffer buf)
     {

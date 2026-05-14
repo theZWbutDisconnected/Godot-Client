@@ -20,6 +20,7 @@ public static class PacketRegistry
         RegisterOutbound(ConnectionState.Login, nameof(C00LoginStart), 0x00);
         RegisterOutbound(ConnectionState.Login, nameof(C01EncryptionResponse), 0x01);
         RegisterOutbound(ConnectionState.Play, nameof(C00KeepAlive), 0x00);
+        RegisterOutbound(ConnectionState.Play, nameof(C0FConfirmTransaction), 0x0F);
         RegisterOutbound(ConnectionState.Play, nameof(C17CustomPayload), 0x17);
 
         // S2C Reg
@@ -29,6 +30,7 @@ public static class PacketRegistry
         RegisterInbound(ConnectionState.Login, 0x03, () => new S03EnableCompression());
         RegisterInbound(ConnectionState.Play, 0x00, () => new S00KeepAlive());
         RegisterInbound(ConnectionState.Play, 0x01, () => new S01JoinGame());
+        RegisterInbound(ConnectionState.Play, 0x32, () => new S32ConfirmTransaction());
         RegisterInbound(ConnectionState.Play, 0x40, () => new S40Disconnect());
     }
 
