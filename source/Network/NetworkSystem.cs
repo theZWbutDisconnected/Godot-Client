@@ -160,6 +160,9 @@ public class NetworkSystem
             case (ConnectionState.Play, S01JoinGame p):
                 ((INetHandlerPlayClient)handler).HandleJoinGame(p);
                 break;
+            case (ConnectionState.Play, S40Disconnect p):
+                ((INetHandlerPlayClient)handler).HandleDisconnect(p);
+                break;
         }
     }
 

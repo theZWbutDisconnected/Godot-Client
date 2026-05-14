@@ -24,5 +24,8 @@ public class S01JoinGame : IPacket
         ReducedDebugInfo = buf.ReadBoolean();
     }
 
-    public void Write(PacketBuffer buf) { /* S2C only, no need to write */ }
+    public void Write(PacketBuffer buf)
+    {
+        /* S2C only, no need to write */
+    }
 }

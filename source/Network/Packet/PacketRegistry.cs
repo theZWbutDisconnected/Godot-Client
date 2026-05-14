@@ -29,6 +29,7 @@ public static class PacketRegistry
         RegisterInbound(ConnectionState.Login, 0x03, () => new S03EnableCompression());
         RegisterInbound(ConnectionState.Play, 0x00, () => new S00KeepAlive());
         RegisterInbound(ConnectionState.Play, 0x01, () => new S01JoinGame());
+        RegisterInbound(ConnectionState.Play, 0x40, () => new S40Disconnect());
     }
 
     private static void RegisterOutbound(ConnectionState state, string className, int packetId)

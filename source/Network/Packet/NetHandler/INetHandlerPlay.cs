@@ -6,4 +6,5 @@ public interface INetHandlerPlayClient : INetHandler
 {
     void HandleKeepAlive(S00KeepAlive packetIn);
     void HandleJoinGame(S01JoinGame packetIn);
+    void HandleDisconnect(S40Disconnect packetIn);
 }

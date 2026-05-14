@@ -32,6 +32,13 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");
     }
 
+    public void HandleDisconnect(S40Disconnect packetIn)
+    {
+        var reason = packetIn.Reason;
+        GD.Print("[Disconnect] Server kicked with reason: " + reason);
+        _networkSystem.Disconnect();
+    }
+
     public void Disconnected(string reason)
     {
         GD.PrintErr($"Play connection lost: {reason}");
