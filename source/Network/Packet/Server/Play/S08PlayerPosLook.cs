@@ -26,12 +26,7 @@ public class S08PlayerPosLook : IPacket
 
     public void Write(PacketBuffer buf)
     {
-        buf.WriteDouble(X);
-        buf.WriteDouble(Y);
-        buf.WriteDouble(Z);
-        buf.WriteFloat(Yaw);
-        buf.WriteFloat(Pitch);
-        buf.WriteByte(EnumFlagsHelper.ToByte(Flags));
+        /* S2C only, no need to write */
     }
 
     [Flags]
@@ -57,17 +52,6 @@ public class S08PlayerPosLook : IPacket
                     set.Add(flag);
             }
             return set;
-        }
-
-        public static byte ToByte(HashSet<EnumFlags> flags)
-        {
-            byte value = 0;
-            if (flags != null)
-            {
-                foreach (var flag in flags)
-                    value |= (byte)flag;
-            }
-            return value;
         }
     }
 }

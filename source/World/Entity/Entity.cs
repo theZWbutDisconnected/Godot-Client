@@ -16,13 +16,14 @@ public partial class Entity : Node3D
     public float PrevX;
     public float PrevY;
     public float PrevZ;
-    public float XDelta;
-    public float YDelta;
-    public float ZDelta;
+    public double XDelta;
+    public double YDelta;
+    public double ZDelta;
     public float Yaw;
     public float Pitch;
     public float PrevYaw;
     public float PrevPitch;
+    public float EyeHeight;
     public Guid EntityUuid = Guid.NewGuid();
     public AABB BoundingBox;
     protected float Width = 0.6F;
@@ -38,15 +39,23 @@ public partial class Entity : Node3D
     {
         Width = w;
         Height = h;
+        EyeHeight = h * 0.86F;
     }
 
-    protected void SetPos(float x, float y, float z) {
+    public void SetPos(float x, float y, float z) {
         X = x;
         Y = y;
         Z = z;
         float w = Width / 2.0F;
         float h = Height / 2.0F;
         BoundingBox = new AABB(x - w, y - h, z - w, x + w, y + h, z + w);
+    }
+
+    public void SetPosAndRot(float x, float y, float z, float yaw, float pitch)
+    {
+        SetPos(x, y, z);
+        Yaw = yaw;
+        Pitch = pitch;
     }
 
     public virtual void Tick()
