@@ -2,14 +2,14 @@
 
 public class C03Player : IPacket
 {
-    protected bool Moving;
-    protected bool OnGround;
-    protected float Pitch;
-    protected bool Rotating;
     protected double X;
     protected double Y;
-    protected float Yaw;
     protected double Z;
+    protected float Yaw;
+    protected float Pitch;
+    protected bool OnGround;
+    protected bool Moving;
+    protected bool Rotating;
 
     public C03Player()
     {
