@@ -1,25 +1,8 @@
-using TestClient.Source.Network.Packet;
+using System.Numerics;
 using TestClient.Source.World;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-/// <summary>
-/// MC 1.8.9 S21PacketChunkData 解析。
-/// 
-/// 包格式：
-///   int    chunkX
-///   int    chunkZ
-///   bool   groundUpContinuous (是否包含生物群系数据)
-///   ushort sectionBitmask    (哪些 section 有数据，bit i = section i)
-///   byte[] data              (所有 section 的方块+光照 + 可选生物群系)
-/// 
-/// data 内部布局（按有数据的 section 顺序排列）：
-///   对每个有数据的 section：
-///     4096 chars 的方块数据 → 8192 bytes (每个 char 拆成低字节、高字节)
-///     2048 bytes 方块光照 (nibble array)
-///     [如果有天空光] 2048 bytes 天空光照 (nibble array)
-///   [如果 groundUpContinuous] 256 bytes 生物群系
-/// </summary>
 public class S21PacketChunkData : IPacket
 {
     public int ChunkX { get; private set; }
@@ -32,8 +15,8 @@ public class S21PacketChunkData : IPacket
         ChunkX = buf.ReadInt();
         ChunkZ = buf.ReadInt();
         GroundUpContinuous = buf.ReadBoolean();
-        int sectionBitmask = buf.ReadUnsignedShort();
-        byte[] data = buf.ReadBytes(buf.ReadVarInt());
+        var sectionBitmask = buf.ReadUnsignedShort();
+        var data = buf.ReadBytes(buf.ReadVarInt());
 
         Chunk = ParseChunkData(ChunkX, ChunkZ, sectionBitmask, GroundUpContinuous, data);
     }
@@ -49,11 +32,11 @@ public class S21PacketChunkData : IPacket
         var chunk = new ChunkData(chunkX, chunkZ);
         chunk.HasSkyLight = true;
 
-        int dataOffset = 0;
-        int sectionCount = System.Numerics.BitOperations.PopCount((uint)sectionBitmask);
-        bool hasSkyLight = groundUpContinuous;
+        var dataOffset = 0;
+        var sectionCount = BitOperations.PopCount((uint)sectionBitmask);
+        var hasSkyLight = groundUpContinuous;
 
-        for (int i = 0; i < ChunkData.SectionCount; i++)
+        for (var i = 0; i < ChunkData.SectionCount; i++)
         {
             if ((sectionBitmask & (1 << i)) == 0) continue;
 
@@ -81,7 +64,7 @@ public class S21PacketChunkData : IPacket
         if (groundUpContinuous)
         {
             var biomeArray = chunk.GetBiomeArray();
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
                 biomeArray[i] = data[dataOffset + i];
         }
 

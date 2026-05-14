@@ -2,7 +2,6 @@ using System.IO;
 using Godot;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Network.Packet.Server.Play;
-using TestClient.Source.World.Entity;
 
 namespace TestClient.Source.Network.NetHandler.impl;
 
@@ -69,7 +68,8 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         entityplayer.SetPosAndRot((float)d0, (float)d1, (float)d2, f, f1);
         _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.X, entityplayer.BoundingBox.Y0, entityplayer.Z,
             entityplayer.Yaw, entityplayer.Pitch, false));
-        GD.Print("Server position set: x -", entityplayer.X, "y -", entityplayer.Y, "z -", entityplayer.Z, "yaw -", entityplayer.Yaw, "pitch -", entityplayer.Pitch);
+        GD.Print("Server position set: x -", entityplayer.X, "y -", entityplayer.Y, "z -", entityplayer.Z, "yaw -",
+            entityplayer.Yaw, "pitch -", entityplayer.Pitch);
     }
 
     public void HandleDisconnect(S40Disconnect packetIn)

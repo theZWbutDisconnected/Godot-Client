@@ -2,7 +2,7 @@ namespace TestClient.Source.Physics;
 
 public class AABB
 {
-    private float _epsilon = 0.0F;
+    private readonly float _epsilon = 0.0F;
     public float X0;
     public float X1;
     public float Y0;
@@ -51,12 +51,14 @@ public class AABB
                 var max = X0 - c.X1 - _epsilon;
                 if (max < xa) xa = max;
             }
+
             if (xa < 0.0F && c.X0 >= X1)
             {
                 var max = X1 - c.X0 + _epsilon;
                 if (max > xa) xa = max;
             }
         }
+
         return xa;
     }
 
@@ -69,12 +71,14 @@ public class AABB
                 var max = Y0 - c.Y1 - _epsilon;
                 if (max < ya) ya = max;
             }
+
             if (ya < 0.0F && c.Y0 >= Y1)
             {
                 var max = Y1 - c.Y0 + _epsilon;
                 if (max > ya) ya = max;
             }
         }
+
         return ya;
     }
 
@@ -87,12 +91,14 @@ public class AABB
                 var max = Z0 - c.Z1 - _epsilon;
                 if (max < za) za = max;
             }
+
             if (za < 0.0F && c.Z0 >= Z1)
             {
                 var max = Z1 - c.Z0 + _epsilon;
                 if (max > za) za = max;
             }
         }
+
         return za;
     }
 

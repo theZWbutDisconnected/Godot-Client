@@ -6,23 +6,14 @@ namespace TestClient.Source.Render;
 public sealed class Tessellator
 {
     private const int MaxVertices = 524288 / 3;
-
-    [Flags]
-    private enum VertexAttributes
-    {
-        None   = 0,
-        Color  = 1 << 0,
-        Uv     = 1 << 1,
-        Normal = 1 << 2
-    }
-
-    private SurfaceTool _sfTool;
-    private int _count;
     private VertexAttributes _attrs;
 
     private Color _color = Colors.White;
-    private Vector2 _uv = Vector2.Zero;
+    private int _count;
     private Vector3 _normal = Vector3.Zero;
+
+    private SurfaceTool _sfTool;
+    private Vector2 _uv = Vector2.Zero;
 
     public Tessellator()
     {
@@ -88,16 +79,16 @@ public sealed class Tessellator
 
     public void Color(int rgb)
     {
-        float r = ((rgb >> 16) & 0xFF) / 255f;
-        float g = ((rgb >> 8) & 0xFF) / 255f;
-        float b = (rgb & 0xFF) / 255f;
+        var r = ((rgb >> 16) & 0xFF) / 255f;
+        var g = ((rgb >> 8) & 0xFF) / 255f;
+        var b = (rgb & 0xFF) / 255f;
         Color(r, g, b);
     }
 
     public void NoColor()
     {
         if (_attrs.HasFlag(VertexAttributes.Color))
-            CheckFormatChange(VertexAttributes.None, removed: VertexAttributes.Color);
+            CheckFormatChange(VertexAttributes.None, VertexAttributes.Color);
         _attrs &= ~VertexAttributes.Color;
         _color = Colors.White;
     }
@@ -133,18 +124,19 @@ public sealed class Tessellator
 
     public MeshInstance3D BuildMeshInstance(Node parent = null, BaseMaterial3D material = null)
     {
-        Mesh mesh = Flush();
+        var mesh = Flush();
         return mesh != null ? BuildInstance(mesh, parent, material) : null;
     }
 
-    private void CheckFormatChange(VertexAttributes addFlag = VertexAttributes.None, VertexAttributes removed = VertexAttributes.None)
+    private void CheckFormatChange(VertexAttributes addFlag = VertexAttributes.None,
+        VertexAttributes removed = VertexAttributes.None)
     {
         if (_count == 0)
             return;
 
         Flush();
         _sfTool.Begin(Mesh.PrimitiveType.Triangles);
-        VertexAttributes keep = _attrs & ~removed;
+        var keep = _attrs & ~removed;
         if (keep.HasFlag(VertexAttributes.Normal))
             _sfTool.SetNormal(_normal);
         if (keep.HasFlag(VertexAttributes.Uv))
@@ -167,5 +159,14 @@ public sealed class Tessellator
             VertexColorUseAsAlbedo = true
         };
         return material;
+    }
+
+    [Flags]
+    private enum VertexAttributes
+    {
+        None = 0,
+        Color = 1 << 0,
+        Uv = 1 << 1,
+        Normal = 1 << 2
     }
 }

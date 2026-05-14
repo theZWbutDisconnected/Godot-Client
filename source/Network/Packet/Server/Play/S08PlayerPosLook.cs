@@ -3,9 +3,19 @@ using System.Collections.Generic;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-
 public class S08PlayerPosLook : IPacket
 {
+    [Flags]
+    public enum EnumFlags
+    {
+        None = 0,
+        X = 1 << 0, // 0x01
+        Y = 1 << 1, // 0x02
+        Z = 1 << 2, // 0x04
+        Yaw = 1 << 3, // 0x08
+        Pitch = 1 << 4 // 0x10
+    }
+
     public double X { get; private set; }
     public double Y { get; private set; }
     public double Z { get; private set; }
@@ -20,24 +30,13 @@ public class S08PlayerPosLook : IPacket
         Z = buf.ReadDouble();
         Yaw = buf.ReadFloat();
         Pitch = buf.ReadFloat();
-        byte flagByte = (byte)buf.ReadByte();
+        var flagByte = (byte)buf.ReadByte();
         Flags = EnumFlagsHelper.FromByte(flagByte);
     }
 
     public void Write(PacketBuffer buf)
     {
         /* S2C only, no need to write */
-    }
-
-    [Flags]
-    public enum EnumFlags
-    {
-        None = 0,
-        X = 1 << 0,      // 0x01
-        Y = 1 << 1,      // 0x02
-        Z = 1 << 2,      // 0x04
-        Yaw = 1 << 3,    // 0x08
-        Pitch = 1 << 4   // 0x10
     }
 
     public static class EnumFlagsHelper
@@ -51,6 +50,7 @@ public class S08PlayerPosLook : IPacket
                 if ((value & (byte)flag) != 0)
                     set.Add(flag);
             }
+
             return set;
         }
     }
