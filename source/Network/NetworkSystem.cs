@@ -19,10 +19,14 @@ public class NetworkSystem
 
     private Dictionary<Type, Action<IPacket>> _handlers = new();
     private bool _isDead;
-    private bool _isReading;
     public string Username { get; private set; }
 
     public ConnectionState State { get; private set; } = ConnectionState.HandShaking;
+
+    public bool IsConnected()
+    {
+        return _manager.IsConnected();
+    }
 
     public void SetUsername(string username)
     {
@@ -54,7 +58,7 @@ public class NetworkSystem
         return this;
     }
 
-    public NetworkSystem SetHandler(INetHandler handler)
+    public void SetHandler(INetHandler handler)
     {
         _manager.SetNetHandler(handler);
         _handlers = handler switch
@@ -75,73 +79,64 @@ public class NetworkSystem
             },
             _ => _handlers
         };
-        return this;
     }
 
     public void StreamProcess()
     {
-        if (_isReading || _isDead || !_manager.IsConnected()) return;
-        _isReading = true;
-
-        Task.Run(() =>
+        if (_isDead || !_manager.IsConnected())
         {
-            try
+            return;
+        }
+
+        try
+        {
+            var length = _buffer.ReadVarInt();
+            if (length <= 0) return;
+
+            var packetData = _buffer.ReadBytes(length);
+            byte[] payload;
+
+            if (_compressionThreshold >= 0)
             {
-                while (_manager.IsConnected())
+                var tempBuf = new PacketBuffer(new MemoryStream(packetData));
+                var dataLength = tempBuf.ReadVarInt();
+
+                if (dataLength == 0)
                 {
-                    var length = _buffer.ReadVarInt();
-                    if (length <= 0) continue;
+                    payload = tempBuf.ReadBytes(packetData.Length - PacketBuffer.GetVarIntSize(0));
+                }
+                else
+                {
+                    var headerSize = PacketBuffer.GetVarIntSize(dataLength);
+                    var compressedLen = packetData.Length - headerSize;
+                    var compressed = tempBuf.ReadBytes(compressedLen);
 
-                    var packetData = _buffer.ReadBytes(length);
-                    byte[] payload;
-
-                    if (_compressionThreshold >= 0)
-                    {
-                        var tempBuf = new PacketBuffer(new MemoryStream(packetData));
-                        var dataLength = tempBuf.ReadVarInt();
-
-                        if (dataLength == 0)
-                        {
-                            payload = tempBuf.ReadBytes(packetData.Length - PacketBuffer.GetVarIntSize(0));
-                        }
-                        else
-                        {
-                            var headerSize = PacketBuffer.GetVarIntSize(dataLength);
-                            var compressedLen = packetData.Length - headerSize;
-                            var compressed = tempBuf.ReadBytes(compressedLen);
-
-                            payload = new byte[dataLength];
-                            using var deflate = new DeflateStream(
-                                new MemoryStream(compressed, 2, compressed.Length - 2), // 跳过 zlib 2字节头
-                                CompressionMode.Decompress);
-                            deflate.ReadExactly(payload, 0, dataLength);
-                        }
-                    }
-                    else
-                    {
-                        payload = packetData;
-                    }
-
-                    var reader = new PacketBuffer(new MemoryStream(payload));
-                    var packetId = reader.ReadVarInt();
-                    var packet = PacketRegistry.CreateInboundPacket(packetId, State);
-                    if (packet != null)
-                    {
-                        packet.Read(reader);
-                        DispatchPacket(packet);
-                    }
+                    payload = new byte[dataLength];
+                    using var deflate = new DeflateStream(
+                        new MemoryStream(compressed, 2, compressed.Length - 2), // 跳过 zlib 2字节头
+                        CompressionMode.Decompress);
+                    deflate.ReadExactly(payload, 0, dataLength);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _isDead = true;
-                _manager.PacketListener?.Disconnected(ex.Message);
+                payload = packetData;
             }
-            finally
+
+            var reader = new PacketBuffer(new MemoryStream(payload));
+            var packetId = reader.ReadVarInt();
+            var packet = PacketRegistry.CreateInboundPacket(packetId, State);
+            if (packet != null)
             {
-                _isReading = false;
+                packet.Read(reader);
+                DispatchPacket(packet);
             }
-        });
+        }
+        catch (Exception ex)
+        {
+            _isDead = true;
+            _manager.PacketListener?.Disconnected(ex.Message);
+        }
     }
 
     private void DispatchPacket(IPacket packet)
