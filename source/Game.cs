@@ -9,55 +9,53 @@ namespace TestClient.Source;
 
 public partial class Game : Node
 {
-	private const string ip = "127.0.0.1";
-	private const short port = 25565;
-	private const string username = "LocalPlayer";
+    private const string ip = "127.0.0.1";
+    private const short port = 25565;
+    private const string username = "LocalPlayer";
 
-	private readonly NetworkSystem _network = new();
-	private readonly Timer _timer = new(20);
-	private string _fpsString = "0 fps";
+    private readonly NetworkSystem _network = new();
+    private readonly Timer _timer = new(20);
+    private string _fpsString = "0 fps";
 
-	private int _frames;
-	private long _lastTime = (long)Time.GetTicksMsec();
+    private int _frames;
+    private long _lastTime = (long)Time.GetTicksMsec();
 
-	public override void _Ready()
-	{
-		NetworkInitialize();
-	}
+    public override void _Ready()
+    {
+        NetworkInitialize();
+    }
 
-	private async Task NetworkInitialize()
-	{
-		_network.SetUsername(username);
-		await _network.Connect(ip, port);
-		_network.SetState(ConnectionState.HandShaking).SetHandler(new NetHandlerHandshakeTcp());
-		await _network.SendPacket(new C00Handshake(47, ip, port, ConnectionState.Login));
-		_network.SetState(ConnectionState.Login).SetHandler(new NetHandlerLoginClient(_network));
-		await _network.SendPacket(new C00LoginStart(username));
-		_network.Name = new StringName("NetworkSystem");
-		AddChild(_network);
-	}
+    private async Task NetworkInitialize()
+    {
+        _network.SetUsername(username);
+        await _network.Connect(ip, port);
+        _network.SetState(ConnectionState.HandShaking).SetHandler(new NetHandlerHandshakeTcp());
+        await _network.SendPacket(new C00Handshake(47, ip, port, ConnectionState.Login));
+        _network.SetState(ConnectionState.Login).SetHandler(new NetHandlerLoginClient(_network));
+        await _network.SendPacket(new C00LoginStart(username));
+    }
 
-	public override void _Process(double delta)
-	{
-		_timer.UpdateTimer();
-		for (var i = 0; i < _timer.ElapsedTicks; ++i) Tick();
-		Render(_timer.RenderPartialTicks);
-		++_frames;
+    public override void _Process(double delta)
+    {
+        _timer.UpdateTimer();
+        for (var i = 0; i < _timer.ElapsedTicks; ++i) Tick();
+        Render(_timer.RenderPartialTicks);
+        ++_frames;
 
-		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
-		{
-			_fpsString = _frames + " fps";
-			_lastTime += 1000L;
-			_frames = 0;
-		}
-	}
+        while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
+        {
+            _fpsString = _frames + " fps";
+            _lastTime += 1000L;
+            _frames = 0;
+        }
+    }
 
-	private void Tick()
-	{
-		if (_network.IsConnected()) _network.StreamProcess();
-	}
+    private void Tick()
+    {
+        if (_network.IsConnected()) _network.StreamProcess();
+    }
 
-	private void Render(float alpha)
-	{
-	}
+    private void Render(float alpha)
+    {
+    }
 }
