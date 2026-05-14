@@ -26,7 +26,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
     {
         var brandBuf = new PacketBuffer(new MemoryStream());
         brandBuf.WriteString("vanilla");
-        await _networkSystem.SendPacket(new C17PacketCustomPayload("MC|Brand", brandBuf));
+        await _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");

@@ -4,8 +4,8 @@ namespace TestClient.Source.Network.Packet.NetHandler;
 
 public interface INetHandlerLoginClient : INetHandler
 {
-    void HandleEncryptionRequest(S01PacketEncryptionRequest packetIn);
-    void HandleLoginSuccess(S02PacketLoginSuccess packetIn);
+    void HandleEncryptionRequest(S01EncryptionRequest @in);
+    void HandleLoginSuccess(S02LoginSuccess @in);
     void HandleDisconnect(S00Disconnect packetIn);
-    void HandleEnableCompression(S03PacketEnableCompression packetIn);
+    void HandleEnableCompression(S03EnableCompression @in);
 }

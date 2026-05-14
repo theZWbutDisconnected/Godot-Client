@@ -17,21 +17,21 @@ public class NetHandlerLoginClient : INetHandlerLoginClient
         _username = username;
     }
 
-    public void HandleEncryptionRequest(S01PacketEncryptionRequest packetIn)
+    public void HandleEncryptionRequest(S01EncryptionRequest @in)
     {
         GD.Print("Sending empty response");
 
-        var response = new C01PacketEncryptionResponse(
+        var response = new C01EncryptionResponse(
             Array.Empty<byte>(),
             Array.Empty<byte>()
         );
         _networkSystem.SendPacket(response);
     }
 
-    public void HandleLoginSuccess(S02PacketLoginSuccess packetIn)
+    public void HandleLoginSuccess(S02LoginSuccess @in)
     {
-        GD.Print($"UUID: {packetIn.Uuid}, Username: {packetIn.Username}");
-        _networkSystem.SetUsername(packetIn.Username);
+        GD.Print($"UUID: {@in.Uuid}, Username: {@in.Username}");
+        _networkSystem.SetUsername(@in.Username);
         _networkSystem.SetState(ConnectionState.Play);
     }
 
@@ -41,9 +41,9 @@ public class NetHandlerLoginClient : INetHandlerLoginClient
         _networkSystem.Disconnect();
     }
 
-    public void HandleEnableCompression(S03PacketEnableCompression packetIn)
+    public void HandleEnableCompression(S03EnableCompression @in)
     {
-        _networkSystem.SetCompressionThreshold(packetIn.Threshold);
+        _networkSystem.SetCompressionThreshold(@in.Threshold);
     }
 
     public void Disconnected(string reason)

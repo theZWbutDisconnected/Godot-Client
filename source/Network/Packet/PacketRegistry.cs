@@ -18,15 +18,15 @@ public static class PacketRegistry
         // C2S Reg
         RegisterOutbound(ConnectionState.HandShaking, nameof(C00Handshake), 0x00);
         RegisterOutbound(ConnectionState.Login, nameof(C00LoginStart), 0x00);
-        RegisterOutbound(ConnectionState.Login, nameof(C01PacketEncryptionResponse), 0x01);
+        RegisterOutbound(ConnectionState.Login, nameof(C01EncryptionResponse), 0x01);
         RegisterOutbound(ConnectionState.Play, nameof(C00KeepAlive), 0x00);
-        RegisterOutbound(ConnectionState.Play, nameof(C17PacketCustomPayload), 0x17);
+        RegisterOutbound(ConnectionState.Play, nameof(C17CustomPayload), 0x17);
 
         // S2C Reg
         RegisterInbound(ConnectionState.Login, 0x00, () => new S00Disconnect());
-        RegisterInbound(ConnectionState.Login, 0x01, () => new S01PacketEncryptionRequest());
-        RegisterInbound(ConnectionState.Login, 0x02, () => new S02PacketLoginSuccess());
-        RegisterInbound(ConnectionState.Login, 0x03, () => new S03PacketEnableCompression());
+        RegisterInbound(ConnectionState.Login, 0x01, () => new S01EncryptionRequest());
+        RegisterInbound(ConnectionState.Login, 0x02, () => new S02LoginSuccess());
+        RegisterInbound(ConnectionState.Login, 0x03, () => new S03EnableCompression());
         RegisterInbound(ConnectionState.Play, 0x00, () => new S00KeepAlive());
         RegisterInbound(ConnectionState.Play, 0x01, () => new S01JoinGame());
     }

@@ -145,13 +145,13 @@ public class NetworkSystem
             case (ConnectionState.Login, S00Disconnect p):
                 ((INetHandlerLoginClient)handler).HandleDisconnect(p);
                 break;
-            case (ConnectionState.Login, S01PacketEncryptionRequest p):
+            case (ConnectionState.Login, S01EncryptionRequest p):
                 ((INetHandlerLoginClient)handler).HandleEncryptionRequest(p);
                 break;
-            case (ConnectionState.Login, S02PacketLoginSuccess p):
+            case (ConnectionState.Login, S02LoginSuccess p):
                 ((INetHandlerLoginClient)handler).HandleLoginSuccess(p);
                 break;
-            case (ConnectionState.Login, S03PacketEnableCompression p):
+            case (ConnectionState.Login, S03EnableCompression p):
                 ((INetHandlerLoginClient)handler).HandleEnableCompression(p);
                 break;
             case (ConnectionState.Play, S00KeepAlive p):

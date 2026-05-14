@@ -1,6 +1,6 @@
 namespace TestClient.Source.Network.Packet.Client.Login;
 
-public class C01PacketEncryptionResponse(byte[] sharedSecretIn, byte[] verifyTokenIn) : IPacket
+public class C01EncryptionResponse(byte[] sharedSecretIn, byte[] verifyTokenIn) : IPacket
 {
     public byte[] SharedSecret { get; } = sharedSecretIn;
     public byte[] VerifyToken { get; } = verifyTokenIn;

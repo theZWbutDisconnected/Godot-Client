@@ -2,7 +2,7 @@ using System;
 
 namespace TestClient.Source.Network.Packet.Server.Login;
 
-public class S01PacketEncryptionRequest : IPacket
+public class S01EncryptionRequest : IPacket
 {
     public string ServerId { get; private set; }
     public byte[] PublicKey { get; private set; } = Array.Empty<byte>();
