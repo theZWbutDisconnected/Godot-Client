@@ -1,6 +1,6 @@
 using TestClient.Source.Network.Packet.Server.Play;
 
-namespace TestClient.Source.Network.Packet.NetHandler;
+namespace TestClient.Source.Network.NetHandler;
 
 public interface INetHandlerPlayClient : INetHandler
 {

@@ -1,7 +1,6 @@
 using System.IO;
 using Godot;
 using TestClient.Source.Network.Packet.Client.Play;
-using TestClient.Source.Network.Packet.NetHandler;
 using TestClient.Source.Network.Packet.Server.Play;
 
 namespace TestClient.Source.Network.NetHandler.impl;

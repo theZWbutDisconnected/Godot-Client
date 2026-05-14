@@ -4,8 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Godot;
+using TestClient.Source.Network.NetHandler;
 using TestClient.Source.Network.Packet;
-using TestClient.Source.Network.Packet.NetHandler;
 using TestClient.Source.Network.Packet.Server.Login;
 using TestClient.Source.Network.Packet.Server.Play;
 
@@ -16,6 +16,8 @@ public class NetworkSystem
     private readonly ClientHandler _manager = new();
     private PacketBuffer _buffer;
     private int _compressionThreshold = -1; // -1 is unenabled
+
+    private Dictionary<Type, Action<IPacket>> _handlers = new();
     private bool _isDead;
     private bool _isReading;
     public string Username { get; private set; }
@@ -59,17 +61,17 @@ public class NetworkSystem
         {
             INetHandlerLoginClient h => new Dictionary<Type, Action<IPacket>>
             {
-                { typeof(S00Disconnect),       p => h.HandleDisconnect((S00Disconnect)p) },
+                { typeof(S00Disconnect), p => h.HandleDisconnect((S00Disconnect)p) },
                 { typeof(S01EncryptionRequest), p => h.HandleEncryptionRequest((S01EncryptionRequest)p) },
-                { typeof(S02LoginSuccess),      p => h.HandleLoginSuccess((S02LoginSuccess)p) },
-                { typeof(S03EnableCompression), p => h.HandleEnableCompression((S03EnableCompression)p) },
+                { typeof(S02LoginSuccess), p => h.HandleLoginSuccess((S02LoginSuccess)p) },
+                { typeof(S03EnableCompression), p => h.HandleEnableCompression((S03EnableCompression)p) }
             },
             INetHandlerPlayClient h => new Dictionary<Type, Action<IPacket>>
             {
-                { typeof(S00KeepAlive),            p => h.HandleKeepAlive((S00KeepAlive)p) },
-                { typeof(S01JoinGame),             p => h.HandleJoinGame((S01JoinGame)p) },
-                { typeof(S32ConfirmTransaction),   p => h.HandleConfirmTransaction((S32ConfirmTransaction)p) },
-                { typeof(S40Disconnect),           p => h.HandleDisconnect((S40Disconnect)p) },
+                { typeof(S00KeepAlive), p => h.HandleKeepAlive((S00KeepAlive)p) },
+                { typeof(S01JoinGame), p => h.HandleJoinGame((S01JoinGame)p) },
+                { typeof(S32ConfirmTransaction), p => h.HandleConfirmTransaction((S32ConfirmTransaction)p) },
+                { typeof(S40Disconnect), p => h.HandleDisconnect((S40Disconnect)p) }
             },
             _ => _handlers
         };
@@ -141,8 +143,6 @@ public class NetworkSystem
             }
         });
     }
-
-    private Dictionary<Type, Action<IPacket>> _handlers = new();
 
     private void DispatchPacket(IPacket packet)
     {

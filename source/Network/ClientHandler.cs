@@ -1,6 +1,6 @@
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using TestClient.Source.Network.Packet.NetHandler;
+using TestClient.Source.Network.NetHandler;
 
 namespace TestClient.Source.Network;
 

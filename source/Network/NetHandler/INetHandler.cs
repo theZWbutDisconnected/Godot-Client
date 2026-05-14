@@ -1,4 +1,4 @@
-﻿namespace TestClient.Source.Network.Packet.NetHandler;
+﻿namespace TestClient.Source.Network.NetHandler;
 
 public interface INetHandler
 {
