@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -54,6 +55,24 @@ public class NetworkSystem
     public NetworkSystem SetHandler(INetHandler handler)
     {
         _manager.SetNetHandler(handler);
+        _handlers = handler switch
+        {
+            INetHandlerLoginClient h => new Dictionary<Type, Action<IPacket>>
+            {
+                { typeof(S00Disconnect),       p => h.HandleDisconnect((S00Disconnect)p) },
+                { typeof(S01EncryptionRequest), p => h.HandleEncryptionRequest((S01EncryptionRequest)p) },
+                { typeof(S02LoginSuccess),      p => h.HandleLoginSuccess((S02LoginSuccess)p) },
+                { typeof(S03EnableCompression), p => h.HandleEnableCompression((S03EnableCompression)p) },
+            },
+            INetHandlerPlayClient h => new Dictionary<Type, Action<IPacket>>
+            {
+                { typeof(S00KeepAlive),            p => h.HandleKeepAlive((S00KeepAlive)p) },
+                { typeof(S01JoinGame),             p => h.HandleJoinGame((S01JoinGame)p) },
+                { typeof(S32ConfirmTransaction),   p => h.HandleConfirmTransaction((S32ConfirmTransaction)p) },
+                { typeof(S40Disconnect),           p => h.HandleDisconnect((S40Disconnect)p) },
+            },
+            _ => _handlers
+        };
         return this;
     }
 
@@ -123,50 +142,14 @@ public class NetworkSystem
         });
     }
 
+    private Dictionary<Type, Action<IPacket>> _handlers = new();
+
     private void DispatchPacket(IPacket packet)
     {
-        var handler = _manager.PacketListener;
-        if (handler == null) return;
-
-        switch (State)
-        {
-            case ConnectionState.Login:
-                var loginClient = (INetHandlerLoginClient)handler;
-                switch (packet)
-                {
-                    case S00Disconnect p:
-                        loginClient.HandleDisconnect(p);
-                        break;
-                    case S01EncryptionRequest p:
-                        loginClient.HandleEncryptionRequest(p);
-                        break;
-                    case S02LoginSuccess p:
-                        loginClient.HandleLoginSuccess(p);
-                        break;
-                    case S03EnableCompression p:
-                        loginClient.HandleEnableCompression(p);
-                        break;
-                }
-                break;
-            case ConnectionState.Play:
-                var playClient = (INetHandlerPlayClient)handler;
-                switch (packet)
-                {
-                    case S00KeepAlive p:
-                        playClient.HandleKeepAlive(p);
-                        break;
-                    case S01JoinGame p:
-                        playClient.HandleJoinGame(p);
-                        break;
-                    case S40Disconnect p:
-                        playClient.HandleDisconnect(p);
-                        break;
-                }
-                break;
-            default:
-                GD.Print("Unpatch state: " + State);
-                break;
-        }
+        if (_handlers.TryGetValue(packet.GetType(), out var action))
+            action(packet);
+        else
+            GD.Print($"Unhandled: {packet.GetType().Name}");
     }
 
     public async Task SendPacket(IPacket packet)
