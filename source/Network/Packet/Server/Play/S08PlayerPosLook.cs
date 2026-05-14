@@ -13,18 +13,6 @@ public class S08PlayerPosLook : IPacket
     public float Pitch { get; private set; }
     public HashSet<EnumFlags> Flags { get; private set; }
 
-    public S08PlayerPosLook() { }
-
-    public S08PlayerPosLook(double x, double y, double z, float yaw, float pitch, HashSet<EnumFlags> flags)
-    {
-        X = x;
-        Y = y;
-        Z = z;
-        Yaw = yaw;
-        Pitch = pitch;
-        Flags = flags;
-    }
-
     public void Read(PacketBuffer buf)
     {
         X = buf.ReadDouble();
