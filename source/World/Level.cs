@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿﻿﻿﻿﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
@@ -10,18 +12,70 @@ namespace TestClient.Source.World;
 
 public partial class Level : Node3D
 {
-    private readonly Dictionary<string, ChunkData> _chunks = new();
+    private readonly ConcurrentDictionary<string, ChunkData> _chunks = new();
     private readonly HashSet<Entity> _entities = new();
+    private readonly ConcurrentQueue<string> _dirtyChunks = new();
+    private readonly ConcurrentDictionary<string, MeshInstance3D> _chunkMeshes = new();
+    private bool _isRefreshing = false;
 
     public void AddChunk(ChunkData chunk)
     {
         string key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
         _chunks[key] = chunk;
-        RenderChunk(chunk);
+        SetDirty(chunk.ChunkX, chunk.ChunkZ);
+        SetDirty(chunk.ChunkX + 1, chunk.ChunkZ);
+        SetDirty(chunk.ChunkX - 1, chunk.ChunkZ);
+        SetDirty(chunk.ChunkX, chunk.ChunkZ + 1);
+        SetDirty(chunk.ChunkX, chunk.ChunkZ - 1);
+        
+        if (!_isRefreshing)
+        {
+            _isRefreshing = true;
+            Task.Run(() =>
+            {
+                RefreshDirtyChunks();
+                _isRefreshing = false;
+            });
+        }
     }
 
-    public void RenderChunk(ChunkData chunk)
+    public void SetDirty(int chunkX, int chunkZ)
     {
+        string key = ChunkKey(chunkX, chunkZ);
+        if (_chunks.ContainsKey(key))
+        {
+            _dirtyChunks.Enqueue(key);
+        }
+    }
+
+    public void RefreshDirtyChunks()
+    {
+        HashSet<string> dirtyKeys = new HashSet<string>();
+        while (_dirtyChunks.TryDequeue(out string key))
+        {
+            dirtyKeys.Add(key);
+        }
+        
+        foreach (string key in dirtyKeys)
+        {
+            string[] parts = key.Split(',');
+            if (parts.Length != 2) continue;
+            
+            if (!int.TryParse(parts[0], out int cx)) continue;
+            if (!int.TryParse(parts[1], out int cz)) continue;
+            
+            var chunk = GetChunk(cx, cz);
+            if (chunk != null)
+            {
+                BuildChunkMeshAsync(chunk);
+            }
+        }
+    }
+    
+    private void BuildChunkMeshAsync(ChunkData chunk)
+    {
+        string key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
+        
         var tessellator = new Tessellator();
         tessellator.Initialize();
 
@@ -40,41 +94,45 @@ public partial class Level : Node3D
 
                     if (chunk.HasBlock(worldX, worldY, worldZ))
                     {
-                        Block block = Blocks.Presets[GetBlockId(worldX, worldY, worldZ)];
-                        if (block == null) block = Blocks.Rock;
+                        Block block = Blocks.GetPreset(GetBlockId(worldX, worldY, worldZ));
                         block.Render(tessellator, this, 0, worldX, worldY, worldZ);
                     }
                 }
             }
         }
-
+        
         var meshInstance = tessellator.BuildMeshInstance();
-        if (meshInstance != null)
-        {
-            AddChild(meshInstance);
-        }
+        CallDeferred(nameof(ApplyChunkMesh), key, meshInstance);
     }
-
-    public ChunkData GetOrCreateChunk(int chunkX, int chunkZ)
+    
+    private void ApplyChunkMesh(string key, MeshInstance3D newMesh)
     {
-        string key = ChunkKey(chunkX, chunkZ);
-        if (_chunks.TryGetValue(key, out var chunk))
-            return chunk;
-
-        chunk = new ChunkData(chunkX, chunkZ);
-        _chunks[key] = chunk;
-        return chunk;
+        if (_chunkMeshes.TryRemove(key, out var oldMesh))
+        {
+            if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this)
+            {
+                RemoveChild(oldMesh);
+            }
+            oldMesh?.QueueFree();
+        }
+        
+        if (newMesh != null)
+        {
+            AddChild(newMesh);
+            _chunkMeshes[key] = newMesh;
+        }
     }
 
     public ChunkData? GetChunk(int chunkX, int chunkZ)
     {
         string key = ChunkKey(chunkX, chunkZ);
-        return _chunks.TryGetValue(key, out var chunk) ? chunk : null;
+        _chunks.TryGetValue(key, out var chunk);
+        return chunk;
     }
 
     public void RemoveChunk(int chunkX, int chunkZ)
     {
-        _chunks.Remove(ChunkKey(chunkX, chunkZ));
+        _chunks.Remove(ChunkKey(chunkX, chunkZ), out _);
     }
 
     public int GetBlockId(int worldX, int worldY, int worldZ)
@@ -140,7 +198,11 @@ public partial class Level : Node3D
                         {
                             if (chunk.HasBlock(x, y, z))
                             {
-                                aabbs.Add(new AABB(x, y, z, x + 1, y + 1, z + 1));
+                                AABB origin = Blocks.GetPreset(chunk.GetBlockId(x, y, z)).GetCollision();
+                                if (origin == null) continue;
+                                AABB cube = new AABB(origin);
+                                cube.Move(x, y, z);
+                                aabbs.Add(cube);
                             }
                         }
                     }

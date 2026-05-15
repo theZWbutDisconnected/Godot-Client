@@ -27,6 +27,8 @@ public partial class Game : Node
 	private string _fpsString = "0 fps";
 	private int _frames;
 	private long _lastTime = (long)Time.GetTicksMsec();
+
+	private bool _isRunning;
 	
 	public static Game Singleton { get; private set;  }
 
@@ -35,10 +37,10 @@ public partial class Game : Node
 		Singleton = this;
 	}
 
-	public override void _Ready()
+	public override async void _Ready()
 	{
-		NetworkInitialize();
-		
+		await NetworkInitialize();
+		_isRunning = true;
 		Level = new Level();
 		Player = new Player(Level, _network);
 		Level.AddEntity(Player);
@@ -46,7 +48,7 @@ public partial class Game : Node
 		AddChild(Level);
 		AddChild(Player);
 		
-		Input.SetMouseMode(Input.MouseModeEnum.Captured);
+		 Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
 
 	private async Task NetworkInitialize()
@@ -61,6 +63,7 @@ public partial class Game : Node
 
 	public override void _Process(double delta)
 	{
+		if (!_isRunning) return;
 		_timer.UpdateTimer();
 		for (var i = 0; i < _timer.ElapsedTicks; ++i) Tick();
 		Render(_timer.RenderPartialTicks);
@@ -105,6 +108,7 @@ public partial class Game : Node
 	public override void _Input(InputEvent @event)
 	{
 		base._Input(@event);
+		if (!_isRunning) return;
 		if (@event is InputEventMouseMotion motion)
 		{
 			var xo = 0.0F;

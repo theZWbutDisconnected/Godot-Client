@@ -31,7 +31,7 @@ public partial class Entity : Node3D
     public Guid EntityUuid = Guid.NewGuid();
     public AABB BoundingBox;
     protected float Width = 0.6F;
-    protected float Height = 1.8F;
+    public float Height = 1.8F;
 
     public Entity(Level level) {
         Level = level;
@@ -51,8 +51,8 @@ public partial class Entity : Node3D
         Y = y;
         Z = z;
         float w = Width / 2.0F;
-        float h = Height / 2.0F;
-        BoundingBox = new AABB(x - w, y - h, z - w, x + w, y + h, z + w);
+        float h = Height;
+        BoundingBox = new AABB(x - w, y, z - w, x + w, y + h, z + w);
     }
 
     public void SetRot(float yaw, float pitch)
@@ -101,9 +101,20 @@ public partial class Entity : Node3D
                 }
             }
 
-            y += (d0 - BoundingBox.Y0);
+            y += d0 - BoundingBox.Y0;
             SetPos(x, y, z);
         }
+    }
+
+    public void Turn(float xo, float yo)
+    {
+        var f = Pitch;
+        var f1 = Yaw;
+        Yaw = (float)(Yaw + xo * 0.15D);
+        Pitch = (float)(Pitch - yo * 0.15D);
+        Pitch = Mathf.Clamp(Pitch, -90.0F, 90.0F);
+        PrevPitch += Pitch - f;
+        PrevYaw += Yaw - f1;
     }
 
     public virtual void Tick()

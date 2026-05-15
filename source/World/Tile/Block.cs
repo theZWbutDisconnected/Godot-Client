@@ -1,4 +1,5 @@
-﻿using TestClient.Source.Render;
+﻿using TestClient.Source.Physics;
+using TestClient.Source.Render;
 
 namespace TestClient.Source.World.Tile;
 
@@ -11,7 +12,7 @@ public class Block
     {
         Id = id;
         TexId = texId;
-        Blocks.Presets[Id] = this;
+        Blocks.SetPreset(Id, this);
     }
 
     public virtual void Render(Tessellator t, Level level, int layer, int x, int y, int z) {
@@ -75,7 +76,15 @@ public class Block
     }
 
     private bool ShouldRenderFace(Level level, int x, int y, int z, int layer) {
-        return !level.HasBlock(x, y, z);
+        return !level.HasBlock(x, y, z) || !Blocks.GetPreset(level.GetBlockId(x, y, z)).IsOpaque();
+    }
+    
+    public virtual AABB GetCube() {
+        return null;
+    }
+    
+    public virtual AABB GetCollision() {
+        return new AABB(0, 0, 0, 1, 1 ,1);
     }
     
     public virtual bool IsOpaque() {

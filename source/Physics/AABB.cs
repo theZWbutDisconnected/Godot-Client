@@ -9,6 +9,16 @@ public class AABB
     public double Y1;
     public double Z0;
     public double Z1;
+    
+    public AABB(AABB old)
+    {
+        X0 = old.X0;
+        Y0 = old.Y0;
+        Z0 = old.Z0;
+        X1 = old.X1;
+        Y1 = old.Y1;
+        Z1 = old.Z1;
+    }
 
     public AABB(double x0, double y0, double z0, double x1, double y1, double z1)
     {

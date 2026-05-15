@@ -155,12 +155,11 @@ public sealed class Tessellator
     {
         var material = new StandardMaterial3D
         {
-            Transparency = BaseMaterial3D.TransparencyEnum.Disabled,
+            Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
             AlbedoTexture = Terrain,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Back,
-            NormalEnabled = true,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
             VertexColorUseAsAlbedo = true
         };
