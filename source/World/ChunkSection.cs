@@ -20,7 +20,8 @@ public class ChunkSection
     public void SetBlock(int localX, int localY, int localZ, int blockId, int metadata = 0)
     {
         if (!IsInBounds(localX, localY, localZ)) return;
-        _blockData[GetIndex(localX, localY, localZ)] = (char)((blockId & 0xFFF) | ((metadata & 0xF) << 12));
+        // ((type & 0xFFF) << 4) | (metadata & 0xF)
+        _blockData[GetIndex(localX, localY, localZ)] = (char)(((blockId & 0xFFF) << 4) | (metadata & 0xF));
         IsEmpty = false;
     }
 
@@ -32,12 +33,14 @@ public class ChunkSection
 
     public int GetBlockId(int localX, int localY, int localZ)
     {
-        return _blockData[GetIndex(localX, localY, localZ)] & 0xFFF;
+        // (value >> 4) & 0xFFF
+        return (_blockData[GetIndex(localX, localY, localZ)] >> 4) & 0xFFF;
     }
 
     public int GetMetadata(int localX, int localY, int localZ)
     {
-        return (_blockData[GetIndex(localX, localY, localZ)] >> 12) & 0xF;
+        // value & 0xF
+        return _blockData[GetIndex(localX, localY, localZ)] & 0xF;
     }
 
     public char GetBlockRaw(int localX, int localY, int localZ)

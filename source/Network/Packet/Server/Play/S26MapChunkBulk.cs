@@ -14,31 +14,30 @@ public class S26MapChunkBulk : IPacket
     {
         IsOverworld = buf.ReadBoolean();
         var chunkCount = buf.ReadVarInt();
-        
+
         // Metadata
         var xPositions = new int[chunkCount];
         var zPositions = new int[chunkCount];
         var dataSizes = new int[chunkCount];
-        
+
         for (var i = 0; i < chunkCount; i++)
         {
             xPositions[i] = buf.ReadInt();
             zPositions[i] = buf.ReadInt();
             dataSizes[i] = buf.ReadUnsignedShort();
         }
-        
+
         // Chunk data
         for (var i = 0; i < chunkCount; i++)
         {
-            var sectionCount = BitOperations.PopCount((uint)dataSizes[i]);
             var dataSize = CalculateDataSize(dataSizes[i], IsOverworld, true);
             var data = buf.ReadBytes(dataSize);
-            
-            var chunk = S21ChunkData.ParseChunkData(xPositions[i], zPositions[i], 
+
+            var chunk = S21ChunkData.ParseChunkData(xPositions[i], zPositions[i],
                 dataSizes[i], true, data);
             Chunks.Add(chunk);
         }
-        
+
         Console.WriteLine($"Dispatching 0x26: {chunkCount} chunks");
     }
 
@@ -51,21 +50,21 @@ public class S26MapChunkBulk : IPacket
     {
         var sectionCount = BitOperations.PopCount((uint)sectionBitmask);
         var size = 0;
-        
+
         // Blocks: 4096 * 2 = 8192 bytes per section
         size += sectionCount * 8192;
-        
-        // Lit: 2048 bytes per section
+
+        // Block light: 2048 bytes per section
         size += sectionCount * 2048;
-        
-        // Sky lit: 2048 bytes per section (OverWorld)
+
+        // Sky light: 2048 bytes per section (仅OverWorld)
         if (isOverworld)
             size += sectionCount * 2048;
-        
-        // Biome data: 256 bytes (only groundUpContinuous)
+
+        // Biome data: 256 bytes (仅groundUpContinuous)
         if (groundUpContinuous)
             size += 256;
-        
+
         return size;
     }
 }
