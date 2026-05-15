@@ -1,5 +1,5 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿﻿using System;
+ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
@@ -12,16 +12,20 @@ namespace TestClient.Source.World;
 
 public partial class Level : Node3D
 {
-    private readonly ConcurrentDictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
+    private readonly Dictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
     private readonly HashSet<Entity> _entities = new();
-    private readonly ConcurrentQueue<ChunkCoordIntPair> _dirtyChunks = new();
-    private readonly ConcurrentDictionary<ChunkCoordIntPair, MeshInstance3D> _chunkMeshes = new();
+    private readonly List<(ChunkCoordIntPair coord, int priority)> _dirtyChunks = new();
+    private readonly Dictionary<ChunkCoordIntPair, MeshInstance3D> _chunkMeshes = new();
+    private readonly object _lockObj = new();
     private bool _isRefreshing = false;
 
     public void AddChunk(ChunkData chunk)
     {
         var key = new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ);
-        _chunks[key] = chunk;
+        lock (_lockObj)
+        {
+            _chunks[key] = chunk;
+        }
         SetDirty(key);
         SetDirty(new ChunkCoordIntPair(chunk.ChunkX + 1, chunk.ChunkZ));
         SetDirty(new ChunkCoordIntPair(chunk.ChunkX - 1, chunk.ChunkZ));
@@ -29,15 +33,33 @@ public partial class Level : Node3D
         SetDirty(new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ - 1));
     }
 
-    public void SetDirty(ChunkCoordIntPair chunkCoord)
+    public void SetDirty(ChunkCoordIntPair chunkCoord, int priority = -1)
     {
-        if (_chunks.ContainsKey(chunkCoord)) _dirtyChunks.Enqueue(chunkCoord);
+        lock (_lockObj)
+        {
+            if (!_chunks.ContainsKey(chunkCoord)) return;
+            _dirtyChunks.RemoveAll(item => item.coord.Equals(chunkCoord));
+            if (priority < 0)
+            {
+                _dirtyChunks.Add((chunkCoord, priority));
+            }
+            else
+            {
+                var insertIndex = Math.Min(priority, _dirtyChunks.Count);
+                _dirtyChunks.Insert(insertIndex, (chunkCoord, priority));
+            }
+        }
     }
 
     public void RefreshDirtyChunks()
     {
-        var dirtyKeys = new HashSet<ChunkCoordIntPair>();
-        while (_dirtyChunks.TryDequeue(out var key)) dirtyKeys.Add(key);
+        List<ChunkCoordIntPair> dirtyKeys;
+        
+        lock (_lockObj)
+        {
+            dirtyKeys = _dirtyChunks.Select(item => item.coord).ToList();
+            _dirtyChunks.Clear();
+        }
 
         foreach (var key in dirtyKeys)
         {
@@ -79,29 +101,43 @@ public partial class Level : Node3D
     private void ApplyChunkMesh(int chunkX, int chunkZ, MeshInstance3D newMesh)
     {
         var key = new ChunkCoordIntPair(chunkX, chunkZ);
-        if (_chunkMeshes.TryRemove(key, out var oldMesh))
+        lock (_lockObj)
         {
-            if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this) RemoveChild(oldMesh);
-            oldMesh?.QueueFree();
-        }
+            if (_chunkMeshes.TryGetValue(key, out var oldMesh))
+            {
+                _chunkMeshes.Remove(key);
+                if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this) RemoveChild(oldMesh);
+                oldMesh?.QueueFree();
+            }
 
-        if (newMesh != null)
-        {
-            AddChild(newMesh);
-            _chunkMeshes[key] = newMesh;
+            if (newMesh != null)
+            {
+                AddChild(newMesh);
+                _chunkMeshes[key] = newMesh;
+            }
         }
     }
 
+    #nullable enable
     public ChunkData? GetChunk(int chunkX, int chunkZ)
     {
         var key = new ChunkCoordIntPair(chunkX, chunkZ);
-        _chunks.TryGetValue(key, out var chunk);
+        ChunkData chunk;
+        lock (_lockObj)
+        {
+            _chunks.TryGetValue(key, out var c);
+            chunk = c;
+        }
         return chunk;
     }
+    #nullable disable
 
     public void RemoveChunk(int chunkX, int chunkZ)
     {
-        _chunks.Remove(new ChunkCoordIntPair(chunkX, chunkZ), out _);
+        lock (_lockObj)
+        {
+            _chunks.Remove(new ChunkCoordIntPair(chunkX, chunkZ));
+        }
     }
 
     public int GetBlockId(BlockPos pos)
@@ -139,12 +175,11 @@ public partial class Level : Node3D
 		if (chunk != null)
 		{
 			chunk.SetBlock(pos.X, pos.Y, pos.Z, blockId, metadata);
-			SetDirty(new ChunkCoordIntPair(cx, cz));
-			
-			SetDirty(new ChunkCoordIntPair(cx + 1, cz));
-			SetDirty(new ChunkCoordIntPair(cx - 1, cz));
-			SetDirty(new ChunkCoordIntPair(cx, cz + 1));
-			SetDirty(new ChunkCoordIntPair(cx, cz - 1));
+			SetDirty(new ChunkCoordIntPair(cx, cz), 0);
+            if (cx == 0) SetDirty(new ChunkCoordIntPair(cx - 1, cz), 1);
+            if (cz == 0) SetDirty(new ChunkCoordIntPair(cx, cz - 1), 1);
+            if (cx == 15) SetDirty(new ChunkCoordIntPair(cx + 1, cz), 1);
+            if (cz == 15) SetDirty(new ChunkCoordIntPair(cx, cz + 1), 1);
 		}
 	}
 
