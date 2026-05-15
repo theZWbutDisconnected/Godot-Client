@@ -80,4 +80,15 @@ public partial class Player : Entity
             }
         }
     }
+
+    public void Turn(float xo, float yo)
+    {
+        var f = Pitch;
+        var f1 = Yaw;
+        Yaw = (float)(Yaw + xo * 0.15D);
+        Pitch = (float)(Pitch - yo * 0.15D);
+        Pitch = Mathf.Clamp(Pitch, -90.0F, 90.0F);
+        PrevPitch += Pitch - f;
+        PrevYaw += Yaw - f1;
+    }
 }

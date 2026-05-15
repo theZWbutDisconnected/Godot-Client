@@ -158,8 +158,8 @@ public partial class Entity : Node3D
             var sin = (float)Math.Sin(rad);
             var cos = (float)Math.Cos(rad);
 
-            XDelta += xa * cos + za * sin;
-            ZDelta += za * cos - xa * sin;
+            XDelta -= xa * cos - za * sin;
+            ZDelta -= za * cos + xa * sin;
         }
     }
 }

@@ -45,6 +45,8 @@ public partial class Game : Node
 		
 		AddChild(Level);
 		AddChild(Player);
+		
+		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
 
 	private async Task NetworkInitialize()
@@ -97,6 +99,21 @@ public partial class Game : Node
 		var y = Player.PrevY + (Player.Y - Player.PrevY) * a;
 		var z = Player.PrevZ + (Player.Z - Player.PrevZ) * a;
 		Camera.Position = new Vector3((float)x, (float)y + Player.EyeHeight, (float)z);
-		Camera.RotationDegrees = new Vector3(Player.Pitch, Player.Yaw, 0.0F);
+		Camera.RotationDegrees = new Vector3(-Player.Pitch, 180 - Player.Yaw, 0.0F);
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		base._Input(@event);
+		if (@event is InputEventMouseMotion motion)
+		{
+			var xo = 0.0F;
+			var yo = 0.0F;
+			xo = motion.Relative.X;
+			yo = -motion.Relative.Y;
+
+			var YMouseAxis = 1;
+			Player.Turn(xo, yo * YMouseAxis);
+		}
 	}
 }
