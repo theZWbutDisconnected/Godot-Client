@@ -16,8 +16,8 @@ public class S18EntityTeleport : IPacket
         PosX = buf.ReadInt();
         PosY = buf.ReadInt();
         PosZ = buf.ReadInt();
-        Yaw = (byte)buf.ReadByte();
-        Pitch = (byte)buf.ReadByte();
+        Yaw = buf.ReadByte();
+        Pitch = buf.ReadByte();
         OnGround = buf.ReadBoolean();
     }
 

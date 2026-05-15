@@ -40,7 +40,9 @@ public partial class Level : Node3D
 
                     if (chunk.HasBlock(worldX, worldY, worldZ))
                     {
-                        Blocks.Rock.Render(tessellator, this, 0, worldX, worldY, worldZ);
+                        Block block = Blocks.Presets[GetBlockId(worldX, worldY, worldZ)];
+                        if (block == null) block = Blocks.Rock;
+                        block.Render(tessellator, this, 0, worldX, worldY, worldZ);
                     }
                 }
             }

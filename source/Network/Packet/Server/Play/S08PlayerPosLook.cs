@@ -30,8 +30,7 @@ public class S08PlayerPosLook : IPacket
         Z = buf.ReadDouble();
         Yaw = buf.ReadFloat();
         Pitch = buf.ReadFloat();
-        var flagByte = (byte)buf.ReadByte();
-        Flags = EnumFlagsHelper.FromByte(flagByte);
+        Flags = EnumFlagsHelper.FromByte(buf.ReadByte());
     }
 
     public void Write(PacketBuffer buf)

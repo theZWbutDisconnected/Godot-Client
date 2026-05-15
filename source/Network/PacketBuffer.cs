@@ -25,9 +25,9 @@ public class PacketBuffer(Stream stream)
 		stream.WriteByte((byte)value);
 	}
 
-	public int ReadByte()
+	public byte ReadByte()
 	{
-		return stream.ReadByte();
+		return (byte)stream.ReadByte();
 	}
 
 	public void WriteBytes(byte[] array)

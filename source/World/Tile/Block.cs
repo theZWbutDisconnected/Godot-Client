@@ -11,6 +11,7 @@ public class Block
     {
         Id = id;
         TexId = texId;
+        Blocks.Presets[Id] = this;
     }
 
     public virtual void Render(Tessellator t, Level level, int layer, int x, int y, int z) {

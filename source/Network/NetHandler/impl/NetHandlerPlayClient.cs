@@ -69,11 +69,11 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 
         if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Yaw)) f += entityplayer.Yaw;
 
-        entityplayer.SetPosAndRot(d0, d1 + 1, d2, f, f1);
+        entityplayer.SetPosAndRot(d0, d1, d2, f, f1);
         _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.X, entityplayer.BoundingBox.Y0, entityplayer.Z,
             entityplayer.Yaw, entityplayer.Pitch, false));
-        GD.Print("Server position set: x -", entityplayer.X, "y -", entityplayer.Y, "z -", entityplayer.Z, "yaw -",
-            entityplayer.Yaw, "pitch -", entityplayer.Pitch);
+        GD.Print("Server position set: x - ", entityplayer.X, " y - ", entityplayer.Y, " z - ", entityplayer.Z, " yaw - ",
+            entityplayer.Yaw, " pitch - ", entityplayer.Pitch);
     }
     
     public void HandleEntityTeleport(S18EntityTeleport packetIn)
