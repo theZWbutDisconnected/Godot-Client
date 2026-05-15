@@ -16,6 +16,9 @@ public partial class Entity : Node3D
     public float PrevX;
     public float PrevY;
     public float PrevZ;
+    public float ServerX;
+    public float ServerY;
+    public float ServerZ;
     public double XDelta;
     public double YDelta;
     public double ZDelta;
@@ -24,6 +27,7 @@ public partial class Entity : Node3D
     public float PrevYaw;
     public float PrevPitch;
     public float EyeHeight;
+    public int EntityId = new Random().Next();
     public Guid EntityUuid = Guid.NewGuid();
     public AABB BoundingBox;
     protected float Width = 0.6F;
@@ -51,11 +55,38 @@ public partial class Entity : Node3D
         BoundingBox = new AABB(x - w, y - h, z - w, x + w, y + h, z + w);
     }
 
+    public void SetRot(float yaw, float pitch)
+    {
+        Yaw = yaw;
+        Pitch = pitch;
+    }
+
     public void SetPosAndRot(float x, float y, float z, float yaw, float pitch)
     {
         SetPos(x, y, z);
-        Yaw = yaw;
-        Pitch = pitch;
+        SetRot(yaw, pitch);
+    }
+
+    public void SetPosAndRot2(float x, float y, float z, float yaw, float pitch, int posRotationIncrements, bool p_180426_10_)
+    {
+        SetPosAndRot(x, y, z, yaw, pitch);
+        List<AABB> list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
+
+        if (list.Count > 0)
+        {
+            float d0 = 0.0F;
+
+            foreach (AABB axisalignedbb in list)
+            {
+                if (axisalignedbb.Y1 > d0)
+                {
+                    d0 = axisalignedbb.Y1;
+                }
+            }
+
+            y += (d0 - BoundingBox.Y0);
+            SetPos(x, y, z);
+        }
     }
 
     public virtual void Tick()

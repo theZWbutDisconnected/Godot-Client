@@ -20,11 +20,11 @@ public static class PacketRegistry
 		RegisterOutbound(ConnectionState.Login, nameof(C00LoginStart), 0x00);
 		RegisterOutbound(ConnectionState.Login, nameof(C01EncryptionResponse), 0x01);
 		RegisterOutbound(ConnectionState.Play, nameof(C00KeepAlive), 0x00);
-		RegisterOutbound(ConnectionState.Play, nameof(C0FConfirmTransaction), 0x0F);
 		RegisterOutbound(ConnectionState.Play, nameof(C03Player), 0x03);
 		RegisterOutbound(ConnectionState.Play, nameof(C04PlayerPosition), 0x04);
 		RegisterOutbound(ConnectionState.Play, nameof(C05PlayerLook), 0x05);
 		RegisterOutbound(ConnectionState.Play, nameof(C06PlayerPosLook), 0x06);
+		RegisterOutbound(ConnectionState.Play, nameof(C0FConfirmTransaction), 0x0F);
 		RegisterOutbound(ConnectionState.Play, nameof(C15ClientSettings), 0x15);
 		RegisterOutbound(ConnectionState.Play, nameof(C17CustomPayload), 0x17);
 
@@ -36,10 +36,11 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x00, () => new S00KeepAlive());
 		RegisterInbound(ConnectionState.Play, 0x01, () => new S01JoinGame());
 		RegisterInbound(ConnectionState.Play, 0x08, () => new S08PlayerPosLook());
+		RegisterInbound(ConnectionState.Play, 0x18, () => new S18EntityTeleport());
+		RegisterInbound(ConnectionState.Play, 0x21, () => new S21ChunkData());
+		RegisterInbound(ConnectionState.Play, 0x26, () => new S26MapChunkBulk());
 		RegisterInbound(ConnectionState.Play, 0x32, () => new S32ConfirmTransaction());
 		RegisterInbound(ConnectionState.Play, 0x40, () => new S40Disconnect());
-		RegisterInbound(ConnectionState.Play, 0x21, () => new S21PacketChunkData());
-		RegisterInbound(ConnectionState.Play, 0x26, () => new S26PacketMapChunkBulk());
 	}
 
 	private static void RegisterOutbound(ConnectionState state, string className, int packetId)

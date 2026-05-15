@@ -4,11 +4,12 @@ namespace TestClient.Source.Network.NetHandler;
 
 public interface INetHandlerPlayClient : INetHandler
 {
-    void HandleKeepAlive(S00KeepAlive packetIn);
-    void HandleJoinGame(S01JoinGame packetIn);
-    void HandlePlayerPosLook(S08PlayerPosLook packetIn);
-    void HandleChunkData(S21PacketChunkData packetIn);
-    void HandleMapChunkBulk(S26PacketMapChunkBulk packetIn);
-    void HandleConfirmTransaction(S32ConfirmTransaction packetIn);
-    void HandleDisconnect(S40Disconnect packetIn);
+    void HandleKeepAlive(S00KeepAlive @in);
+    void HandleJoinGame(S01JoinGame @in);
+    void HandlePlayerPosLook(S08PlayerPosLook @in);
+    void HandleEntityTeleport(S18EntityTeleport @in);
+    void HandleChunkData(S21ChunkData @in);
+    void HandleMapChunkBulk(S26MapChunkBulk @in);
+    void HandleConfirmTransaction(S32ConfirmTransaction @in);
+    void HandleDisconnect(S40Disconnect @in);
 }

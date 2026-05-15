@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using Godot;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Network.Packet.Server.Play;
+using TestClient.Source.World.Entity;
 
 namespace TestClient.Source.Network.NetHandler.impl;
 
@@ -33,7 +35,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         brandBuf.WriteString("vanilla");
         _networkSystem.SendPacket(new C15ClientSettings());
         _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
-        
+        Game.Singleton.Player.EntityId = packetIn.EntityId;
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");
@@ -73,25 +75,54 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         GD.Print("Server position set: x -", entityplayer.X, "y -", entityplayer.Y, "z -", entityplayer.Z, "yaw -",
             entityplayer.Yaw, "pitch -", entityplayer.Pitch);
     }
-
-    public void HandleChunkData(S21PacketChunkData packetIn)
+    
+    public void HandleEntityTeleport(S18EntityTeleport packetIn)
     {
-        var level = Game.Singleton.Level;
-        if (packetIn.Chunk != null)
+        Entity entity = null;
+        var p = Game.Singleton.Player;
+        if (p.EntityId == packetIn.EntityId) entity = p;
+        if (entity != null)
         {
-            level.AddChunk(packetIn.Chunk);
-            GD.Print("Chunk received: (" + packetIn.ChunkX + ", " + packetIn.ChunkZ + "), GroundUp: " + packetIn.GroundUpContinuous);
+            entity.ServerX = packetIn.PosX;
+            entity.ServerY = packetIn.PosY;
+            entity.ServerZ = packetIn.PosZ;
+            float d0 = entity.ServerX / 32.0F;
+            float d1 = entity.ServerY / 32.0F;
+            float d2 = entity.ServerZ / 32.0F;
+            float f = (packetIn.Yaw * 360) / 256.0F;
+            float f1 = (packetIn.Pitch * 360) / 256.0F;
+
+            if (Math.Abs(entity.X - d0) < 0.03125D && Math.Abs(entity.Y - d1) < 0.015625D && Math.Abs(entity.Z - d2) < 0.03125D)
+            {
+                entity.SetPosAndRot2(entity.X, entity.Y, entity.Z, f, f1, 3, true);
+            }
+            else
+            {
+                entity.SetPosAndRot2(d0, d1, d2, f, f1, 3, true);
+            }
+
+            entity.OnGround = packetIn.OnGround;
         }
     }
 
-    public void HandleMapChunkBulk(S26PacketMapChunkBulk packetIn)
+    public void HandleChunkData(S21ChunkData @in)
     {
         var level = Game.Singleton.Level;
-        foreach (var chunk in packetIn.Chunks)
+        if (@in.Chunk != null)
+        {
+            level.AddChunk(@in.Chunk);
+            GD.Print("Chunk received: (" + @in.ChunkX + ", " + @in.ChunkZ + "), GroundUp: " + @in.GroundUpContinuous);
+        }
+    }
+
+    public void HandleMapChunkBulk(S26MapChunkBulk @in)
+    {
+        var level = Game.Singleton.Level;
+        foreach (var chunk in @in.Chunks)
         {
             level.AddChunk(chunk);
         }
-        GD.Print("MapChunkBulk received: " + packetIn.Chunks.Count + " chunks, Overworld: " + packetIn.IsOverworld);
+        GD.Print("MapChunkBulk received: " + @in.Chunks.Count + " chunks, Overworld: " + @in.IsOverworld);
     }
 
     public void HandleDisconnect(S40Disconnect packetIn)

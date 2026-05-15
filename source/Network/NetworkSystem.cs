@@ -75,8 +75,9 @@ public class NetworkSystem
 				{ typeof(S00KeepAlive), p => h.HandleKeepAlive((S00KeepAlive)p) },
 				{ typeof(S01JoinGame), p => h.HandleJoinGame((S01JoinGame)p) },
 				{ typeof(S08PlayerPosLook), p => h.HandlePlayerPosLook((S08PlayerPosLook)p) },
-				{ typeof(S21PacketChunkData), p => h.HandleChunkData((S21PacketChunkData)p) },
-				{ typeof(S26PacketMapChunkBulk), p => h.HandleMapChunkBulk((S26PacketMapChunkBulk)p) },
+				{ typeof(S18EntityTeleport), p => h.HandleEntityTeleport((S18EntityTeleport)p) },
+				{ typeof(S21ChunkData), p => h.HandleChunkData((S21ChunkData)p) },
+				{ typeof(S26MapChunkBulk), p => h.HandleMapChunkBulk((S26MapChunkBulk)p) },
 				{ typeof(S32ConfirmTransaction), p => h.HandleConfirmTransaction((S32ConfirmTransaction)p) },
 				{ typeof(S40Disconnect), p => h.HandleDisconnect((S40Disconnect)p) }
 			},
