@@ -2,15 +2,15 @@ namespace TestClient.Source.Physics;
 
 public class AABB
 {
-    private readonly float _epsilon = 0.0F;
-    public float X0;
-    public float X1;
-    public float Y0;
-    public float Y1;
-    public float Z0;
-    public float Z1;
+    private readonly double _epsilon = 0.0F;
+    public double X0;
+    public double X1;
+    public double Y0;
+    public double Y1;
+    public double Z0;
+    public double Z1;
 
-    public AABB(float x0, float y0, float z0, float x1, float y1, float z1)
+    public AABB(double x0, double y0, double z0, double x1, double y1, double z1)
     {
         X0 = x0;
         Y0 = y0;
@@ -20,7 +20,7 @@ public class AABB
         Z1 = z1;
     }
 
-    public AABB Expand(float xa, float ya, float za)
+    public AABB Expand(double xa, double ya, double za)
     {
         var x0 = X0;
         var y0 = Y0;
@@ -37,12 +37,12 @@ public class AABB
         return new AABB(x0, y0, z0, x1, y1, z1);
     }
 
-    public AABB Grow(float xa, float ya, float za)
+    public AABB Grow(double xa, double ya, double za)
     {
         return new AABB(X0 - xa, Y0 - ya, Z0 - za, X1 + xa, Y1 + ya, Z1 + za);
     }
 
-    public float ClipXCollide(AABB c, float xa)
+    public double ClipXCollide(AABB c, double xa)
     {
         if (c.Y1 > Y0 && c.Y0 < Y1 && c.Z1 > Z0 && c.Z0 < Z1)
         {
@@ -62,7 +62,7 @@ public class AABB
         return xa;
     }
 
-    public float ClipYCollide(AABB c, float ya)
+    public double ClipYCollide(AABB c, double ya)
     {
         if (c.X1 > X0 && c.X0 < X1 && c.Z1 > Z0 && c.Z0 < Z1)
         {
@@ -82,7 +82,7 @@ public class AABB
         return ya;
     }
 
-    public float ClipZCollide(AABB c, float za)
+    public double ClipZCollide(AABB c, double za)
     {
         if (c.X1 > X0 && c.X0 < X1 && c.Y1 > Y0 && c.Y0 < Y1)
         {
@@ -107,7 +107,7 @@ public class AABB
         return c.X1 > X0 && c.X0 < X1 && c.Y1 > Y0 && c.Y0 < Y1 && c.Z1 > Z0 && c.Z0 < Z1;
     }
 
-    public void Move(float xa, float ya, float za)
+    public void Move(double xa, double ya, double za)
     {
         X0 += xa;
         Y0 += ya;

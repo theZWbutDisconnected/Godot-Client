@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Godot;
-using TestClient.Source.World.Entity;
+using TestClient.Source.World.Entities;
 using TestClient.Source.Network;
 using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
@@ -38,16 +38,13 @@ public partial class Game : Node
 	public override void _Ready()
 	{
 		NetworkInitialize();
+		
 		Level = new Level();
 		Player = new Player(Level, _network);
-		
-		var t = new Tessellator();
-		t.Initialize();
-		Blocks.Rock.Render(t, Level, 0, 0, 0, 0);
+		Level.AddEntity(Player);
 		
 		AddChild(Level);
 		AddChild(Player);
-		AddChild(t.BuildMeshInstance());
 	}
 
 	private async Task NetworkInitialize()
@@ -96,10 +93,10 @@ public partial class Game : Node
 
 	private void MoveCameraToPlayer(float a)
 	{
-		float x = Player.PrevX + (Player.X - Player.PrevX) * a;
-		float y = Player.PrevY + (Player.Y - Player.PrevY) * a;
-		float z = Player.PrevZ + (Player.Z - Player.PrevZ) * a;
-		Camera.Position = new Vector3(x, y + Player.EyeHeight, z);
+		var x = Player.PrevX + (Player.X - Player.PrevX) * a;
+		var y = Player.PrevY + (Player.Y - Player.PrevY) * a;
+		var z = Player.PrevZ + (Player.Z - Player.PrevZ) * a;
+		Camera.Position = new Vector3((float)x, (float)y + Player.EyeHeight, (float)z);
 		Camera.RotationDegrees = new Vector3(Player.Pitch, Player.Yaw, 0.0F);
 	}
 }

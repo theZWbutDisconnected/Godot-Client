@@ -5,14 +5,14 @@ using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Physics;
 
-namespace TestClient.Source.World.Entity;
+namespace TestClient.Source.World.Entities;
 
 public partial class Player : Entity
 {
-    public NetworkSystem SendQueue;
-    public float LastX;
-    public float LastY;
-    public float LastZ;
+    public readonly NetworkSystem SendQueue;
+    public double LastX;
+    public double LastY;
+    public double LastZ;
     public float LastYaw;
     public float LastPitch;
     private int _positionUpdateTicks;
@@ -36,8 +36,8 @@ public partial class Player : Entity
         if ((Input.IsKeyPressed(Key.Space) || Input.IsKeyPressed(Key.Bracketright)) && OnGround) YDelta = 0.5F;
 
         MoveRelative(xa, ya, OnGround ? 0.1F : 0.02F);
-        YDelta = (float)(YDelta - 0.08);
-        Move((float)XDelta, (float)YDelta, (float)ZDelta);
+        YDelta -= 0.08;
+        Move(XDelta, YDelta, ZDelta);
         XDelta *= 0.91F;
         YDelta *= 0.98F;
         ZDelta *= 0.91F;
@@ -58,14 +58,12 @@ public partial class Player : Entity
             var sendThreshold = 9.0E-4D;
             var posReported = Mth.LengthSquared(delta0, delta1, delta2) > sendThreshold || _positionUpdateTicks >= 20;
             var rotReported = delta3 != 0.0D || delta4 != 0.0D;
-            if (posReported && rotReported)
-                SendQueue.SendPacket(new C06PlayerPosLook(X, BoundingBox.Y0, Z, Yaw, Pitch, OnGround));
-            else if (posReported)
-                SendQueue.SendPacket(new C04PlayerPosition(X, BoundingBox.Y0, Z, OnGround));
-            else if (rotReported)
-                SendQueue.SendPacket(new C05PlayerLook(Yaw, Pitch, OnGround));
-            else
-                SendQueue.SendPacket(new C03Player(OnGround));
+            
+            if (posReported && rotReported) SendQueue.SendPacket(new C06PlayerPosLook(X, BoundingBox.Y0, Z, Yaw, Pitch, OnGround));
+            else if (posReported)           SendQueue.SendPacket(new C04PlayerPosition(X, BoundingBox.Y0, Z, OnGround));
+            else if (rotReported)           SendQueue.SendPacket(new C05PlayerLook(Yaw, Pitch, OnGround));
+            else                            SendQueue.SendPacket(new C03Player(OnGround));
+            
             ++_positionUpdateTicks;
             if (posReported)
             {

@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using Godot;
 using TestClient.Source.Physics;
 
-namespace TestClient.Source.World.Entity;
+namespace TestClient.Source.World.Entities;
 
 public partial class Entity : Node3D
 {
     protected Level Level;
     public bool OnGround;
     public bool Removed;
-    public float X;
-    public float Y;
-    public float Z;
-    public float PrevX;
-    public float PrevY;
-    public float PrevZ;
-    public float ServerX;
-    public float ServerY;
-    public float ServerZ;
+    public double X;
+    public double Y;
+    public double Z;
+    public double PrevX;
+    public double PrevY;
+    public double PrevZ;
+    public int ServerX;
+    public int ServerY;
+    public int ServerZ;
     public double XDelta;
     public double YDelta;
     public double ZDelta;
@@ -46,7 +46,7 @@ public partial class Entity : Node3D
         EyeHeight = h * 0.86F;
     }
 
-    public void SetPos(float x, float y, float z) {
+    public void SetPos(double x, double y, double z) {
         X = x;
         Y = y;
         Z = z;
@@ -57,24 +57,41 @@ public partial class Entity : Node3D
 
     public void SetRot(float yaw, float pitch)
     {
-        Yaw = yaw;
-        Pitch = pitch;
+        Yaw = yaw % 360.0F;
+        Pitch = pitch % 360.0F;
     }
 
-    public void SetPosAndRot(float x, float y, float z, float yaw, float pitch)
+    public void SetPosAndRot(double x, double y, double z, float yaw, float pitch)
     {
+        PrevX = X = x;
+        PrevY = Y = y;
+        PrevZ = Z = z;
+        PrevYaw = Yaw = yaw;
+        PrevPitch = Pitch = pitch;
+        double d0 = PrevYaw - yaw;
+
+        if (d0 < -180.0D)
+        {
+            PrevYaw += 360.0F;
+        }
+
+        if (d0 >= 180.0D)
+        {
+            PrevYaw -= 360.0F;
+        }
+
         SetPos(x, y, z);
         SetRot(yaw, pitch);
     }
 
-    public void SetPosAndRot2(float x, float y, float z, float yaw, float pitch, int posRotationIncrements, bool p_180426_10_)
+    public void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, bool p_180426_10_)
     {
         SetPosAndRot(x, y, z, yaw, pitch);
         List<AABB> list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
 
         if (list.Count > 0)
         {
-            float d0 = 0.0F;
+            double d0 = 0.0F;
 
             foreach (AABB axisalignedbb in list)
             {
@@ -98,9 +115,9 @@ public partial class Entity : Node3D
         PrevPitch = Pitch;
     }
 
-    public void Move(float xa, float ya, float za)
+    public void Move(double xa, double ya, double za)
     {
-        float xaOrg = xa, yaOrg = ya, zaOrg = za;
+        double xaOrg = xa, yaOrg = ya, zaOrg = za;
 
         var bb = BoundingBox;
         List<AABB> aABBs = Level.GetCubes(bb.Expand(xa, ya, za));
@@ -128,12 +145,12 @@ public partial class Entity : Node3D
         Z = (bb.Z0 + bb.Z1) * 0.5F;
     }
 
-    public void MoveRelative(float xa, float za, float speed)
+    public void MoveRelative(double xa, double za, double speed)
     {
         var dist = xa * xa + za * za;
         if (dist >= 0.01F)
         {
-            dist = speed / (float)Math.Sqrt(dist);
+            dist = speed / Math.Sqrt(dist);
             xa *= dist;
             za *= dist;
 

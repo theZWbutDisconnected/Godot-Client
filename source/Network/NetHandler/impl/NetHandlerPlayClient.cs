@@ -3,7 +3,7 @@ using System.IO;
 using Godot;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Network.Packet.Server.Play;
-using TestClient.Source.World.Entity;
+using TestClient.Source.World.Entities;
 
 namespace TestClient.Source.Network.NetHandler.impl;
 
@@ -31,9 +31,9 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 
     public void HandleJoinGame(S01JoinGame packetIn)
     {
+        _networkSystem.SendPacket(new C15ClientSettings());
         var brandBuf = new PacketBuffer(new MemoryStream());
         brandBuf.WriteString("vanilla");
-        _networkSystem.SendPacket(new C15ClientSettings());
         _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
         Game.Singleton.Player.EntityId = packetIn.EntityId;
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
@@ -69,7 +69,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 
         if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Yaw)) f += entityplayer.Yaw;
 
-        entityplayer.SetPosAndRot((float)d0, (float)d1, (float)d2, f, f1);
+        entityplayer.SetPosAndRot(d0, d1 + 1, d2, f, f1);
         _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.X, entityplayer.BoundingBox.Y0, entityplayer.Z,
             entityplayer.Yaw, entityplayer.Pitch, false));
         GD.Print("Server position set: x -", entityplayer.X, "y -", entityplayer.Y, "z -", entityplayer.Z, "yaw -",
@@ -78,9 +78,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
     
     public void HandleEntityTeleport(S18EntityTeleport packetIn)
     {
-        Entity entity = null;
-        var p = Game.Singleton.Player;
-        if (p.EntityId == packetIn.EntityId) entity = p;
+        Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         if (entity != null)
         {
             entity.ServerX = packetIn.PosX;

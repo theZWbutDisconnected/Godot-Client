@@ -1,7 +1,9 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
+using TestClient.Source.World.Entities;
 using TestClient.Source.World.Tile;
 
 namespace TestClient.Source.World;
@@ -9,6 +11,7 @@ namespace TestClient.Source.World;
 public partial class Level : Node3D
 {
     private readonly Dictionary<string, ChunkData> _chunks = new();
+    private readonly HashSet<Entity> _entities = new();
 
     public void AddChunk(ChunkData chunk)
     {
@@ -151,5 +154,15 @@ public partial class Level : Node3D
     public bool IsLit(int p0, int p1, int p2)
     {
         return true;
+    }
+    
+    public void AddEntity(Entity entity)
+    {
+        _entities.Add(entity);
+    }
+
+    public Entity GetEntityById(int entityId)
+    {
+        return _entities.FirstOrDefault(e => e.EntityId == entityId);
     }
 }
