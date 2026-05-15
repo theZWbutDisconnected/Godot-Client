@@ -78,6 +78,7 @@ public class NetworkSystem
 				{ typeof(S18EntityTeleport), p => h.HandleEntityTeleport((S18EntityTeleport)p) },
 				{ typeof(S19EntityHeadLook), p => h.HandleEntityHeadLook((S19EntityHeadLook)p) },
 				{ typeof(S21ChunkData), p => h.HandleChunkData((S21ChunkData)p) },
+				{ typeof(S22MultiBlockChange), p => h.HandleMultiBlockChange((S22MultiBlockChange)p) },
 				{ typeof(S23BlockChange), p => h.HandleBlockChange((S23BlockChange)p) },
 				{ typeof(S26MapChunkBulk), p => h.HandleMapChunkBulk((S26MapChunkBulk)p) },
 				{ typeof(S32ConfirmTransaction), p => h.HandleConfirmTransaction((S32ConfirmTransaction)p) },
@@ -129,7 +130,6 @@ public class NetworkSystem
 			var reader = new PacketBuffer(new MemoryStream(payload));
 			var packetId = reader.ReadVarInt();
 			var packet = PacketRegistry.CreateInboundPacket(packetId, State);
-
 			if (packet != null)
 			{
 				packet.Read(reader);

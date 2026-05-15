@@ -134,16 +134,16 @@ public class PacketBuffer(Stream stream)
 		WriteByte(boolean ? 1 : 0);
 	}
 
-	public int ReadShort()
+	public short ReadShort()
 	{
 		var bytes = ReadBytes(2);
-		return (bytes[0] << 8) | bytes[1];
+		return (short)((bytes[0] << 8) | bytes[1]);
 	}
 
-	public int ReadUnsignedShort()
+	public ushort ReadUnsignedShort()
 	{
 		var bytes = ReadBytes(2);
-		return (bytes[0] << 8) | bytes[1];
+		return (ushort)((bytes[0] << 8) | bytes[1]);
 	}
 
 	public int ReadInt()

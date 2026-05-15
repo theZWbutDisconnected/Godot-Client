@@ -39,7 +39,9 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x18, () => new S18EntityTeleport());
 		RegisterInbound(ConnectionState.Play, 0x19, () => new S19EntityHeadLook());
 		RegisterInbound(ConnectionState.Play, 0x21, () => new S21ChunkData());
+		RegisterInbound(ConnectionState.Play, 0x22, () => new S22MultiBlockChange());
 		RegisterInbound(ConnectionState.Play, 0x23, () => new S23BlockChange());
+		RegisterInbound(ConnectionState.Play, 0x24, () => new S24BlockAction());
 		RegisterInbound(ConnectionState.Play, 0x26, () => new S26MapChunkBulk());
 		RegisterInbound(ConnectionState.Play, 0x32, () => new S32ConfirmTransaction());
 		RegisterInbound(ConnectionState.Play, 0x40, () => new S40Disconnect());

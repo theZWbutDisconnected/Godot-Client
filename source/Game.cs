@@ -5,6 +5,7 @@ using TestClient.Source.Network;
 using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
+using TestClient.Source.Physics;
 using TestClient.Source.Render;
 using TestClient.Source.World;
 using TestClient.Source.World.Tile;
@@ -48,7 +49,7 @@ public partial class Game : Node
 		AddChild(Level);
 		AddChild(Player);
 		
-		 Input.SetMouseMode(Input.MouseModeEnum.Captured);
+		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
 
 	private async Task NetworkInitialize()
@@ -81,6 +82,10 @@ public partial class Game : Node
 	{
 		if (_network.IsConnected()) _network.StreamProcess();
 		Player.Tick();
+		if (Input.IsMouseButtonPressed(MouseButton.Left))
+		{
+			Level.SetBlock(new BlockPos(Player.X, Player.Y - 1, Player.Z), 7, 0);
+		}
 	}
 
 	private void Render(float alpha)

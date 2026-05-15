@@ -131,6 +131,24 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 		}
 	}
 
+	public void HandleMultiBlockChange(S22MultiBlockChange @in)
+	{
+		var level = Game.Singleton.Level;
+		var chunkCoord = @in.ChunkPos;
+		
+		foreach (var updateData in @in.ChangedBlocks)
+		{
+			var pos = updateData.GetPos(chunkCoord);
+			var blockStateId = updateData.BlockStateId;
+			
+			var blockId = blockStateId >> 4;
+			var metadata = blockStateId & 0xF;
+			
+			level.SetBlock(pos, blockId, metadata);
+            GD.Print("S22 MultiBlock changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
+		}
+	}
+
 	public void HandleBlockChange(S23BlockChange @in)
 	{
 		var level = Game.Singleton.Level;
@@ -141,7 +159,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 		var metadata = blockStateId & 0xF;
 		
 		level.SetBlock(pos, blockId, metadata);
-		GD.Print("Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
+		GD.Print("S23 Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
 	}
 
 	public void HandleDisconnect(S40Disconnect packetIn)

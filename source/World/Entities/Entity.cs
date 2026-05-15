@@ -37,13 +37,13 @@ public partial class Entity : Node3D
         Level = level;
         SetSize(0.6F, 1.8F);
         SetPos(0.0F, 0.0F, 0.0F);
+        EyeHeight = 1.62F;
     }
 
     protected void SetSize(float w, float h)
     {
         Width = w;
         Height = h;
-        EyeHeight = h * 0.86F;
     }
 
     public void SetPos(double x, double y, double z) {

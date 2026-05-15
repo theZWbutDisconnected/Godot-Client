@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,60 +12,43 @@ namespace TestClient.Source.World;
 
 public partial class Level : Node3D
 {
-    private readonly ConcurrentDictionary<string, ChunkData> _chunks = new();
+    private readonly ConcurrentDictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
     private readonly HashSet<Entity> _entities = new();
-    private readonly ConcurrentQueue<string> _dirtyChunks = new();
-    private readonly ConcurrentDictionary<string, MeshInstance3D> _chunkMeshes = new();
+    private readonly ConcurrentQueue<ChunkCoordIntPair> _dirtyChunks = new();
+    private readonly ConcurrentDictionary<ChunkCoordIntPair, MeshInstance3D> _chunkMeshes = new();
     private bool _isRefreshing = false;
 
     public void AddChunk(ChunkData chunk)
     {
-        var key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
+        var key = new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ);
         _chunks[key] = chunk;
-        SetDirty(chunk.ChunkX, chunk.ChunkZ);
-        SetDirty(chunk.ChunkX + 1, chunk.ChunkZ);
-        SetDirty(chunk.ChunkX - 1, chunk.ChunkZ);
-        SetDirty(chunk.ChunkX, chunk.ChunkZ + 1);
-        SetDirty(chunk.ChunkX, chunk.ChunkZ - 1);
-
-        if (!_isRefreshing)
-        {
-            _isRefreshing = true;
-            Task.Run(() =>
-            {
-                RefreshDirtyChunks();
-                _isRefreshing = false;
-            });
-        }
+        SetDirty(key);
+        SetDirty(new ChunkCoordIntPair(chunk.ChunkX + 1, chunk.ChunkZ));
+        SetDirty(new ChunkCoordIntPair(chunk.ChunkX - 1, chunk.ChunkZ));
+        SetDirty(new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ + 1));
+        SetDirty(new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ - 1));
     }
 
-    public void SetDirty(int chunkX, int chunkZ)
+    public void SetDirty(ChunkCoordIntPair chunkCoord)
     {
-        var key = ChunkKey(chunkX, chunkZ);
-        if (_chunks.ContainsKey(key)) _dirtyChunks.Enqueue(key);
+        if (_chunks.ContainsKey(chunkCoord)) _dirtyChunks.Enqueue(chunkCoord);
     }
 
     public void RefreshDirtyChunks()
     {
-        var dirtyKeys = new HashSet<string>();
+        var dirtyKeys = new HashSet<ChunkCoordIntPair>();
         while (_dirtyChunks.TryDequeue(out var key)) dirtyKeys.Add(key);
 
         foreach (var key in dirtyKeys)
         {
-            var parts = key.Split(',');
-            if (parts.Length != 2) continue;
-
-            if (!int.TryParse(parts[0], out var cx)) continue;
-            if (!int.TryParse(parts[1], out var cz)) continue;
-
-            var chunk = GetChunk(cx, cz);
+            var chunk = GetChunk(key.ChunkXPos, key.ChunkZPos);
             if (chunk != null) BuildChunkMeshAsync(chunk);
         }
     }
 
     private void BuildChunkMeshAsync(ChunkData chunk)
     {
-        var key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
+        var key = new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ);
 
         var tessellator = new Tessellator();
         tessellator.Initialize();
@@ -90,11 +73,12 @@ public partial class Level : Node3D
         }
 
         var meshInstance = tessellator.BuildMeshInstance();
-        CallDeferred(nameof(ApplyChunkMesh), key, meshInstance);
+        CallDeferred(nameof(ApplyChunkMesh), chunk.ChunkX, chunk.ChunkZ, meshInstance);
     }
 
-    private void ApplyChunkMesh(string key, MeshInstance3D newMesh)
+    private void ApplyChunkMesh(int chunkX, int chunkZ, MeshInstance3D newMesh)
     {
+        var key = new ChunkCoordIntPair(chunkX, chunkZ);
         if (_chunkMeshes.TryRemove(key, out var oldMesh))
         {
             if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this) RemoveChild(oldMesh);
@@ -110,14 +94,14 @@ public partial class Level : Node3D
 
     public ChunkData? GetChunk(int chunkX, int chunkZ)
     {
-        var key = ChunkKey(chunkX, chunkZ);
+        var key = new ChunkCoordIntPair(chunkX, chunkZ);
         _chunks.TryGetValue(key, out var chunk);
         return chunk;
     }
 
     public void RemoveChunk(int chunkX, int chunkZ)
     {
-        _chunks.Remove(ChunkKey(chunkX, chunkZ), out _);
+        _chunks.Remove(new ChunkCoordIntPair(chunkX, chunkZ), out _);
     }
 
     public int GetBlockId(BlockPos pos)
@@ -155,12 +139,12 @@ public partial class Level : Node3D
 		if (chunk != null)
 		{
 			chunk.SetBlock(pos.X, pos.Y, pos.Z, blockId, metadata);
-			SetDirty(cx, cz);
+			SetDirty(new ChunkCoordIntPair(cx, cz));
 			
-			SetDirty(cx + 1, cz);
-			SetDirty(cx - 1, cz);
-			SetDirty(cx, cz + 1);
-			SetDirty(cx, cz - 1);
+			SetDirty(new ChunkCoordIntPair(cx + 1, cz));
+			SetDirty(new ChunkCoordIntPair(cx - 1, cz));
+			SetDirty(new ChunkCoordIntPair(cx, cz + 1));
+			SetDirty(new ChunkCoordIntPair(cx, cz - 1));
 		}
 	}
 
@@ -208,7 +192,20 @@ public partial class Level : Node3D
         return aabbs;
     }
 
-    private static string ChunkKey(int cx, int cz) => $"{cx},{cz}";
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+
+        if (!_isRefreshing)
+        {
+            _isRefreshing = true;
+            Task.Run(() =>
+            {
+                RefreshDirtyChunks();
+                _isRefreshing = false;
+            });
+        }
+    }
 
     public bool IsLit(int p0, int p1, int p2)
     {

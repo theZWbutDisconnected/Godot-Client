@@ -11,6 +11,7 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleEntityHeadLook(S19EntityHeadLook @in);
     void HandleChunkData(S21ChunkData @in);
     void HandleMapChunkBulk(S26MapChunkBulk @in);
+    void HandleMultiBlockChange(S22MultiBlockChange @in);
     void HandleBlockChange(S23BlockChange @in);
     void HandleConfirmTransaction(S32ConfirmTransaction @in);
     void HandleDisconnect(S40Disconnect @in);

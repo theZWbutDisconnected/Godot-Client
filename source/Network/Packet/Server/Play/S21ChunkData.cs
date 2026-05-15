@@ -26,10 +26,7 @@ public class S21ChunkData : IPacket
         try
         {
             var blockEntityCount = buf.ReadVarInt();
-            for (int i = 0; i < blockEntityCount; i++)
-            {
-                SkipNbtTag(buf);
-            }
+            for (var i = 0; i < blockEntityCount; i++) SkipNbtTag(buf);
         }
         catch (Exception)
         {
@@ -95,7 +92,7 @@ public class S21ChunkData : IPacket
             case 9: // TAG_List
                 var listType = buf.ReadSignedByte();
                 var listLength = buf.ReadInt();
-                for (int i = 0; i < listLength; i++)
+                for (var i = 0; i < listLength; i++)
                     SkipNbtPayload(buf, listType);
                 break;
             case 10: // TAG_Compound
@@ -108,6 +105,7 @@ public class S21ChunkData : IPacket
                         buf.ReadBytes(childNameLength);
                     SkipNbtPayload(buf, childType);
                 }
+
                 break;
             case 11: // TAG_Int_Array
                 var intArrayLength = buf.ReadInt();

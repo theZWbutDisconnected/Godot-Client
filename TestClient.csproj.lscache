@@ -96,7 +96,9 @@ source/
     S18EntityTeleport.cs
     S19EntityHeadLook.cs
     S21ChunkData.cs
+    S22MultiBlockChange.cs
     S23BlockChange.cs
+    S24BlockAction.cs
     S26MapChunkBulk.cs
     S32ConfirmTransaction.cs
     S40Disconnect.cs
@@ -106,6 +108,7 @@ source/
   Axis.cs
   AxisDirection.cs
   BlockPos.cs
+  ChunkCoordIntPair.cs
   Direction.cs
   Mth.cs
   Plane.cs
