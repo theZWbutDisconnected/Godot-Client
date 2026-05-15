@@ -34,8 +34,6 @@ public class S21ChunkData : IPacket
         catch (Exception)
         {
         }
-
-        Console.WriteLine("Dispatching 0x21");
     }
 
     public void Write(PacketBuffer buf)

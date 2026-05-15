@@ -10,6 +10,7 @@ namespace TestClient.Source.World.Entities;
 public partial class Player : Entity
 {
     public readonly NetworkSystem SendQueue;
+    public float HeadYaw;
     public double LastX;
     public double LastY;
     public double LastZ;
@@ -20,6 +21,11 @@ public partial class Player : Entity
     public Player(Level level, NetworkSystem netHandler) : base(level)
     {
         SendQueue = netHandler;
+    }
+
+    public override void SetHeadYaw(float f)
+    {
+        HeadYaw = f;
     }
 
     public override void Tick()

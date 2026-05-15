@@ -37,8 +37,6 @@ public class S26MapChunkBulk : IPacket
                 dataSizes[i], true, data);
             Chunks.Add(chunk);
         }
-
-        Console.WriteLine($"Dispatching 0x26: {chunkCount} chunks");
     }
 
     public void Write(PacketBuffer buf)
@@ -57,11 +55,11 @@ public class S26MapChunkBulk : IPacket
         // Block light: 2048 bytes per section
         size += sectionCount * 2048;
 
-        // Sky light: 2048 bytes per section (仅OverWorld)
+        // Sky light: 2048 bytes per section (only OverWorld)
         if (isOverworld)
             size += sectionCount * 2048;
 
-        // Biome data: 256 bytes (仅groundUpContinuous)
+        // Biome data: 256 bytes (only GroundUpContinuous)
         if (groundUpContinuous)
             size += 256;
 

@@ -72,8 +72,8 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         entityplayer.SetPosAndRot(d0, d1, d2, f, f1);
         _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.X, entityplayer.BoundingBox.Y0, entityplayer.Z,
             entityplayer.Yaw, entityplayer.Pitch, false));
-        GD.Print("Server position set: x - ", entityplayer.X, " y - ", entityplayer.Y, " z - ", entityplayer.Z, " yaw - ",
-            entityplayer.Yaw, " pitch - ", entityplayer.Pitch);
+        // GD.Print("Server position set: x - ", entityplayer.X, " y - ", entityplayer.Y, " z - ", entityplayer.Z, " yaw - ",
+        //     entityplayer.Yaw, " pitch - ", entityplayer.Pitch);
     }
     
     public void HandleEntityTeleport(S18EntityTeleport packetIn)
@@ -103,13 +103,22 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
+    public void HandleEntityHeadLook(S19EntityHeadLook packetIn)
+    {
+        Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        if (entity != null)
+        {
+            float f = packetIn.Yaw * 360 / 256.0F;
+            entity.SetHeadYaw(f);
+        }
+    }
+
     public void HandleChunkData(S21ChunkData @in)
     {
         var level = Game.Singleton.Level;
         if (@in.Chunk != null)
         {
             level.AddChunk(@in.Chunk);
-            GD.Print("Chunk received: (" + @in.ChunkX + ", " + @in.ChunkZ + "), GroundUp: " + @in.GroundUpContinuous);
         }
     }
 
@@ -120,7 +129,6 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 		{
 			level.AddChunk(chunk);
 		}
-		GD.Print("MapChunkBulk received: " + @in.Chunks.Count + " chunks, Overworld: " + @in.IsOverworld);
 	}
 
 	public void HandleBlockChange(S23BlockChange @in)

@@ -173,4 +173,8 @@ public partial class Entity : Node3D
             ZDelta -= za * cos + xa * sin;
         }
     }
+
+    public virtual void SetHeadYaw(float f)
+    {
+    }
 }

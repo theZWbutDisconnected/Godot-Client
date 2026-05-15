@@ -8,6 +8,7 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleJoinGame(S01JoinGame @in);
     void HandlePlayerPosLook(S08PlayerPosLook @in);
     void HandleEntityTeleport(S18EntityTeleport @in);
+    void HandleEntityHeadLook(S19EntityHeadLook @in);
     void HandleChunkData(S21ChunkData @in);
     void HandleMapChunkBulk(S26MapChunkBulk @in);
     void HandleBlockChange(S23BlockChange @in);

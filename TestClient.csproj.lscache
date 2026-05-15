@@ -94,6 +94,7 @@ source/
     S01JoinGame.cs
     S08PlayerPosLook.cs
     S18EntityTeleport.cs
+    S19EntityHeadLook.cs
     S21ChunkData.cs
     S23BlockChange.cs
     S26MapChunkBulk.cs
