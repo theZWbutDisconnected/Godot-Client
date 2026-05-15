@@ -20,14 +20,14 @@ public partial class Level : Node3D
 
     public void AddChunk(ChunkData chunk)
     {
-        string key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
+        var key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
         _chunks[key] = chunk;
         SetDirty(chunk.ChunkX, chunk.ChunkZ);
         SetDirty(chunk.ChunkX + 1, chunk.ChunkZ);
         SetDirty(chunk.ChunkX - 1, chunk.ChunkZ);
         SetDirty(chunk.ChunkX, chunk.ChunkZ + 1);
         SetDirty(chunk.ChunkX, chunk.ChunkZ - 1);
-        
+
         if (!_isRefreshing)
         {
             _isRefreshing = true;
@@ -41,81 +41,65 @@ public partial class Level : Node3D
 
     public void SetDirty(int chunkX, int chunkZ)
     {
-        string key = ChunkKey(chunkX, chunkZ);
-        if (_chunks.ContainsKey(key))
-        {
-            _dirtyChunks.Enqueue(key);
-        }
+        var key = ChunkKey(chunkX, chunkZ);
+        if (_chunks.ContainsKey(key)) _dirtyChunks.Enqueue(key);
     }
 
     public void RefreshDirtyChunks()
     {
-        HashSet<string> dirtyKeys = new HashSet<string>();
-        while (_dirtyChunks.TryDequeue(out string key))
+        var dirtyKeys = new HashSet<string>();
+        while (_dirtyChunks.TryDequeue(out var key)) dirtyKeys.Add(key);
+
+        foreach (var key in dirtyKeys)
         {
-            dirtyKeys.Add(key);
-        }
-        
-        foreach (string key in dirtyKeys)
-        {
-            string[] parts = key.Split(',');
+            var parts = key.Split(',');
             if (parts.Length != 2) continue;
-            
-            if (!int.TryParse(parts[0], out int cx)) continue;
-            if (!int.TryParse(parts[1], out int cz)) continue;
-            
+
+            if (!int.TryParse(parts[0], out var cx)) continue;
+            if (!int.TryParse(parts[1], out var cz)) continue;
+
             var chunk = GetChunk(cx, cz);
-            if (chunk != null)
-            {
-                BuildChunkMeshAsync(chunk);
-            }
+            if (chunk != null) BuildChunkMeshAsync(chunk);
         }
     }
-    
+
     private void BuildChunkMeshAsync(ChunkData chunk)
     {
-        string key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
-        
+        var key = ChunkKey(chunk.ChunkX, chunk.ChunkZ);
+
         var tessellator = new Tessellator();
         tessellator.Initialize();
 
-        int startX = chunk.ChunkX * ChunkData.Width;
-        int startZ = chunk.ChunkZ * ChunkData.Depth;
+        var startX = chunk.ChunkX * ChunkData.Width;
+        var startZ = chunk.ChunkZ * ChunkData.Depth;
 
-        for (int y = 0; y < ChunkData.Height; y++)
+        for (var y = 0; y < ChunkData.Height; y++)
+        for (var x = 0; x < ChunkData.Width; x++)
+        for (var z = 0; z < ChunkData.Depth; z++)
         {
-            for (int x = 0; x < ChunkData.Width; x++)
-            {
-                for (int z = 0; z < ChunkData.Depth; z++)
-                {
-                    int worldX = startX + x;
-                    int worldY = y;
-                    int worldZ = startZ + z;
+            var worldX = startX + x;
+            var worldY = y;
+            var worldZ = startZ + z;
 
-                    if (chunk.HasBlock(worldX, worldY, worldZ))
-                    {
-                        Block block = Blocks.GetPreset(GetBlockId(worldX, worldY, worldZ));
-                        block.Render(tessellator, this, 0, worldX, worldY, worldZ);
-                    }
-                }
+            if (chunk.HasBlock(worldX, worldY, worldZ))
+            {
+                var block = Blocks.GetPreset(GetBlockId(worldX, worldY, worldZ));
+                block.Render(tessellator, this, 0, worldX, worldY, worldZ);
             }
         }
-        
+
         var meshInstance = tessellator.BuildMeshInstance();
         CallDeferred(nameof(ApplyChunkMesh), key, meshInstance);
     }
-    
+
     private void ApplyChunkMesh(string key, MeshInstance3D newMesh)
     {
         if (_chunkMeshes.TryRemove(key, out var oldMesh))
         {
-            if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this)
-            {
-                RemoveChild(oldMesh);
-            }
+            if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this) RemoveChild(oldMesh);
             oldMesh?.QueueFree();
         }
-        
+
         if (newMesh != null)
         {
             AddChild(newMesh);
@@ -125,7 +109,7 @@ public partial class Level : Node3D
 
     public ChunkData? GetChunk(int chunkX, int chunkZ)
     {
-        string key = ChunkKey(chunkX, chunkZ);
+        var key = ChunkKey(chunkX, chunkZ);
         _chunks.TryGetValue(key, out var chunk);
         return chunk;
     }
@@ -137,8 +121,8 @@ public partial class Level : Node3D
 
     public int GetBlockId(int worldX, int worldY, int worldZ)
     {
-        int cx = ChunkData.WorldToChunk(worldX);
-        int cz = ChunkData.WorldToChunk(worldZ);
+        var cx = ChunkData.WorldToChunk(worldX);
+        var cz = ChunkData.WorldToChunk(worldZ);
         var chunk = GetChunk(cx, cz);
         if (chunk == null) return 0;
         return chunk.GetBlockId(worldX, worldY, worldZ);
@@ -146,8 +130,8 @@ public partial class Level : Node3D
 
     public int GetMetadata(int worldX, int worldY, int worldZ)
     {
-        int cx = ChunkData.WorldToChunk(worldX);
-        int cz = ChunkData.WorldToChunk(worldZ);
+        var cx = ChunkData.WorldToChunk(worldX);
+        var cz = ChunkData.WorldToChunk(worldZ);
         var chunk = GetChunk(cx, cz);
         if (chunk == null) return 0;
         return chunk.GetMetadata(worldX, worldY, worldZ);
@@ -155,8 +139,8 @@ public partial class Level : Node3D
 
     public bool HasBlock(int worldX, int worldY, int worldZ)
     {
-        int cx = ChunkData.WorldToChunk(worldX);
-        int cz = ChunkData.WorldToChunk(worldZ);
+        var cx = ChunkData.WorldToChunk(worldX);
+        var cz = ChunkData.WorldToChunk(worldZ);
         var chunk = GetChunk(cx, cz);
         if (chunk == null) return false;
         return chunk.HasBlock(worldX, worldY, worldZ);
@@ -166,48 +150,40 @@ public partial class Level : Node3D
     {
         var aabbs = new List<AABB>();
 
-        int minX = Mathf.FloorToInt(expand.X0);
-        int minY = Mathf.FloorToInt(expand.Y0);
-        int minZ = Mathf.FloorToInt(expand.Z0);
-        int maxX = Mathf.FloorToInt(expand.X1);
-        int maxY = Mathf.FloorToInt(expand.Y1);
-        int maxZ = Mathf.FloorToInt(expand.Z1);
+        var minX = Mathf.FloorToInt(expand.X0);
+        var minY = Mathf.FloorToInt(expand.Y0);
+        var minZ = Mathf.FloorToInt(expand.Z0);
+        var maxX = Mathf.FloorToInt(expand.X1);
+        var maxY = Mathf.FloorToInt(expand.Y1);
+        var maxZ = Mathf.FloorToInt(expand.Z1);
 
-        int minCX = ChunkData.WorldToChunk(minX);
-        int maxCX = ChunkData.WorldToChunk(maxX);
-        int minCZ = ChunkData.WorldToChunk(minZ);
-        int maxCZ = ChunkData.WorldToChunk(maxZ);
+        var minCX = ChunkData.WorldToChunk(minX);
+        var maxCX = ChunkData.WorldToChunk(maxX);
+        var minCZ = ChunkData.WorldToChunk(minZ);
+        var maxCZ = ChunkData.WorldToChunk(maxZ);
 
-        for (int cx = minCX; cx <= maxCX; cx++)
+        for (var cx = minCX; cx <= maxCX; cx++)
+        for (var cz = minCZ; cz <= maxCZ; cz++)
         {
-            for (int cz = minCZ; cz <= maxCZ; cz++)
-            {
-                var chunk = GetChunk(cx, cz);
-                if (chunk == null) continue;
+            var chunk = GetChunk(cx, cz);
+            if (chunk == null) continue;
 
-                int lxMin = Mathf.Max(minX, ChunkData.LocalToWorld(0, cx));
-                int lxMax = Mathf.Min(maxX, ChunkData.LocalToWorld(15, cx));
-                int lzMin = Mathf.Max(minZ, ChunkData.LocalToWorld(0, cz));
-                int lzMax = Mathf.Min(maxZ, ChunkData.LocalToWorld(15, cz));
+            var lxMin = Mathf.Max(minX, ChunkData.LocalToWorld(0, cx));
+            var lxMax = Mathf.Min(maxX, ChunkData.LocalToWorld(15, cx));
+            var lzMin = Mathf.Max(minZ, ChunkData.LocalToWorld(0, cz));
+            var lzMax = Mathf.Min(maxZ, ChunkData.LocalToWorld(15, cz));
 
-                for (int x = lxMin; x <= lxMax; x++)
+            for (var x = lxMin; x <= lxMax; x++)
+            for (var y = minY; y <= maxY; y++)
+            for (var z = lzMin; z <= lzMax; z++)
+                if (chunk.HasBlock(x, y, z))
                 {
-                    for (int y = minY; y <= maxY; y++)
-                    {
-                        for (int z = lzMin; z <= lzMax; z++)
-                        {
-                            if (chunk.HasBlock(x, y, z))
-                            {
-                                AABB origin = Blocks.GetPreset(chunk.GetBlockId(x, y, z)).GetCollision();
-                                if (origin == null) continue;
-                                AABB cube = new AABB(origin);
-                                cube.Move(x, y, z);
-                                aabbs.Add(cube);
-                            }
-                        }
-                    }
+                    var origin = Blocks.GetPreset(chunk.GetBlockId(x, y, z)).GetCollision();
+                    if (origin == null) continue;
+                    var cube = new AABB(origin);
+                    cube.Move(x, y, z);
+                    aabbs.Add(cube);
                 }
-            }
         }
 
         return aabbs;
