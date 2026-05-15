@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using TestClient.Source.Physics;
 
 namespace TestClient.Source.Network;
 
@@ -207,5 +208,10 @@ public class PacketBuffer(Stream stream)
 		if (BitConverter.IsLittleEndian)
 			Array.Reverse(bytes);
 		return BitConverter.ToInt64(bytes, 0);
+	}
+
+	public BlockPos ReadBlockPos()
+	{
+		return BlockPos.FromLong(ReadLong());
 	}
 }

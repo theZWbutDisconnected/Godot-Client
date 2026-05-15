@@ -10,7 +10,7 @@ public class AirTile : Block
         
     }
 
-    public override void Render(Tessellator t, Level level, int layer, int x, int y, int z)
+    public override void Render(Tessellator t, Level level, int layer, BlockPos pos)
     {
     }
     

@@ -95,13 +95,20 @@ source/
     S08PlayerPosLook.cs
     S18EntityTeleport.cs
     S21ChunkData.cs
+    S23BlockChange.cs
     S26MapChunkBulk.cs
     S32ConfirmTransaction.cs
     S40Disconnect.cs
   PacketBuffer.cs
  Physics/
   AABB.cs
+  Axis.cs
+  AxisDirection.cs
+  BlockPos.cs
+  Direction.cs
   Mth.cs
+  Plane.cs
+  Vec3i.cs
  Render/Tessellator.cs
  Timer.cs
  World/

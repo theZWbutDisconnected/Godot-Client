@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿using System.Collections.Concurrent;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -81,10 +81,11 @@ public partial class Level : Node3D
             var worldY = y;
             var worldZ = startZ + z;
 
+            var pos = new BlockPos(worldX, worldY, worldZ);
             if (chunk.HasBlock(worldX, worldY, worldZ))
             {
-                var block = Blocks.GetPreset(GetBlockId(worldX, worldY, worldZ));
-                block.Render(tessellator, this, 0, worldX, worldY, worldZ);
+                var block = Blocks.GetPreset(GetBlockId(pos));
+                block.Render(tessellator, this, 0, pos);
             }
         }
 
@@ -119,32 +120,49 @@ public partial class Level : Node3D
         _chunks.Remove(ChunkKey(chunkX, chunkZ), out _);
     }
 
-    public int GetBlockId(int worldX, int worldY, int worldZ)
+    public int GetBlockId(BlockPos pos)
     {
-        var cx = ChunkData.WorldToChunk(worldX);
-        var cz = ChunkData.WorldToChunk(worldZ);
+        var cx = ChunkData.WorldToChunk(pos.X);
+        var cz = ChunkData.WorldToChunk(pos.Z);
         var chunk = GetChunk(cx, cz);
         if (chunk == null) return 0;
-        return chunk.GetBlockId(worldX, worldY, worldZ);
+        return chunk.GetBlockId(pos.X, pos.Y, pos.Z);
     }
 
-    public int GetMetadata(int worldX, int worldY, int worldZ)
+    public int GetMetadata(BlockPos pos)
     {
-        var cx = ChunkData.WorldToChunk(worldX);
-        var cz = ChunkData.WorldToChunk(worldZ);
+        var cx = ChunkData.WorldToChunk(pos.X);
+        var cz = ChunkData.WorldToChunk(pos.Z);
         var chunk = GetChunk(cx, cz);
         if (chunk == null) return 0;
-        return chunk.GetMetadata(worldX, worldY, worldZ);
+        return chunk.GetMetadata(pos.X, pos.Y, pos.Z);
     }
 
-    public bool HasBlock(int worldX, int worldY, int worldZ)
-    {
-        var cx = ChunkData.WorldToChunk(worldX);
-        var cz = ChunkData.WorldToChunk(worldZ);
-        var chunk = GetChunk(cx, cz);
-        if (chunk == null) return false;
-        return chunk.HasBlock(worldX, worldY, worldZ);
-    }
+    public bool HasBlock(BlockPos pos)
+	{
+		var cx = ChunkData.WorldToChunk(pos.X);
+		var cz = ChunkData.WorldToChunk(pos.Z);
+		var chunk = GetChunk(cx, cz);
+		if (chunk == null) return false;
+		return chunk.HasBlock(pos.X, pos.Y, pos.Z);
+	}
+
+	public void SetBlock(BlockPos pos, int blockId, int metadata = 0)
+	{
+		var cx = ChunkData.WorldToChunk(pos.X);
+		var cz = ChunkData.WorldToChunk(pos.Z);
+		var chunk = GetChunk(cx, cz);
+		if (chunk != null)
+		{
+			chunk.SetBlock(pos.X, pos.Y, pos.Z, blockId, metadata);
+			SetDirty(cx, cz);
+			
+			SetDirty(cx + 1, cz);
+			SetDirty(cx - 1, cz);
+			SetDirty(cx, cz + 1);
+			SetDirty(cx, cz - 1);
+		}
+	}
 
     public List<AABB> GetCubes(AABB expand)
     {
@@ -178,7 +196,8 @@ public partial class Level : Node3D
             for (var z = lzMin; z <= lzMax; z++)
                 if (chunk.HasBlock(x, y, z))
                 {
-                    var origin = Blocks.GetPreset(chunk.GetBlockId(x, y, z)).GetCollision();
+                    var pos = new BlockPos(x, y, z);
+                    var origin = Blocks.GetPreset(GetBlockId(pos)).GetCollision();
                     if (origin == null) continue;
                     var cube = new AABB(origin);
                     cube.Move(x, y, z);

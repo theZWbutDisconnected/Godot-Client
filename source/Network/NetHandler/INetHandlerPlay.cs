@@ -10,6 +10,7 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleEntityTeleport(S18EntityTeleport @in);
     void HandleChunkData(S21ChunkData @in);
     void HandleMapChunkBulk(S26MapChunkBulk @in);
+    void HandleBlockChange(S23BlockChange @in);
     void HandleConfirmTransaction(S32ConfirmTransaction @in);
     void HandleDisconnect(S40Disconnect @in);
 }

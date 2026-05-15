@@ -114,16 +114,29 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
     }
 
     public void HandleMapChunkBulk(S26MapChunkBulk @in)
-    {
-        var level = Game.Singleton.Level;
-        foreach (var chunk in @in.Chunks)
-        {
-            level.AddChunk(chunk);
-        }
-        GD.Print("MapChunkBulk received: " + @in.Chunks.Count + " chunks, Overworld: " + @in.IsOverworld);
-    }
+	{
+		var level = Game.Singleton.Level;
+		foreach (var chunk in @in.Chunks)
+		{
+			level.AddChunk(chunk);
+		}
+		GD.Print("MapChunkBulk received: " + @in.Chunks.Count + " chunks, Overworld: " + @in.IsOverworld);
+	}
 
-    public void HandleDisconnect(S40Disconnect packetIn)
+	public void HandleBlockChange(S23BlockChange @in)
+	{
+		var level = Game.Singleton.Level;
+		var pos = @in.BlockPos;
+		var blockStateId = @in.BlockStateId;
+		
+		var blockId = blockStateId >> 4;
+		var metadata = blockStateId & 0xF;
+		
+		level.SetBlock(pos, blockId, metadata);
+		GD.Print("Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
+	}
+
+	public void HandleDisconnect(S40Disconnect packetIn)
     {
         var reason = packetIn.Reason;
         GD.Print("[Disconnect] Server kicked with reason: " + reason);
