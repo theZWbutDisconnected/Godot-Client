@@ -9,8 +9,8 @@ public class Blocks
     public static readonly Block Dirt = new(3, 2);
     public static readonly Block Bedrock = new(7, 17);
     public static readonly Block Sand = new(12, 18);
-    public static readonly Block OakLog = new OakLog(17);
-    public static readonly Block OakLeaves = new(18, 22);
+    public static readonly Block OakLog = new LogBlock(17);
+    public static readonly Block OakLeaves = new Leaves(18);
     
     public static Block GetPreset(int id)
     {

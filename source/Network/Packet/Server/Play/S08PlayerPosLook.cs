@@ -5,15 +5,13 @@ namespace TestClient.Source.Network.Packet.Server.Play;
 
 public class S08PlayerPosLook : IPacket
 {
-    [Flags]
     public enum EnumFlags
     {
-        None = 0,
-        X = 1 << 0, // 0x01
-        Y = 1 << 1, // 0x02
-        Z = 1 << 2, // 0x04
-        Yaw = 1 << 3, // 0x08
-        Pitch = 1 << 4 // 0x10
+        X = 0,
+        Y = 1,
+        Z = 2,
+        Yaw = 3,
+        Pitch = 4
     }
 
     public double X { get; private set; }
@@ -30,26 +28,36 @@ public class S08PlayerPosLook : IPacket
         Z = buf.ReadDouble();
         Yaw = buf.ReadFloat();
         Pitch = buf.ReadFloat();
-        Flags = EnumFlagsHelper.FromByte(buf.ReadByte());
+        Flags = EnumFlagsHelper.Unpack(buf.ReadByte());
     }
 
     public void Write(PacketBuffer buf)
     {
         /* S2C only, no need to write */
     }
-
+    
     public static class EnumFlagsHelper
     {
-        public static HashSet<EnumFlags> FromByte(byte value)
+        public static int GetMask(EnumFlags flag)
+        {
+            return 1 << (int)flag;
+        }
+
+        public static bool IsSet(EnumFlags flag, int flags)
+        {
+            return (flags & GetMask(flag)) == GetMask(flag);
+        }
+
+        public static HashSet<EnumFlags> Unpack(int flags)
         {
             var set = new HashSet<EnumFlags>();
-            foreach (EnumFlags flag in Enum.GetValues(typeof(EnumFlags)))
+            foreach (EnumFlags enumFlag in Enum.GetValues(typeof(EnumFlags)))
             {
-                if (flag == EnumFlags.None) continue;
-                if ((value & (byte)flag) != 0)
-                    set.Add(flag);
+                if (IsSet(enumFlag, flags))
+                {
+                    set.Add(enumFlag);
+                }
             }
-
             return set;
         }
     }

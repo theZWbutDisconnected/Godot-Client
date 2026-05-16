@@ -127,7 +127,8 @@ source/
    Block.cs
    Blocks.cs
    GrassBlock.cs
-   OakLog.cs
+   Leaves.cs
+   LogBlock.cs
 
 [metadataReferences]
 <NUGET>/

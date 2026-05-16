@@ -106,7 +106,7 @@ public partial class Level : Node3D
             if (_chunkMeshes.TryGetValue(key, out var oldMesh))
             {
                 _chunkMeshes.Remove(key);
-                if (IsInstanceValid(oldMesh) && oldMesh.GetParent() == this) RemoveChild(oldMesh);
+                RemoveChild(oldMesh);
                 oldMesh?.QueueFree();
             }
 

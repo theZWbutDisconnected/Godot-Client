@@ -73,10 +73,9 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         
         _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.X, entityplayer.BoundingBox.Y0, entityplayer.Z,
             entityplayer.Yaw, entityplayer.Pitch, false));
-        Player player = Game.Singleton.Player;
-        player.PrevX = player.X;
-        player.PrevY = player.Y;
-        player.PrevZ = player.Z;
+        entityplayer.PrevX = entityplayer.X;
+        entityplayer.PrevY = entityplayer.Y;
+        entityplayer.PrevZ = entityplayer.Z;
         GD.Print("Server position set: x - ", entityplayer.X, " y - ", entityplayer.Y, " z - ", entityplayer.Z, " yaw - ",
             entityplayer.Yaw, " pitch - ", entityplayer.Pitch);
     }

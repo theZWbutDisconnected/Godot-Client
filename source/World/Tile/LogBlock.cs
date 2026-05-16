@@ -1,8 +1,8 @@
 ﻿namespace TestClient.Source.World.Tile;
 
-public class OakLog : Block
+public class LogBlock : Block
 {
-    public OakLog(int id) : base(id, 3)
+    public LogBlock(int id) : base(id, 3)
     {
         
     }
