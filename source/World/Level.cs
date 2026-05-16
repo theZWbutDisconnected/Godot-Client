@@ -132,6 +132,11 @@ public partial class Level : Node3D
     }
     #nullable disable
 
+    public bool HasChunk(int chunkX, int chunkZ)
+    {
+        return GetChunk(chunkX, chunkZ) != null;
+    }
+
     public void RemoveChunk(int chunkX, int chunkZ)
     {
         lock (_lockObj)
@@ -255,5 +260,20 @@ public partial class Level : Node3D
     public Entity GetEntityById(int entityId)
     {
         return _entities.FirstOrDefault(e => e.EntityId == entityId);
+    }
+
+    public bool IsBlockLoaded(BlockPos pos)
+    {
+        return IsBlockLoaded(pos, true);
+    }
+
+    public bool IsBlockLoaded(BlockPos pos, bool allowEmpty)
+    {
+        return IsChunkLoaded(pos.X >> 4, pos.Z >> 4, allowEmpty);
+    }
+
+    protected bool IsChunkLoaded(int x, int z, bool allowEmpty)
+    {
+        return HasChunk(x, z);
     }
 }
