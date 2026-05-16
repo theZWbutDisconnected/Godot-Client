@@ -1,5 +1,3 @@
-using Godot;
-
 namespace TestClient.Source.World;
 
 public class ChunkSection
@@ -48,46 +46,59 @@ public class ChunkSection
         return _blockData[GetIndex(localX, localY, localZ)];
     }
 
-    public char[] GetData() => _blockData;
+    public char[] GetData()
+    {
+        return _blockData;
+    }
 
-    public byte[] GetBlockLightArray() => _blockLight;
+    public byte[] GetBlockLightArray()
+    {
+        return _blockLight;
+    }
 
-    public byte[] GetSkyLightArray() => _skyLight;
+    public byte[] GetSkyLightArray()
+    {
+        return _skyLight;
+    }
 
     public void RecalcEmpty()
     {
         IsEmpty = true;
-        for (int i = 0; i < TotalBlocks; i++)
-        {
+        for (var i = 0; i < TotalBlocks; i++)
             if (_blockData[i] != 0)
             {
                 IsEmpty = false;
                 return;
             }
-        }
     }
 
     public void ReadBlocksFromPacket(byte[] packetData, int offset)
     {
-        for (int i = 0; i < TotalBlocks; i++)
+        for (var i = 0; i < TotalBlocks; i++)
         {
-            int bi = offset + i * 2;
+            var bi = offset + i * 2;
             _blockData[i] = (char)((packetData[bi] & 0xFF) | ((packetData[bi + 1] & 0xFF) << 8));
         }
+
         RecalcEmpty();
     }
 
     public static void ReadNibbleArray(byte[] src, byte[] dst, int srcOffset, int length)
     {
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
-            byte val = src[srcOffset + i];
+            var val = src[srcOffset + i];
             dst[i] = val;
         }
     }
 
-    private static int GetIndex(int x, int y, int z) => y * Width * Depth + z * Width + x;
+    private static int GetIndex(int x, int y, int z)
+    {
+        return y * Width * Depth + z * Width + x;
+    }
 
-    private static bool IsInBounds(int x, int y, int z) =>
-        x >= 0 && x < Width && y >= 0 && y < Height && z >= 0 && z < Depth;
+    private static bool IsInBounds(int x, int y, int z)
+    {
+        return x >= 0 && x < Width && y >= 0 && y < Height && z >= 0 && z < Depth;
+    }
 }

@@ -11,14 +11,14 @@ public class Blocks
     public static readonly Block Sand = new(12, 18);
     public static readonly Block OakLog = new LogBlock(17);
     public static readonly Block OakLeaves = new Leaves(18);
-    
+
     public static Block GetPreset(int id)
     {
-        Block block = Presets[id];
+        var block = Presets[id];
         if (block == null) block = Empty;
         return block;
     }
-    
+
     public static void SetPreset(int id, Block block)
     {
         Presets[id] = block;

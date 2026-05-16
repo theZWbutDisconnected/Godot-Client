@@ -1,5 +1,5 @@
-﻿﻿using System;
- using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
@@ -12,12 +12,12 @@ namespace TestClient.Source.World;
 
 public partial class Level : Node3D
 {
-    private readonly Dictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
-    private readonly HashSet<Entity> _entities = new();
-    private readonly List<(ChunkCoordIntPair coord, int priority)> _dirtyChunks = new();
     private readonly Dictionary<ChunkCoordIntPair, MeshInstance3D> _chunkMeshes = new();
+    private readonly Dictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
+    private readonly List<(ChunkCoordIntPair coord, int priority)> _dirtyChunks = new();
+    private readonly HashSet<Entity> _entities = new();
     private readonly object _lockObj = new();
-    private bool _isRefreshing = false;
+    private bool _isRefreshing;
 
     public void AddChunk(ChunkData chunk)
     {
@@ -26,6 +26,7 @@ public partial class Level : Node3D
         {
             _chunks[key] = chunk;
         }
+
         SetDirty(key);
         SetDirty(new ChunkCoordIntPair(chunk.ChunkX + 1, chunk.ChunkZ));
         SetDirty(new ChunkCoordIntPair(chunk.ChunkX - 1, chunk.ChunkZ));
@@ -54,7 +55,7 @@ public partial class Level : Node3D
     public void RefreshDirtyChunks()
     {
         List<ChunkCoordIntPair> dirtyKeys;
-        
+
         lock (_lockObj)
         {
             dirtyKeys = _dirtyChunks.Select(item => item.coord).ToList();
@@ -118,7 +119,7 @@ public partial class Level : Node3D
         }
     }
 
-    #nullable enable
+#nullable enable
     public ChunkData? GetChunk(int chunkX, int chunkZ)
     {
         var key = new ChunkCoordIntPair(chunkX, chunkZ);
@@ -128,9 +129,10 @@ public partial class Level : Node3D
             _chunks.TryGetValue(key, out var c);
             chunk = c;
         }
+
         return chunk;
     }
-    #nullable disable
+#nullable disable
 
     public bool HasChunk(int chunkX, int chunkZ)
     {
@@ -164,29 +166,29 @@ public partial class Level : Node3D
     }
 
     public bool HasBlock(BlockPos pos)
-	{
-		var cx = ChunkData.WorldToChunk(pos.X);
-		var cz = ChunkData.WorldToChunk(pos.Z);
-		var chunk = GetChunk(cx, cz);
-		if (chunk == null) return false;
-		return chunk.HasBlock(pos.X, pos.Y, pos.Z);
-	}
+    {
+        var cx = ChunkData.WorldToChunk(pos.X);
+        var cz = ChunkData.WorldToChunk(pos.Z);
+        var chunk = GetChunk(cx, cz);
+        if (chunk == null) return false;
+        return chunk.HasBlock(pos.X, pos.Y, pos.Z);
+    }
 
-	public void SetBlock(BlockPos pos, int blockId, int metadata = 0)
-	{
-		var cx = ChunkData.WorldToChunk(pos.X);
-		var cz = ChunkData.WorldToChunk(pos.Z);
-		var chunk = GetChunk(cx, cz);
-		if (chunk != null)
-		{
-			chunk.SetBlock(pos.X, pos.Y, pos.Z, blockId, metadata);
-			SetDirty(new ChunkCoordIntPair(cx, cz), 0);
+    public void SetBlock(BlockPos pos, int blockId, int metadata = 0)
+    {
+        var cx = ChunkData.WorldToChunk(pos.X);
+        var cz = ChunkData.WorldToChunk(pos.Z);
+        var chunk = GetChunk(cx, cz);
+        if (chunk != null)
+        {
+            chunk.SetBlock(pos.X, pos.Y, pos.Z, blockId, metadata);
+            SetDirty(new ChunkCoordIntPair(cx, cz), 0);
             if (cx == 0) SetDirty(new ChunkCoordIntPair(cx - 1, cz), 1);
             if (cz == 0) SetDirty(new ChunkCoordIntPair(cx, cz - 1), 1);
             if (cx == 15) SetDirty(new ChunkCoordIntPair(cx + 1, cz), 1);
             if (cz == 15) SetDirty(new ChunkCoordIntPair(cx, cz + 1), 1);
-		}
-	}
+        }
+    }
 
     public List<AABB> GetCubes(AABB expand)
     {
@@ -251,7 +253,7 @@ public partial class Level : Node3D
     {
         return true;
     }
-    
+
     public void AddEntity(Entity entity)
     {
         _entities.Add(entity);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Godot;
 using TestClient.Source.Physics;
 
@@ -7,33 +6,34 @@ namespace TestClient.Source.World.Entities;
 
 public partial class Entity : Node3D
 {
+    public AABB BoundingBox;
+    public int EntityId = new Random().Next();
+    public Guid EntityUuid = Guid.NewGuid();
+    public float EyeHeight;
     protected Level Level;
     public bool OnGround;
     public bool Removed;
-    public double X;
-    public double Y;
-    public double Z;
+    public double PosX;
+    public double PosY;
+    public double PosZ;
+    public float PrevRotX;
+    public float PrevRotY;
     public double PrevX;
     public double PrevY;
     public double PrevZ;
+    public float RotX;
+    public float RotY;
     public int ServerX;
     public int ServerY;
     public int ServerZ;
     public double XDelta;
     public double YDelta;
     public double ZDelta;
-    public float Yaw;
-    public float Pitch;
-    public float PrevYaw;
-    public float PrevPitch;
-    public float EyeHeight;
-    public int EntityId = new Random().Next();
-    public Guid EntityUuid = Guid.NewGuid();
-    public AABB BoundingBox;
     protected float Width = 0.6F;
     public float Height = 1.8F;
 
-    public Entity(Level level) {
+    public Entity(Level level)
+    {
         Level = level;
         SetSize(0.6F, 1.8F);
         SetPos(0.0F, 0.0F, 0.0F);
@@ -46,60 +46,52 @@ public partial class Entity : Node3D
         Height = h;
     }
 
-    public void SetPos(double x, double y, double z) {
-        X = x;
-        Y = y;
-        Z = z;
-        float w = Width / 2.0F;
-        float h = Height;
+    public void SetPos(double x, double y, double z)
+    {
+        PosX = x;
+        PosY = y;
+        PosZ = z;
+        var w = Width / 2.0F;
+        var h = Height;
         BoundingBox = new AABB(x - w, y, z - w, x + w, y + h, z + w);
     }
 
     public void SetRot(float yaw, float pitch)
     {
-        Yaw = yaw % 360.0F;
-        Pitch = pitch % 360.0F;
+        RotY = yaw % 360.0F;
+        RotX = pitch % 360.0F;
     }
 
     public void SetPosAndRot(double x, double y, double z, float yaw, float pitch)
     {
-        PrevX = X = x;
-        PrevY = Y = y;
-        PrevZ = Z = z;
-        PrevYaw = Yaw = yaw;
-        PrevPitch = Pitch = pitch;
-        double d0 = PrevYaw - yaw;
+        PrevX = PosX = x;
+        PrevY = PosY = y;
+        PrevZ = PosZ = z;
+        PrevRotY = RotY = yaw;
+        PrevRotX = RotX = pitch;
+        double d0 = PrevRotY - yaw;
 
-        if (d0 < -180.0D)
-        {
-            PrevYaw += 360.0F;
-        }
+        if (d0 < -180.0D) PrevRotY += 360.0F;
 
-        if (d0 >= 180.0D)
-        {
-            PrevYaw -= 360.0F;
-        }
+        if (d0 >= 180.0D) PrevRotY -= 360.0F;
 
         SetPos(x, y, z);
         SetRot(yaw, pitch);
     }
 
-    public void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, bool p_180426_10_)
+    public void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements,
+        bool p_180426_10_)
     {
         SetPosAndRot(x, y, z, yaw, pitch);
-        List<AABB> list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
+        var list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
 
         if (list.Count > 0)
         {
             double d0 = 0.0F;
 
-            foreach (AABB axisalignedbb in list)
-            {
+            foreach (var axisalignedbb in list)
                 if (axisalignedbb.Y1 > d0)
-                {
                     d0 = axisalignedbb.Y1;
-                }
-            }
 
             y += d0 - BoundingBox.Y0;
             SetPos(x, y, z);
@@ -108,22 +100,22 @@ public partial class Entity : Node3D
 
     public void Turn(float xo, float yo)
     {
-        var f = Pitch;
-        var f1 = Yaw;
-        Yaw = (float)(Yaw + xo * 0.15D);
-        Pitch = (float)(Pitch - yo * 0.15D);
-        Pitch = Mathf.Clamp(Pitch, -90.0F, 90.0F);
-        PrevPitch += Pitch - f;
-        PrevYaw += Yaw - f1;
+        var f = RotX;
+        var f1 = RotY;
+        RotY = (float)(RotY + xo * 0.15D);
+        RotX = (float)(RotX - yo * 0.15D);
+        RotX = Mathf.Clamp(RotX, -90.0F, 90.0F);
+        PrevRotX += RotX - f;
+        PrevRotY += RotY - f1;
     }
 
     public virtual void Tick()
     {
-        PrevX = X;
-        PrevY = Y;
-        PrevZ = Z;
-        PrevYaw = Yaw;
-        PrevPitch = Pitch;
+        PrevX = PosX;
+        PrevY = PosY;
+        PrevZ = PosZ;
+        PrevRotY = RotY;
+        PrevRotX = RotX;
     }
 
     public void Move(double xa, double ya, double za)
@@ -131,7 +123,7 @@ public partial class Entity : Node3D
         double xaOrg = xa, yaOrg = ya, zaOrg = za;
 
         var bb = BoundingBox;
-        List<AABB> aABBs = Level.GetCubes(bb.Expand(xa, ya, za));
+        var aABBs = Level.GetCubes(bb.Expand(xa, ya, za));
 
         for (var i = 0; i < aABBs.Count; i++)
             ya = aABBs[i].ClipYCollide(bb, ya);
@@ -151,9 +143,9 @@ public partial class Entity : Node3D
         if (yaOrg != ya) YDelta = 0.0F;
         if (zaOrg != za) ZDelta = 0.0F;
 
-        X = (bb.X0 + bb.X1) * 0.5F;
-        Y = bb.Y0;
-        Z = (bb.Z0 + bb.Z1) * 0.5F;
+        PosX = (bb.X0 + bb.X1) * 0.5F;
+        PosY = bb.Y0;
+        PosZ = (bb.Z0 + bb.Z1) * 0.5F;
     }
 
     public void MoveRelative(double xa, double za, double speed)
@@ -165,7 +157,7 @@ public partial class Entity : Node3D
             xa *= dist;
             za *= dist;
 
-            var rad = Yaw * (float)(Math.PI / 180.0);
+            var rad = RotY * (float)(Math.PI / 180.0);
             var sin = (float)Math.Sin(rad);
             var cos = (float)Math.Cos(rad);
 

@@ -1,7 +1,5 @@
-﻿using System;
-using Godot;
+﻿using Godot;
 using TestClient.Source.Network;
-using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Physics;
 
@@ -10,14 +8,14 @@ namespace TestClient.Source.World.Entities;
 public partial class Player : Entity
 {
     public readonly NetworkSystem SendQueue;
+    private int _positionUpdateTicks;
     public float HeadYaw;
+    public float LastPitch;
     public double LastX;
     public double LastY;
-    public double LastZ;
     public float LastYaw;
-    public float LastPitch;
-    private int _positionUpdateTicks;
-    
+    public double LastZ;
+
     public Player(Level level, NetworkSystem netHandler) : base(level)
     {
         SendQueue = netHandler;
@@ -30,10 +28,10 @@ public partial class Player : Entity
 
     public override void Tick()
     {
-        if (Level.IsBlockLoaded(new BlockPos(X, 0.0D, Z)))
+        if (Level.IsBlockLoaded(new BlockPos(PosX, 0.0D, PosZ)))
         {
             base.Tick();
-            
+
             var xa = 0.0F;
             var ya = 0.0F;
 
@@ -58,35 +56,35 @@ public partial class Player : Entity
 
             if (SendQueue.IsConnected())
             {
-                double delta0 = X - LastX;
-                double delta1 = BoundingBox.Y0 - LastY;
-                double delta2 = Z - LastZ;
-                var delta3 = (double)(Yaw - LastYaw);
-                var delta4 = (double)(Pitch - LastPitch);
+                var delta0 = PosX - LastX;
+                var delta1 = BoundingBox.Y0 - LastY;
+                var delta2 = PosZ - LastZ;
+                var delta3 = (double)(RotY - LastYaw);
+                var delta4 = (double)(RotX - LastPitch);
                 var sendThreshold = 9.0E-4D;
                 var posReported = Mth.LengthSquared(delta0, delta1, delta2) > sendThreshold ||
                                   _positionUpdateTicks >= 20;
                 var rotReported = delta3 != 0.0D || delta4 != 0.0D;
 
                 if (posReported && rotReported)
-                    SendQueue.SendPacket(new C06PlayerPosLook(X, BoundingBox.Y0, Z, Yaw, Pitch, OnGround));
-                else if (posReported) SendQueue.SendPacket(new C04PlayerPosition(X, BoundingBox.Y0, Z, OnGround));
-                else if (rotReported) SendQueue.SendPacket(new C05PlayerLook(Yaw, Pitch, OnGround));
+                    SendQueue.SendPacket(new C06PlayerPosLook(PosX, BoundingBox.Y0, PosZ, RotY, RotX, OnGround));
+                else if (posReported) SendQueue.SendPacket(new C04PlayerPosition(PosX, BoundingBox.Y0, PosZ, OnGround));
+                else if (rotReported) SendQueue.SendPacket(new C05PlayerLook(RotY, RotX, OnGround));
                 else SendQueue.SendPacket(new C03Player(OnGround));
 
                 ++_positionUpdateTicks;
                 if (posReported)
                 {
-                    LastX = X;
+                    LastX = PosX;
                     LastY = BoundingBox.Y0;
-                    LastZ = Z;
+                    LastZ = PosZ;
                     _positionUpdateTicks = 0;
                 }
 
                 if (rotReported)
                 {
-                    LastYaw = Yaw;
-                    LastPitch = Pitch;
+                    LastYaw = RotY;
+                    LastPitch = RotX;
                 }
             }
         }

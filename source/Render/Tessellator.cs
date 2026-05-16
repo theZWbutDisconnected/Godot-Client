@@ -5,8 +5,8 @@ namespace TestClient.Source.Render;
 
 public sealed class Tessellator
 {
-    private static readonly Texture2D Terrain;
     private const int MaxVertices = 524288 / 3;
+    private static readonly Texture2D Terrain;
     private VertexAttributes _attrs;
 
     private Color _color = Colors.White;

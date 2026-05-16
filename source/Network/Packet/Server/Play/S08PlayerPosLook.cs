@@ -35,7 +35,7 @@ public class S08PlayerPosLook : IPacket
     {
         /* S2C only, no need to write */
     }
-    
+
     public static class EnumFlagsHelper
     {
         public static int GetMask(EnumFlags flag)
@@ -52,12 +52,9 @@ public class S08PlayerPosLook : IPacket
         {
             var set = new HashSet<EnumFlags>();
             foreach (EnumFlags enumFlag in Enum.GetValues(typeof(EnumFlags)))
-            {
                 if (IsSet(enumFlag, flags))
-                {
                     set.Add(enumFlag);
-                }
-            }
+
             return set;
         }
     }

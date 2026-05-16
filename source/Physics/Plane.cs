@@ -1,17 +1,31 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TestClient.Source.Physics;
 
-
 public class Plane : IEnumerable<Direction>
 {
-    public static readonly Plane HORIZONTAL = new Plane();
-    public static readonly Plane VERTICAL = new Plane();
+    public static readonly Plane HORIZONTAL = new();
+    public static readonly Plane VERTICAL = new();
 
-    private Plane() { }
+    private Plane()
+    {
+    }
 
-    public Direction[] Facings => this == HORIZONTAL ? new[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST } : new[] { Direction.UP, Direction.DOWN };
+    public Direction[] Facings => this == HORIZONTAL
+        ? new[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST }
+        : new[] { Direction.UP, Direction.DOWN };
+
+    public IEnumerator<Direction> GetEnumerator()
+    {
+        foreach (var f in Facings) yield return f;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
     public Direction Random(Random rand)
     {
@@ -19,12 +33,8 @@ public class Plane : IEnumerable<Direction>
         return facings[rand.Next(facings.Length)];
     }
 
-    public bool Matches(Direction facing) => facing != null && facing.Axis.Plane == this;
-
-    public IEnumerator<Direction> GetEnumerator()
+    public bool Matches(Direction facing)
     {
-        foreach (var f in Facings) yield return f;
+        return facing != null && facing.Axis.Plane == this;
     }
-
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 }

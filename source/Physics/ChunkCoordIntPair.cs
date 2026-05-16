@@ -4,8 +4,6 @@ namespace TestClient.Source.World;
 
 public class ChunkCoordIntPair
 {
-    public int ChunkXPos { get; }
-    public int ChunkZPos { get; }
     private int _cachedHashCode;
 
     public ChunkCoordIntPair(int x, int z)
@@ -14,19 +12,23 @@ public class ChunkCoordIntPair
         ChunkZPos = z;
     }
 
+    public int ChunkXPos { get; }
+    public int ChunkZPos { get; }
+
     public static long ChunkXZ2Int(int x, int z)
     {
-        return ((long)x & 4294967295L) | (((long)z & 4294967295L) << 32);
+        return (x & 4294967295L) | ((z & 4294967295L) << 32);
     }
 
     public override int GetHashCode()
     {
         if (_cachedHashCode == 0)
         {
-            int i = 1664525 * ChunkXPos + 1013904223;
-            int j = 1664525 * (ChunkZPos ^ -559038737) + 1013904223;
+            var i = 1664525 * ChunkXPos + 1013904223;
+            var j = 1664525 * (ChunkZPos ^ -559038737) + 1013904223;
             _cachedHashCode = i ^ j;
         }
+
         return _cachedHashCode;
     }
 

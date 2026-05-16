@@ -9,7 +9,7 @@ public class AABB
     public double Y1;
     public double Z0;
     public double Z1;
-    
+
     public AABB(AABB old)
     {
         X0 = old.X0;

@@ -3,7 +3,6 @@ using System.IO;
 using Godot;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Network.Packet.Server.Play;
-using TestClient.Source.World.Entities;
 
 namespace TestClient.Source.Network.NetHandler.impl;
 
@@ -51,57 +50,56 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         var f1 = packetIn.Pitch;
 
         if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.X))
-            d0 += entityplayer.X;
+            d0 += entityplayer.PosX;
         else
             entityplayer.XDelta = 0.0D;
 
         if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Y))
-            d1 += entityplayer.Y;
+            d1 += entityplayer.PosY;
         else
             entityplayer.YDelta = 0.0D;
 
         if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Z))
-            d2 += entityplayer.Z;
+            d2 += entityplayer.PosZ;
         else
             entityplayer.ZDelta = 0.0D;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Pitch)) f1 += entityplayer.Pitch;
+        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Pitch)) f1 += entityplayer.RotX;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Yaw)) f += entityplayer.Yaw;
+        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Yaw)) f += entityplayer.RotY;
 
         entityplayer.SetPosAndRot(d0, d1, d2, f, f1);
-        
-        _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.X, entityplayer.BoundingBox.Y0, entityplayer.Z,
-            entityplayer.Yaw, entityplayer.Pitch, false));
-        entityplayer.PrevX = entityplayer.X;
-        entityplayer.PrevY = entityplayer.Y;
-        entityplayer.PrevZ = entityplayer.Z;
-        GD.Print("Server position set: x - ", entityplayer.X, " y - ", entityplayer.Y, " z - ", entityplayer.Z, " yaw - ",
-            entityplayer.Yaw, " pitch - ", entityplayer.Pitch);
+
+        _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.PosX, entityplayer.BoundingBox.Y0,
+            entityplayer.PosZ,
+            entityplayer.RotY, entityplayer.RotX, false));
+        entityplayer.PrevX = entityplayer.PosX;
+        entityplayer.PrevY = entityplayer.PosY;
+        entityplayer.PrevZ = entityplayer.PosZ;
+        GD.Print("Server position set: x - ", entityplayer.PosX, " y - ", entityplayer.PosY, " z - ", entityplayer.PosZ,
+            " yaw - ",
+            entityplayer.RotY, " pitch - ", entityplayer.RotX);
     }
-    
+
     public void HandleEntityTeleport(S18EntityTeleport packetIn)
     {
-        Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         if (entity != null)
         {
             entity.ServerX = packetIn.PosX;
             entity.ServerY = packetIn.PosY;
             entity.ServerZ = packetIn.PosZ;
-            float d0 = entity.ServerX / 32.0F;
-            float d1 = entity.ServerY / 32.0F;
-            float d2 = entity.ServerZ / 32.0F;
-            float f = (packetIn.Yaw * 360) / 256.0F;
-            float f1 = (packetIn.Pitch * 360) / 256.0F;
+            var d0 = entity.ServerX / 32.0F;
+            var d1 = entity.ServerY / 32.0F;
+            var d2 = entity.ServerZ / 32.0F;
+            var f = packetIn.Yaw * 360 / 256.0F;
+            var f1 = packetIn.Pitch * 360 / 256.0F;
 
-            if (Math.Abs(entity.X - d0) < 0.03125D && Math.Abs(entity.Y - d1) < 0.015625D && Math.Abs(entity.Z - d2) < 0.03125D)
-            {
-                entity.SetPosAndRot2(entity.X, entity.Y, entity.Z, f, f1, 3, true);
-            }
+            if (Math.Abs(entity.PosX - d0) < 0.03125D && Math.Abs(entity.PosY - d1) < 0.015625D &&
+                Math.Abs(entity.PosZ - d2) < 0.03125D)
+                entity.SetPosAndRot2(entity.PosX, entity.PosY, entity.PosZ, f, f1, 3, true);
             else
-            {
                 entity.SetPosAndRot2(d0, d1, d2, f, f1, 3, true);
-            }
 
             entity.OnGround = packetIn.OnGround;
         }
@@ -109,10 +107,10 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 
     public void HandleEntityHeadLook(S19EntityHeadLook packetIn)
     {
-        Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         if (entity != null)
         {
-            float f = packetIn.Yaw * 360 / 256.0F;
+            var f = packetIn.Yaw * 360 / 256.0F;
             entity.SetHeadYaw(f);
         }
     }
@@ -120,53 +118,48 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
     public void HandleChunkData(S21ChunkData @in)
     {
         var level = Game.Singleton.Level;
-        if (@in.Chunk != null)
-        {
-            level.AddChunk(@in.Chunk);
-        }
+        if (@in.Chunk != null) level.AddChunk(@in.Chunk);
     }
 
     public void HandleMapChunkBulk(S26MapChunkBulk @in)
-	{
-		var level = Game.Singleton.Level;
-		foreach (var chunk in @in.Chunks)
-		{
-			level.AddChunk(chunk);
-		}
-	}
+    {
+        var level = Game.Singleton.Level;
+        foreach (var chunk in @in.Chunks) level.AddChunk(chunk);
+    }
 
-	public void HandleMultiBlockChange(S22MultiBlockChange @in)
-	{
-		var level = Game.Singleton.Level;
-		var chunkCoord = @in.ChunkPos;
-		
-		foreach (var updateData in @in.ChangedBlocks)
-		{
-			var pos = updateData.GetPos(chunkCoord);
-			var blockStateId = updateData.BlockStateId;
-			
-			var blockId = blockStateId >> 4;
-			var metadata = blockStateId & 0xF;
-			
-			level.SetBlock(pos, blockId, metadata);
-            GD.Print("S22 MultiBlock changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
-		}
-	}
+    public void HandleMultiBlockChange(S22MultiBlockChange @in)
+    {
+        var level = Game.Singleton.Level;
+        var chunkCoord = @in.ChunkPos;
 
-	public void HandleBlockChange(S23BlockChange @in)
-	{
-		var level = Game.Singleton.Level;
-		var pos = @in.BlockPos;
-		var blockStateId = @in.BlockStateId;
-		
-		var blockId = blockStateId >> 4;
-		var metadata = blockStateId & 0xF;
-		
-		level.SetBlock(pos, blockId, metadata);
-		GD.Print("S23 Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
-	}
+        foreach (var updateData in @in.ChangedBlocks)
+        {
+            var pos = updateData.GetPos(chunkCoord);
+            var blockStateId = updateData.BlockStateId;
 
-	public void HandleDisconnect(S40Disconnect packetIn)
+            var blockId = blockStateId >> 4;
+            var metadata = blockStateId & 0xF;
+
+            level.SetBlock(pos, blockId, metadata);
+            GD.Print(
+                "S22 MultiBlock changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
+        }
+    }
+
+    public void HandleBlockChange(S23BlockChange @in)
+    {
+        var level = Game.Singleton.Level;
+        var pos = @in.BlockPos;
+        var blockStateId = @in.BlockStateId;
+
+        var blockId = blockStateId >> 4;
+        var metadata = blockStateId & 0xF;
+
+        level.SetBlock(pos, blockId, metadata);
+        GD.Print("S23 Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
+    }
+
+    public void HandleDisconnect(S40Disconnect packetIn)
     {
         var reason = packetIn.Reason;
         GD.Print("[Disconnect] Server kicked with reason: " + reason);

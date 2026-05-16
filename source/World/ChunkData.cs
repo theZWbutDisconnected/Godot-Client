@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using Godot;
+using System;
 
 namespace TestClient.Source.World;
 
@@ -10,22 +9,22 @@ public class ChunkData
     public const int Depth = 16;
     public const int SectionCount = Height / 16; // 16
 
-    public int ChunkX { get; }
-    public int ChunkZ { get; }
+    private readonly byte[] _biomeArray = new byte[256];
 
     private readonly ChunkSection?[] _sections = new ChunkSection[SectionCount];
-
-    private byte[] _biomeArray = new byte[256];
-
-    public bool Dirty { get; set; }
-
-    public bool HasSkyLight { get; set; } = true;
 
     public ChunkData(int chunkX, int chunkZ)
     {
         ChunkX = chunkX;
         ChunkZ = chunkZ;
     }
+
+    public int ChunkX { get; }
+    public int ChunkZ { get; }
+
+    public bool Dirty { get; set; }
+
+    public bool HasSkyLight { get; set; } = true;
 
     public ChunkSection? GetSection(int sectionIndex)
     {
@@ -36,7 +35,7 @@ public class ChunkData
     public ChunkSection GetOrCreateSection(int sectionIndex)
     {
         if (sectionIndex < 0 || sectionIndex >= SectionCount)
-            throw new System.ArgumentOutOfRangeException(nameof(sectionIndex));
+            throw new ArgumentOutOfRangeException(nameof(sectionIndex));
 
         return _sections[sectionIndex] ??= new ChunkSection();
     }
@@ -44,10 +43,10 @@ public class ChunkData
     public int GetBlockId(int worldX, int worldY, int worldZ)
     {
         if (worldY < 0 || worldY >= Height) return 0;
-        int lx = WorldToLocal(worldX, ChunkX);
-        int lz = WorldToLocal(worldZ, ChunkZ);
-        int sectionY = worldY >> 4;
-        int localY = worldY & 0xF;
+        var lx = WorldToLocal(worldX, ChunkX);
+        var lz = WorldToLocal(worldZ, ChunkZ);
+        var sectionY = worldY >> 4;
+        var localY = worldY & 0xF;
 
         var section = _sections[sectionY];
         if (section == null) return 0;
@@ -58,10 +57,10 @@ public class ChunkData
     public int GetMetadata(int worldX, int worldY, int worldZ)
     {
         if (worldY < 0 || worldY >= Height) return 0;
-        int lx = WorldToLocal(worldX, ChunkX);
-        int lz = WorldToLocal(worldZ, ChunkZ);
-        int sectionY = worldY >> 4;
-        int localY = worldY & 0xF;
+        var lx = WorldToLocal(worldX, ChunkX);
+        var lz = WorldToLocal(worldZ, ChunkZ);
+        var sectionY = worldY >> 4;
+        var localY = worldY & 0xF;
 
         var section = _sections[sectionY];
         if (section == null) return 0;
@@ -72,10 +71,10 @@ public class ChunkData
     public void SetBlock(int worldX, int worldY, int worldZ, int blockId, int metadata = 0)
     {
         if (worldY < 0 || worldY >= Height) return;
-        int lx = WorldToLocal(worldX, ChunkX);
-        int lz = WorldToLocal(worldZ, ChunkZ);
-        int sectionY = worldY >> 4;
-        int localY = worldY & 0xF;
+        var lx = WorldToLocal(worldX, ChunkX);
+        var lz = WorldToLocal(worldZ, ChunkZ);
+        var sectionY = worldY >> 4;
+        var localY = worldY & 0xF;
 
         GetOrCreateSection(sectionY).SetBlock(lx, localY, lz, blockId, metadata);
         Dirty = true;
@@ -84,10 +83,10 @@ public class ChunkData
     public bool HasBlock(int worldX, int worldY, int worldZ)
     {
         if (worldY < 0 || worldY >= Height) return false;
-        int lx = WorldToLocal(worldX, ChunkX);
-        int lz = WorldToLocal(worldZ, ChunkZ);
-        int sectionY = worldY >> 4;
-        int localY = worldY & 0xF;
+        var lx = WorldToLocal(worldX, ChunkX);
+        var lz = WorldToLocal(worldZ, ChunkZ);
+        var sectionY = worldY >> 4;
+        var localY = worldY & 0xF;
 
         var section = _sections[sectionY];
         if (section == null) return false;
@@ -95,9 +94,15 @@ public class ChunkData
         return section.GetBlockRaw(lx, localY, lz) != 0;
     }
 
-    public byte[] GetBiomeArray() => _biomeArray;
+    public byte[] GetBiomeArray()
+    {
+        return _biomeArray;
+    }
 
-    public ChunkSection?[] GetSections() => _sections;
+    public ChunkSection?[] GetSections()
+    {
+        return _sections;
+    }
 
     public static int WorldToLocal(int worldCoord, int chunkCoord)
     {
