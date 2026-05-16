@@ -8,6 +8,8 @@ public class Blocks
     public static readonly Block Grass = new GrassBlock(2);
     public static readonly Block Dirt = new(3, 2);
     public static readonly Block Bedrock = new(7, 17);
+    public static readonly Block FlowingWater = new LiquidTile(8, LiquidTile.LiquidType.Water);
+    public static readonly Block Water = new LiquidTile(9, LiquidTile.LiquidType.Water);
     public static readonly Block Sand = new(12, 18);
     public static readonly Block OakLog = new LogBlock(17);
     public static readonly Block OakLeaves = new Leaves(18);
@@ -15,7 +17,7 @@ public class Blocks
     public static Block GetPreset(int id)
     {
         var block = Presets[id];
-        if (block == null) block = Empty;
+        if (block == null) block = Rock;
         return block;
     }
 

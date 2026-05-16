@@ -108,7 +108,7 @@ public partial class Level : Node3D
             {
                 _chunkMeshes.Remove(key);
                 RemoveChild(oldMesh);
-                oldMesh?.QueueFree();
+                oldMesh?.Free();
             }
 
             if (newMesh != null)
@@ -123,7 +123,7 @@ public partial class Level : Node3D
     public ChunkData? GetChunk(int chunkX, int chunkZ)
     {
         var key = new ChunkCoordIntPair(chunkX, chunkZ);
-        ChunkData chunk;
+        ChunkData? chunk;
         lock (_lockObj)
         {
             _chunks.TryGetValue(key, out var c);

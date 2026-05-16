@@ -9,7 +9,6 @@ public partial class Entity : Node3D
     public AABB BoundingBox;
     public int EntityId = new Random().Next();
     public Guid EntityUuid = Guid.NewGuid();
-    public float EyeHeight;
     protected Level Level;
     public bool OnGround;
     public bool Removed;
@@ -31,6 +30,7 @@ public partial class Entity : Node3D
     public double ZDelta;
     protected float Width = 0.6F;
     public float Height = 1.8F;
+    public float EyeHeight;
 
     public Entity(Level level)
     {
