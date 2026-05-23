@@ -6,7 +6,6 @@ namespace TestClient.Source.Render;
 public sealed class Tessellator
 {
     private const int MaxVertices = 786432 / 3;
-    private static readonly Texture2D Terrain;
     private VertexAttributes _attrs;
 
     private Color _color = Colors.White;
@@ -15,11 +14,6 @@ public sealed class Tessellator
 
     private SurfaceTool _sfTool;
     private Vector2 _uv = Vector2.Zero;
-
-    static Tessellator()
-    {
-        Terrain = GD.Load<Texture2D>("res://terrain.png");
-    }
 
     public Tessellator()
     {
@@ -154,7 +148,7 @@ public sealed class Tessellator
         {
             Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
-            AlbedoTexture = Terrain,
+            AlbedoTexture = TextureAtlas.AtlasTexture,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Back,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
@@ -169,7 +163,7 @@ public sealed class Tessellator
         {
             Transparency = BaseMaterial3D.TransparencyEnum.AlphaDepthPrePass,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
-            AlbedoTexture = Terrain,
+            AlbedoTexture = TextureAtlas.AtlasTexture,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,

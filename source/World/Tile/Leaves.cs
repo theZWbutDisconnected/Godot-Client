@@ -1,8 +1,10 @@
 ﻿namespace TestClient.Source.World.Tile;
 
+using TestClient.Source.Render;
+
 public class Leaves : Block
 {
-    public Leaves(int id) : base(id, 22)
+    public Leaves(int id) : base(id, TextureAtlas.Index("leaves_oak"))
     {
     }
 

@@ -17,10 +17,10 @@ public class LiquidTile : Block
     {
         TexId = type switch
         {
-            LiquidType.Water => 14,
-            LiquidType.Lava => 30,
-            LiquidType.FlowingWater => 14,
-            LiquidType.FlowingLava => 30,
+            LiquidType.Water => TextureAtlas.Index("water_still"),
+            LiquidType.Lava => TextureAtlas.Index("lava_still"),
+            LiquidType.FlowingWater => TextureAtlas.Index("water_still"),
+            LiquidType.FlowingLava => TextureAtlas.Index("lava_still"),
             _ => 255
         };
     }
@@ -46,10 +46,8 @@ public class LiquidTile : Block
             return;
 
         int tex = GetTexture(0);
-        float u0 = tex % 16 / 16.0F;
-        float u1 = u0 + 0.0624375F;
-        float v0_tex = tex / 16 / 16.0F;
-        float v1_full = v0_tex + 0.0624375F;
+        TextureAtlas.GetUV(tex, out float u0, out float v0_tex, out float u1, out float v1_full);
+        float uvTileHeight = v1_full - v0_tex;
 
         float x0 = x, x1 = x + 1.0F;
         float y0 = y, z0 = z, z1 = z + 1.0F;
@@ -96,8 +94,8 @@ public class LiquidTile : Block
         {
             float yn0 = y0 + hCenter;  // (x,   z)
             float yn1 = y0 + hEast;    // (x+1, z)
-            float vt0 = v0_tex + 0.0624375F * hCenter;
-            float vt1 = v0_tex + 0.0624375F * hEast;
+            float vt0 = v0_tex + uvTileHeight * hCenter;
+            float vt1 = v0_tex + uvTileHeight * hEast;
 
             float cf = c2;
             if (!level.IsLit(x, y, z - 1))
@@ -116,8 +114,8 @@ public class LiquidTile : Block
         {
             float ys1 = y0 + hSouthEast; // (x+1, z+1)
             float ys0 = y0 + hSouth;     // (x,   z+1)
-            float vt1 = v0_tex + 0.0624375F * hSouthEast;
-            float vt0 = v0_tex + 0.0624375F * hSouth;
+            float vt1 = v0_tex + uvTileHeight * hSouthEast;
+            float vt0 = v0_tex + uvTileHeight * hSouth;
 
             float cf = c2;
             if (!level.IsLit(x, y, z + 1))
@@ -136,8 +134,8 @@ public class LiquidTile : Block
         {
             float yw1 = y0 + hSouth;  // (x, z+1)
             float yw0 = y0 + hCenter; // (x, z)
-            float vt1 = v0_tex + 0.0624375F * hSouth;
-            float vt0 = v0_tex + 0.0624375F * hCenter;
+            float vt1 = v0_tex + uvTileHeight * hSouth;
+            float vt0 = v0_tex + uvTileHeight * hCenter;
 
             float cf = c3;
             if (!level.IsLit(x - 1, y, z))
@@ -156,8 +154,8 @@ public class LiquidTile : Block
         {
             float ye0 = y0 + hEast;      // (x+1, z)
             float ye1 = y0 + hSouthEast; // (x+1, z+1)
-            float vt0 = v0_tex + 0.0624375F * hEast;
-            float vt1 = v0_tex + 0.0624375F * hSouthEast;
+            float vt0 = v0_tex + uvTileHeight * hEast;
+            float vt1 = v0_tex + uvTileHeight * hSouthEast;
 
             float cf = c3;
             if (!level.IsLit(x + 1, y, z))

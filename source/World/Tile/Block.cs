@@ -99,7 +99,7 @@ public class Block
 
     public virtual AABB GetCube()
     {
-        return null;
+        return new AABB(0, 0, 0, 1, 1, 1);
     }
 
     public virtual AABB GetCollision()
@@ -120,10 +120,7 @@ public class Block
     public virtual void RenderFace(Tessellator t, int x, int y, int z, int face)
     {
         var tex = GetTexture(face);
-        var u0 = tex % 16 / 16.0F;
-        var u1 = u0 + 0.0624375F;
-        var v0 = tex / 16 / 16.0F;
-        var v1 = v0 + 0.0624375F;
+        TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var x0 = x + 0.0F;
         var x1 = x + 1.0F;
         var y0 = y + 0.0F;

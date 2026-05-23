@@ -4,24 +4,23 @@ using TestClient.Source.Render;
 
 namespace TestClient.Source.World.Tile;
 
-public class Bush : Block
+public class DoubleBush : Block
 {
-    public Bush(int id, int texId) : base(id, 15)
+    public DoubleBush(int id, int texId) : base(id, 15)
     {
         TexId = texId;
     }
 
     public override void Tick(Level level, int x, int y, int z, Random random)
     {
-        var below = level.GetBlockId(new BlockPos(x, y - 1, z));
-        if (!level.IsLit(x, y, z) || (below != Blocks.Dirt.Id && below != Blocks.Grass.Id))
-            level.SetBlock(new BlockPos(x, y, z), 0);
     }
 
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
+        Level = level;
         int x = pos.X, y = pos.Y, z = pos.Z;
-        var tex = GetTexture(TexId);
+        var id = Level.GetBlockId(pos.Offset(Direction.DOWN));
+        var tex = id != Id ? TextureAtlas.Index("double_plant_grass_bottom") : TextureAtlas.Index("double_plant_grass_top");
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
         t.Color(1.0F, 1.0F, 1.0F);
@@ -59,6 +58,12 @@ public class Bush : Block
     public override AABB GetCollision()
     {
         return null;
+    }
+
+    public override AABB GetCube()
+    {
+        float f = 0.4F;
+        return new AABB(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.8F, 0.5F + f);
     }
 
     public override bool IsOpaque()
