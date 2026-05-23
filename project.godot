@@ -13,12 +13,15 @@ config_version=5
 config/name="TestClient"
 run/main_scene="uid://dvpner7vigw5e"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+boot_splash/bg_color=Color(0.5019608, 0.8, 1, 1)
 config/icon="res://icon.svg"
 
 [display]
 
 window/size/viewport_width=864
 window/size/viewport_height=480
+window/stretch/mode="viewport"
+window/stretch/aspect="keep_height"
 
 [dotnet]
 
@@ -30,4 +33,6 @@ project/assembly_name="TestClient"
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0.5019608, 0.8, 1, 1)
