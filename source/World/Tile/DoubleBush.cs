@@ -1,4 +1,5 @@
 ﻿using System;
+using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
 
@@ -6,6 +7,7 @@ namespace TestClient.Source.World.Tile;
 
 public class DoubleBush : Block
 {
+    private BlockPos _pos;
     public DoubleBush(int id, int texId) : base(id, 15)
     {
         TexId = texId;
@@ -18,9 +20,9 @@ public class DoubleBush : Block
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
         Level = level;
+        _pos = pos;
         int x = pos.X, y = pos.Y, z = pos.Z;
-        var id = Level.GetBlockId(pos.Offset(Direction.DOWN));
-        var tex = id != Id ? TextureAtlas.Index("double_plant_grass_bottom") : TextureAtlas.Index("double_plant_grass_top");
+        var tex = GetTexture(level.GetMetadata(pos));
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
         t.Color(1.0F, 1.0F, 1.0F);
@@ -53,6 +55,22 @@ public class DoubleBush : Block
     protected override bool ShouldRenderFace(Level level, BlockPos pos)
     {
         return true;
+    }
+    
+    protected override int GetTexture(int meta)
+    {
+        var id = _pos.Offset(Direction.DOWN);
+        GD.Print(meta);
+        return meta switch
+        {
+            2 => TextureAtlas.Index("double_plant_grass_bottom"),
+            10 => Level.GetMetadata(id) switch
+            {
+                2 => TextureAtlas.Index("double_plant_grass_top"),
+                _ => 0
+            },
+            _ => 0
+        };
     }
 
     public override AABB GetCollision()
