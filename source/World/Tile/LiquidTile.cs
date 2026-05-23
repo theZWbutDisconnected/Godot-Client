@@ -3,14 +3,14 @@ using TestClient.Source.Render;
 
 namespace TestClient.Source.World.Tile;
 
+public enum LiquidType
+{
+    Water,
+    Lava
+}
+
 public class LiquidTile : Block
 {
-    public enum LiquidType
-    {
-        Water,
-        Lava
-    }
-    
     public LiquidTile(int id, LiquidType type) : base(id, 255)
     {
         TexId = type switch
