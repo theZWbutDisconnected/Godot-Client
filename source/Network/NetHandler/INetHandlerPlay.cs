@@ -15,5 +15,6 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleMultiBlockChange(S22MultiBlockChange @in);
     void HandleBlockChange(S23BlockChange @in);
     void HandleConfirmTransaction(S32ConfirmTransaction @in);
+    void HandlePlayerAbilities(S39PlayerAbilities @in);
     void HandleDisconnect(S40Disconnect @in);
 }

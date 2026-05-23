@@ -73,9 +73,6 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.PosX, entityplayer.BoundingBox.Y0,
             entityplayer.PosZ,
             entityplayer.RotY, entityplayer.RotX, false));
-        entityplayer.PrevX = entityplayer.PosX;
-        entityplayer.PrevY = entityplayer.PosY;
-        entityplayer.PrevZ = entityplayer.PosZ;
         GD.Print("Server position set: x - ", entityplayer.PosX, " y - ", entityplayer.PosY, " z - ", entityplayer.PosZ,
             " yaw - ",
             entityplayer.RotY, " pitch - ", entityplayer.RotX);
@@ -162,6 +159,17 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 
         level.SetBlock(pos, blockId, metadata);
         GD.Print("S23 Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
+    }
+
+    public void HandlePlayerAbilities(S39PlayerAbilities packetIn)
+    {
+        var player = Game.Singleton.Player;
+        player.Capabilities.IsFlying = packetIn.Flying;
+        player.Capabilities.IsCreativeMode = packetIn.CreativeMode;
+        player.Capabilities.DisableDamage = packetIn.Invulnerable;
+        player.Capabilities.AllowFlying = packetIn.AllowFlying;
+        player.Capabilities.FlySpeed = packetIn.FlySpeed;
+        player.Capabilities.WalkSpeed = packetIn.WalkSpeed;
     }
 
     public void HandleDisconnect(S40Disconnect packetIn)

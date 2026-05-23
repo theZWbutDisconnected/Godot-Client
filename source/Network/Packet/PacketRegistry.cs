@@ -25,6 +25,7 @@ public static class PacketRegistry
         RegisterOutbound(ConnectionState.Play, nameof(C05PlayerLook), 0x05);
         RegisterOutbound(ConnectionState.Play, nameof(C06PlayerPosLook), 0x06);
         RegisterOutbound(ConnectionState.Play, nameof(C0FConfirmTransaction), 0x0F);
+        RegisterOutbound(ConnectionState.Play, nameof(C13PlayerAbilities), 0x13);
         RegisterOutbound(ConnectionState.Play, nameof(C15ClientSettings), 0x15);
         RegisterOutbound(ConnectionState.Play, nameof(C17CustomPayload), 0x17);
 
@@ -45,6 +46,7 @@ public static class PacketRegistry
         RegisterInbound(ConnectionState.Play, 0x24, () => new S24BlockAction());
         RegisterInbound(ConnectionState.Play, 0x26, () => new S26MapChunkBulk());
         RegisterInbound(ConnectionState.Play, 0x32, () => new S32ConfirmTransaction());
+        RegisterInbound(ConnectionState.Play, 0x39, () => new S39PlayerAbilities());
         RegisterInbound(ConnectionState.Play, 0x40, () => new S40Disconnect());
     }
 

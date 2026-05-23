@@ -15,6 +15,7 @@ public partial class Player : Entity
     public double LastY;
     public float LastYaw;
     public double LastZ;
+    public Capabilities Capabilities = new();
 
     public Player(Level level, NetworkSystem netHandler) : base(level)
     {
@@ -88,5 +89,10 @@ public partial class Player : Entity
                 }
             }
         }
+    }
+
+    public void SendAbilities()
+    {
+        SendQueue.SendPacket(new C13PlayerAbilities(Capabilities));
     }
 }
