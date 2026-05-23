@@ -92,9 +92,7 @@ public class NetworkSystem
 
 	public void StreamProcess()
 	{
-		if (_isDead || !_manager.IsConnected()) return;
-
-		while (_manager.Stream.DataAvailable)
+		while (!_isDead && _manager.IsConnected() && _manager.Stream.DataAvailable)
 		{
 			try
 			{
