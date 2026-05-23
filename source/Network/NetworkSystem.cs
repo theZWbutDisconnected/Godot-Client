@@ -94,54 +94,67 @@ public class NetworkSystem
     {
         if (_isDead || !_manager.IsConnected()) return;
 
-        try
+        while (_manager.Stream.DataAvailable)
         {
-            var length = _buffer.ReadVarInt();
-            if (length <= 0) return;
-
-            var packetData = _buffer.ReadBytes(length);
-            byte[] payload;
-
-            if (_compressionThreshold >= 0)
+            try
             {
-                var tempBuf = new PacketBuffer(new MemoryStream(packetData));
-                var dataLength = tempBuf.ReadVarInt();
+                var length = _buffer.ReadVarInt();
+                if (length <= 0) return;
 
-                if (dataLength == 0)
+                var packetData = _buffer.ReadBytes(length);
+                byte[] payload;
+
+                if (_compressionThreshold >= 0)
                 {
-                    payload = tempBuf.ReadBytes(packetData.Length - PacketBuffer.GetVarIntSize(0));
+                    var tempBuf = new PacketBuffer(new MemoryStream(packetData));
+                    var dataLength = tempBuf.ReadVarInt();
+
+                    if (dataLength == 0)
+                    {
+                        payload = tempBuf.ReadBytes(packetData.Length - PacketBuffer.GetVarIntSize(0));
+                    }
+                    else
+                    {
+                        var headerSize = PacketBuffer.GetVarIntSize(dataLength);
+                        var compressedLen = packetData.Length - headerSize;
+                        var compressed = tempBuf.ReadBytes(compressedLen);
+
+                        payload = new byte[dataLength];
+                        using var deflate = new DeflateStream(
+                            new MemoryStream(compressed, 2, compressed.Length - 2),
+                            CompressionMode.Decompress);
+                        deflate.ReadExactly(payload, 0, dataLength);
+                    }
                 }
                 else
                 {
-                    var headerSize = PacketBuffer.GetVarIntSize(dataLength);
-                    var compressedLen = packetData.Length - headerSize;
-                    var compressed = tempBuf.ReadBytes(compressedLen);
+                    payload = packetData;
+                }
 
-                    payload = new byte[dataLength];
-                    using var deflate = new DeflateStream(
-                        new MemoryStream(compressed, 2, compressed.Length - 2),
-                        CompressionMode.Decompress);
-                    deflate.ReadExactly(payload, 0, dataLength);
+                var reader = new PacketBuffer(new MemoryStream(payload));
+                var packetId = reader.ReadVarInt();
+                var packet = PacketRegistry.CreateInboundPacket(packetId, State);
+                if (packet != null)
+                {
+                    packet.Read(reader);
+                    DispatchPacket(packet);
+                }
+                else
+                {
+                    // GD.Print($"[StreamProcess] Unknown S2C packetId: 0x{packetId:X2} (state={State}), skipping");
                 }
             }
-            else
+            catch (EndOfStreamException)
             {
-                payload = packetData;
+                return;
             }
-
-            var reader = new PacketBuffer(new MemoryStream(payload));
-            var packetId = reader.ReadVarInt();
-            var packet = PacketRegistry.CreateInboundPacket(packetId, State);
-            if (packet != null)
+            catch (Exception ex)
             {
-                packet.Read(reader);
-                DispatchPacket(packet);
+                GD.PrintErr($"[StreamProcess] Fatal error: {ex.Message}");
+                _isDead = true;
+                _manager.PacketListener?.Disconnected(ex.Message);
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            _isDead = true;
-            _manager.PacketListener?.Disconnected(ex.Message);
         }
     }
 
