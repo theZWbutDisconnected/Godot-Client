@@ -12,113 +12,113 @@ namespace TestClient.Source;
 
 public partial class Game : Node
 {
-    private const string ip = "127.0.0.1";
-    private const int port = 25565;
-    private const string username = "LocalPlayer";
+	private const string ip = "127.0.0.1";
+	private const int port = 25565;
+	private const string username = "LocalPlayer";
 
-    private readonly NetworkSystem _network = new();
-    private readonly Timer _timer = new(20);
+	private readonly NetworkSystem _network = new();
+	private readonly Timer _timer = new(20);
 
-    private string _fpsString = "0 fps";
-    private int _frames;
+	private string _fpsString = "0 fps";
+	private int _frames;
 
-    private bool _isRunning;
-    private long _lastTime = (long)Time.GetTicksMsec();
+	private bool _isRunning;
+	private long _lastTime = (long)Time.GetTicksMsec();
 
-    [Export] public Camera3D Camera;
-    public Level Level;
-    public Player Player;
+	[Export] public Camera3D Camera;
+	public Level Level;
+	public Player Player;
 
-    public Game()
-    {
-        Singleton = this;
-    }
+	public Game()
+	{
+		Singleton = this;
+	}
 
-    public static Game Singleton { get; private set; }
+	public static Game Singleton { get; private set; }
 
-    public override async void _Ready()
-    {
-        await NetworkInitialize();
-        _isRunning = true;
-        Level = new Level();
-        Player = new Player(Level, _network);
-        Level.AddEntity(Player);
+	public override async void _Ready()
+	{
+		await NetworkInitialize();
+		_isRunning = true;
+		Level = new Level();
+		Player = new Player(Level, _network);
+		Level.AddEntity(Player);
 
-        AddChild(Level);
-        AddChild(Player);
+		AddChild(Level);
+		AddChild(Player);
 
-        Input.SetMouseMode(Input.MouseModeEnum.Captured);
-    }
+		Input.SetMouseMode(Input.MouseModeEnum.Captured);
+	}
 
-    private async Task NetworkInitialize()
-    {
-        _network.SetUsername(username);
-        await _network.Connect(ip, port);
-        _network.SetState(ConnectionState.HandShaking).SetHandler(new NetHandlerHandshakeTcp());
-        await _network.SendPacket(new C00Handshake(47, ip, port, ConnectionState.Login));
-        _network.SetState(ConnectionState.Login).SetHandler(new NetHandlerLoginClient(_network));
-        await _network.SendPacket(new C00LoginStart(username));
-    }
+	private async Task NetworkInitialize()
+	{
+		_network.SetUsername(username);
+		await _network.Connect(ip, port);
+		_network.SetState(ConnectionState.HandShaking).SetHandler(new NetHandlerHandshakeTcp());
+		await _network.SendPacket(new C00Handshake(47, ip, port, ConnectionState.Login));
+		_network.SetState(ConnectionState.Login).SetHandler(new NetHandlerLoginClient(_network));
+		await _network.SendPacket(new C00LoginStart(username));
+	}
 
-    public override void _Process(double delta)
-    {
-        if (!_isRunning) return;
-        _timer.UpdateTimer();
-        for (var i = 0; i < _timer.ElapsedTicks; ++i) Tick();
-        Render(_timer.RenderPartialTicks);
-        ++_frames;
+	public override void _Process(double delta)
+	{
+		if (!_isRunning) return;
+		_timer.UpdateTimer();
+		for (var i = 0; i < _timer.ElapsedTicks; ++i) Tick();
+		Render(_timer.RenderPartialTicks);
+		++_frames;
 
-        while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
-        {
-            _fpsString = _frames + " fps";
-            _lastTime += 1000L;
-            _frames = 0;
-        }
-    }
+		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
+		{
+			_fpsString = _frames + " fps";
+			_lastTime += 1000L;
+			_frames = 0;
+		}
+	}
 
-    private void Tick()
-    {
-        if (_network.IsConnected()) _network.StreamProcess();
-        Player.Tick();
-        if (Input.IsMouseButtonPressed(MouseButton.Left))
-            Level.SetBlock(new BlockPos(Player.PosX, Player.PosY - 1, Player.PosZ), 7);
-    }
+	private void Tick()
+	{
+		if (_network.IsConnected()) _network.StreamProcess();
+		Player.Tick();
+		if (Input.IsMouseButtonPressed(MouseButton.Left))
+			Level.SetBlock(new BlockPos(Player.PosX, Player.PosY - 1, Player.PosZ), 7);
+	}
 
-    private void Render(float alpha)
-    {
-        SetupCamera(alpha);
-    }
+	private void Render(float alpha)
+	{
+		SetupCamera(alpha);
+	}
 
-    private void SetupCamera(float a)
-    {
-        Camera.Fov = 70.0F;
-        Camera.Near = 0.05F;
-        Camera.Far = 1000.0F;
-        MoveCameraToPlayer(a);
-    }
+	private void SetupCamera(float a)
+	{
+		Camera.Fov = 70.0F;
+		Camera.Near = 0.05F;
+		Camera.Far = 1000.0F;
+		MoveCameraToPlayer(a);
+	}
 
-    private void MoveCameraToPlayer(float a)
-    {
-        var x = Player.PrevX + (Player.PosX - Player.PrevX) * a;
-        var y = Player.PrevY + (Player.PosY - Player.PrevY) * a;
-        var z = Player.PrevZ + (Player.PosZ - Player.PrevZ) * a;
-        Camera.Position = new Vector3((float)x, (float)y + Player.EyeHeight, (float)z);
-        Camera.RotationDegrees = new Vector3(-Player.RotX, 180 - Player.RotY, 0.0F);
-    }
+	private void MoveCameraToPlayer(float a)
+	{
+		var x = Player.PrevX + (Player.PosX - Player.PrevX) * a;
+		var y = Player.PrevY + (Player.PosY - Player.PrevY) * a;
+		var z = Player.PrevZ + (Player.PosZ - Player.PrevZ) * a;
+		Camera.Position = new Vector3((float)x, (float)y + Player.EyeHeight, (float)z);
+		Camera.RotationDegrees = new Vector3(-Player.RotX, 180 - Player.RotY, 0.0F);
+	}
 
-    public override void _Input(InputEvent @event)
-    {
-        base._Input(@event);
-        if (!_isRunning) return;
-        if (@event is InputEventMouseMotion motion)
-        {
-            var xo = 0.0F;
-            var yo = 0.0F;
-            xo = motion.Relative.X;
-            yo = -motion.Relative.Y;
+	public override void _Input(InputEvent @event)
+	{
+		base._Input(@event);
+		if (!_isRunning) return;
+		if (@event is InputEventMouseMotion motion)
+		{
+			var xo = 0.0F;
+			var yo = 0.0F;
+			xo = motion.Relative.X;
+			yo = -motion.Relative.Y;
 
-            var YMouseAxis = 1;
-            Player.Turn(xo, yo * YMouseAxis);
-        }
-    }
+			var YMouseAxis = 1;
+			Player.Turn(xo, yo * YMouseAxis);
+		}
+	}
 }

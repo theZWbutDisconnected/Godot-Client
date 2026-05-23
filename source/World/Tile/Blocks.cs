@@ -7,12 +7,16 @@ public class Blocks
     public static readonly Block Rock = new(1, 1);
     public static readonly Block Grass = new GrassBlock(2);
     public static readonly Block Dirt = new(3, 2);
+    public static readonly Block Bush = new Bush(6, 15);
     public static readonly Block Bedrock = new(7, 17);
     public static readonly Block FlowingWater = new LiquidTile(8, LiquidType.Water);
     public static readonly Block Water = new LiquidTile(9, LiquidType.Water);
+    public static readonly Block FlowingLava = new LiquidTile(10, LiquidType.Lava);
+    public static readonly Block Lava = new LiquidTile(11, LiquidType.Lava);
     public static readonly Block Sand = new(12, 18);
     public static readonly Block OakLog = new LogBlock(17);
     public static readonly Block OakLeaves = new Leaves(18);
+    public static readonly Block TallGrass = new Bush(31, 13);
 
     public static Block GetPreset(int id)
     {

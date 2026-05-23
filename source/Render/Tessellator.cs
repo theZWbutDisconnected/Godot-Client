@@ -111,7 +111,7 @@ public sealed class Tessellator
         return mesh;
     }
 
-    private MeshInstance3D BuildInstance(Mesh mesh, Node parent = null, BaseMaterial3D material = null)
+    private MeshInstance3D BuildInstance(Mesh mesh, BaseMaterial3D material = null)
     {
         if (mesh == null)
             return null;
@@ -121,17 +121,14 @@ public sealed class Tessellator
             Mesh = mesh,
             MaterialOverride = material ?? CreateDefaultMaterial()
         };
-
-        if (parent != null)
-            parent.AddChild(meshInstance);
-
+        
         return meshInstance;
     }
 
-    public MeshInstance3D BuildMeshInstance(Node parent = null, BaseMaterial3D material = null)
+    public MeshInstance3D BuildMeshInstance(BaseMaterial3D material = null)
     {
         var mesh = Flush();
-        return mesh != null ? BuildInstance(mesh, parent, material) : null;
+        return mesh != null ? BuildInstance(mesh, material) : null;
     }
 
     private void CheckFormatChange(VertexAttributes addFlag = VertexAttributes.None,

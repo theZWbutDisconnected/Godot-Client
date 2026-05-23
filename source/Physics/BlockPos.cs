@@ -131,9 +131,9 @@ public class BlockPos : Vec3i
 
     public static BlockPos FromLong(long serialized)
     {
-        var x = (int)((serialized >> XShift) & XMask);
-        var y = (int)((serialized >> YShift) & YMask);
-        var z = (int)(serialized & ZMask);
+        var x = (int)(serialized << 64 - XShift - NumXBits >> 64 - NumXBits);
+        var y = (int)(serialized << 64 - YShift - NumYBits >> 64 - NumYBits);
+        var z = (int)(serialized << 64 - NumZBits >> 64 - NumZBits);
         return new BlockPos(x, y, z);
     }
 

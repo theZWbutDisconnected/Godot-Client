@@ -183,10 +183,12 @@ public partial class Level : Node3D
         {
             chunk.SetBlock(pos.X, pos.Y, pos.Z, blockId, metadata);
             SetDirty(new ChunkCoordIntPair(cx, cz), 0);
-            if (cx == 0) SetDirty(new ChunkCoordIntPair(cx - 1, cz), 1);
-            if (cz == 0) SetDirty(new ChunkCoordIntPair(cx, cz - 1), 1);
-            if (cx == 15) SetDirty(new ChunkCoordIntPair(cx + 1, cz), 1);
-            if (cz == 15) SetDirty(new ChunkCoordIntPair(cx, cz + 1), 1);
+            var lx = ChunkData.WorldToLocal(pos.X, cx);
+            var lz = ChunkData.WorldToLocal(pos.Z, cz);
+            if (lx == 0) SetDirty(new ChunkCoordIntPair(cx - 1, cz), 1);
+            if (lz == 0) SetDirty(new ChunkCoordIntPair(cx, cz - 1), 1);
+            if (lx == 15) SetDirty(new ChunkCoordIntPair(cx + 1, cz), 1);
+            if (lz == 15) SetDirty(new ChunkCoordIntPair(cx, cz + 1), 1);
         }
     }
 

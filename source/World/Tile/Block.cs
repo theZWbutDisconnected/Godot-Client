@@ -1,4 +1,5 @@
-﻿using TestClient.Source.Physics;
+﻿using System;
+using TestClient.Source.Physics;
 using TestClient.Source.Render;
 
 namespace TestClient.Source.World.Tile;
@@ -7,6 +8,12 @@ public class Block
 {
     public int Id;
     public int TexId;
+
+    protected Block(int id)
+    {
+        Id = id;
+        Blocks.SetPreset(Id, this);
+    }
 
     public Block(int id, int texId)
     {
@@ -187,5 +194,8 @@ public class Block
             t.VertexUV(x1, y1, z0, u0, v0);
             t.VertexUV(x1, y0, z0, u0, v1);
         }
+    }
+
+    public virtual void Tick(Level level, int x, int y, int z, Random random) {
     }
 }
