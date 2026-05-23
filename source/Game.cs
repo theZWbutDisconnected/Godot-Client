@@ -80,8 +80,6 @@ public partial class Game : Node
 	{
 		if (_network.IsConnected()) _network.StreamProcess();
 		Player.Tick();
-		if (Input.IsMouseButtonPressed(MouseButton.Left))
-			Level.SetBlock(new BlockPos(Player.PosX, Player.PosY - 1, Player.PosZ), 7);
 	}
 
 	private void Render(float alpha)

@@ -55,6 +55,11 @@ public class Bush : Block
         }
     }
 
+    protected override bool ShouldRenderFace(Level level, BlockPos pos, int layer)
+    {
+        return true;
+    }
+
     public override AABB GetCollision()
     {
         return null;

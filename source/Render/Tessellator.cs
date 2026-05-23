@@ -5,7 +5,7 @@ namespace TestClient.Source.Render;
 
 public sealed class Tessellator
 {
-    private const int MaxVertices = 524288 / 3;
+    private const int MaxVertices = 786432 / 3;
     private static readonly Texture2D Terrain;
     private VertexAttributes _attrs;
 
@@ -152,7 +152,7 @@ public sealed class Tessellator
     {
         var material = new StandardMaterial3D
         {
-            Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor,
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
             AlbedoTexture = Terrain,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,

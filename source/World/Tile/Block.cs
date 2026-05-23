@@ -6,6 +6,7 @@ namespace TestClient.Source.World.Tile;
 
 public class Block
 {
+    protected Level Level;
     public int Id;
     public int TexId;
 
@@ -24,6 +25,7 @@ public class Block
 
     public virtual void Render(Tessellator t, Level level, int layer, BlockPos pos)
     {
+        Level = level;
         float c1;
         float c2;
         float c3;
@@ -90,7 +92,7 @@ public class Block
         }
     }
 
-    private bool ShouldRenderFace(Level level, BlockPos pos, int layer)
+    protected virtual bool ShouldRenderFace(Level level, BlockPos pos, int layer)
     {
         return !level.HasBlock(pos) || !Blocks.GetPreset(level.GetBlockId(pos)).IsOpaque();
     }
@@ -115,7 +117,7 @@ public class Block
         return TexId;
     }
 
-    public void RenderFace(Tessellator t, int x, int y, int z, int face)
+    public virtual void RenderFace(Tessellator t, int x, int y, int z, int face)
     {
         var tex = GetTexture(face);
         var u0 = tex % 16 / 16.0F;
