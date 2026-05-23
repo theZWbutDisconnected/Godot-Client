@@ -11,8 +11,8 @@ public class S01EncryptionRequest : IPacket
     public void Read(PacketBuffer buf)
     {
         ServerId = buf.ReadString(20);
-        PublicKey = buf.ReadBytes(buf.ReadVarInt());
-        VerifyToken = buf.ReadBytes(buf.ReadVarInt());
+        PublicKey = buf.ReadByteArray();
+        VerifyToken = buf.ReadByteArray();
     }
 
     public void Write(PacketBuffer buf)

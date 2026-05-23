@@ -13,7 +13,7 @@ namespace TestClient.Source;
 public partial class Game : Node
 {
     private const string ip = "127.0.0.1";
-    private const short port = 25565;
+    private const int port = 25565;
     private const string username = "LocalPlayer";
 
     private readonly NetworkSystem _network = new();

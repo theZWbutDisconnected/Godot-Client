@@ -24,8 +24,8 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
 
     public void HandleConfirmTransaction(S32ConfirmTransaction packetIn)
     {
-        if (!packetIn.Accepted)
-            _networkSystem.SendPacket(new C0FConfirmTransaction(packetIn.WindowId, packetIn.ActionNumber, true));
+        // if (!packetIn.Accepted)
+        //     _networkSystem.SendPacket(new C0FConfirmTransaction(packetIn.WindowId, packetIn.ActionNumber, true));
     }
 
     public void HandleJoinGame(S01JoinGame packetIn)
@@ -81,28 +81,33 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
             entityplayer.RotY, " pitch - ", entityplayer.RotX);
     }
 
+    public void HandleEntityVelocity(S12EntityVelocity packetIn)
+    {
+        var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        if (entity == null) return;
+        entity.SetVelocity(packetIn.MotionX / 8000.0D, packetIn.MotionY / 8000.0D, packetIn.MotionZ / 8000.0D);
+    }
+
     public void HandleEntityTeleport(S18EntityTeleport packetIn)
     {
         var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
-        if (entity != null)
-        {
-            entity.ServerX = packetIn.PosX;
-            entity.ServerY = packetIn.PosY;
-            entity.ServerZ = packetIn.PosZ;
-            var d0 = entity.ServerX / 32.0F;
-            var d1 = entity.ServerY / 32.0F;
-            var d2 = entity.ServerZ / 32.0F;
-            var f = packetIn.Yaw * 360 / 256.0F;
-            var f1 = packetIn.Pitch * 360 / 256.0F;
+        if (entity == null) return;
+        entity.ServerX = packetIn.PosX;
+        entity.ServerY = packetIn.PosY;
+        entity.ServerZ = packetIn.PosZ;
+        var d0 = entity.ServerX / 32.0F;
+        var d1 = entity.ServerY / 32.0F;
+        var d2 = entity.ServerZ / 32.0F;
+        var f = packetIn.Yaw * 360 / 256.0F;
+        var f1 = packetIn.Pitch * 360 / 256.0F;
 
-            if (Math.Abs(entity.PosX - d0) < 0.03125D && Math.Abs(entity.PosY - d1) < 0.015625D &&
-                Math.Abs(entity.PosZ - d2) < 0.03125D)
-                entity.SetPosAndRot2(entity.PosX, entity.PosY, entity.PosZ, f, f1, 3, true);
-            else
-                entity.SetPosAndRot2(d0, d1, d2, f, f1, 3, true);
+        if (Math.Abs(entity.PosX - d0) < 0.03125D && Math.Abs(entity.PosY - d1) < 0.015625D &&
+            Math.Abs(entity.PosZ - d2) < 0.03125D)
+            entity.SetPosAndRot2(entity.PosX, entity.PosY, entity.PosZ, f, f1, 3, true);
+        else
+            entity.SetPosAndRot2(d0, d1, d2, f, f1, 3, true);
 
-            entity.OnGround = packetIn.OnGround;
-        }
+        entity.OnGround = packetIn.OnGround;
     }
 
     public void HandleEntityHeadLook(S19EntityHeadLook packetIn)

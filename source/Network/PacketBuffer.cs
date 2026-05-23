@@ -42,6 +42,13 @@ public class PacketBuffer(Stream stream)
         stream.Write(array, 0, array.Length);
     }
 
+    public byte[] ReadByteArray()
+    {
+        var bytes = new byte[ReadVarInt()];
+        stream.ReadExactly(bytes);
+        return bytes;
+    }
+
     public byte[] ReadBytes(int length)
     {
         var array = new byte[length];

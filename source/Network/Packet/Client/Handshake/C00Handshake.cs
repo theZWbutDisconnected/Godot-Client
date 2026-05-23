@@ -1,6 +1,6 @@
 ﻿namespace TestClient.Source.Network.Packet.Client.Handshake;
 
-public class C00Handshake(int version, string ip, short port, ConnectionState requestedState) : IPacket
+public class C00Handshake(int version, string ip, int port, ConnectionState requestedState) : IPacket
 {
     public int ProtocolVersion { get; } = version;
     public string Ip { get; } = ip;

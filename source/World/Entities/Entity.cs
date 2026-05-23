@@ -166,6 +166,13 @@ public partial class Entity : Node3D
         }
     }
 
+    public void SetVelocity(double x, double y, double z)
+    {
+        XDelta = x;
+        YDelta = y;
+        ZDelta = z;
+    }
+
     public virtual void SetHeadYaw(float f)
     {
     }

@@ -261,7 +261,7 @@ public partial class Level : Node3D
 
     public Entity GetEntityById(int entityId)
     {
-        return _entities.FirstOrDefault(e => e.EntityId == entityId);
+        return _entities.First(e => e.EntityId == entityId);
     }
 
     public bool IsBlockLoaded(BlockPos pos)
