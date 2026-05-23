@@ -12,7 +12,7 @@ namespace TestClient.Source.World;
 
 public partial class Level : Node3D
 {
-    private readonly Dictionary<ChunkCoordIntPair, MeshInstance3D> _chunkMeshes = new();
+    private readonly Dictionary<ChunkCoordIntPair, (MeshInstance3D solid, MeshInstance3D liquid)> _chunkMeshes = new();
     private readonly Dictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
     private readonly List<(ChunkCoordIntPair coord, int priority)> _dirtyChunks = new();
     private readonly HashSet<Entity> _entities = new();
@@ -72,13 +72,12 @@ public partial class Level : Node3D
     private void BuildChunkMeshAsync(ChunkData chunk)
     {
         var key = new ChunkCoordIntPair(chunk.ChunkX, chunk.ChunkZ);
-
         var tessellator = new Tessellator();
-        tessellator.Initialize();
 
         var startX = chunk.ChunkX * ChunkData.Width;
         var startZ = chunk.ChunkZ * ChunkData.Depth;
 
+        tessellator.Initialize();
         for (var y = 0; y < ChunkData.Height; y++)
         for (var x = 0; x < ChunkData.Width; x++)
         for (var z = 0; z < ChunkData.Depth; z++)
@@ -91,31 +90,59 @@ public partial class Level : Node3D
             if (chunk.HasBlock(worldX, worldY, worldZ))
             {
                 var block = Blocks.GetPreset(GetBlockId(pos));
-                block.Render(tessellator, this, 0, pos);
+                if (block is not LiquidTile) block.Render(tessellator, this, 0, pos);
             }
         }
 
-        var meshInstance = tessellator.BuildMeshInstance();
-        CallDeferred(nameof(ApplyChunkMesh), chunk.ChunkX, chunk.ChunkZ, meshInstance);
+        var solidMesh = tessellator.BuildMeshInstance(Tessellator.CreateSolidMaterial());
+
+        tessellator.Initialize();
+        for (var y = 0; y < ChunkData.Height; y++)
+        for (var x = 0; x < ChunkData.Width; x++)
+        for (var z = 0; z < ChunkData.Depth; z++)
+        {
+            var worldX = startX + x;
+            var worldY = y;
+            var worldZ = startZ + z;
+
+            var pos = new BlockPos(worldX, worldY, worldZ);
+            if (chunk.HasBlock(worldX, worldY, worldZ))
+            {
+                var block = Blocks.GetPreset(GetBlockId(pos));
+                if (block is LiquidTile) block.Render(tessellator, this, 0, pos);
+            }
+        }
+
+        var liquidMesh = tessellator.BuildMeshInstance(Tessellator.CreateLiquidMaterial());
+        CallDeferred(nameof(ApplyChunkMesh), chunk.ChunkX, chunk.ChunkZ, solidMesh, liquidMesh);
     }
 
-    private void ApplyChunkMesh(int chunkX, int chunkZ, MeshInstance3D newMesh)
+    private void ApplyChunkMesh(int chunkX, int chunkZ, MeshInstance3D solidMesh, MeshInstance3D liquidMesh)
     {
         var key = new ChunkCoordIntPair(chunkX, chunkZ);
         lock (_lockObj)
         {
-            if (_chunkMeshes.TryGetValue(key, out var oldMesh))
+            if (_chunkMeshes.TryGetValue(key, out var oldMeshes))
             {
                 _chunkMeshes.Remove(key);
-                RemoveChild(oldMesh);
-                oldMesh?.Free();
+                if (oldMeshes.solid != null)
+                {
+                    RemoveChild(oldMeshes.solid);
+                    oldMeshes.solid.Free();
+                }
+                if (oldMeshes.liquid != null)
+                {
+                    RemoveChild(oldMeshes.liquid);
+                    oldMeshes.liquid.Free();
+                }
             }
 
-            if (newMesh != null)
-            {
-                AddChild(newMesh);
-                _chunkMeshes[key] = newMesh;
-            }
+            if (solidMesh != null)
+                AddChild(solidMesh);
+            if (liquidMesh != null)
+                AddChild(liquidMesh);
+            if (solidMesh != null || liquidMesh != null)
+                _chunkMeshes[key] = (solidMesh, liquidMesh);
         }
     }
 

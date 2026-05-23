@@ -148,11 +148,11 @@ public sealed class Tessellator
             _sfTool.SetColor(_color);
     }
 
-    private static StandardMaterial3D CreateDefaultMaterial()
+    public static StandardMaterial3D CreateSolidMaterial()
     {
         var material = new StandardMaterial3D
         {
-            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
             AlbedoTexture = Terrain,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
@@ -161,6 +161,26 @@ public sealed class Tessellator
             VertexColorUseAsAlbedo = true
         };
         return material;
+    }
+
+    public static StandardMaterial3D CreateLiquidMaterial()
+    {
+        var material = new StandardMaterial3D
+        {
+            Transparency = BaseMaterial3D.TransparencyEnum.AlphaDepthPrePass,
+            DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
+            AlbedoTexture = Terrain,
+            TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
+            CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            VertexColorUseAsAlbedo = true
+        };
+        return material;
+    }
+
+    private static StandardMaterial3D CreateDefaultMaterial()
+    {
+        return CreateSolidMaterial();
     }
 
     [Flags]

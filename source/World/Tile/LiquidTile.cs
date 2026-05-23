@@ -99,7 +99,7 @@ public class LiquidTile : Block
 
     protected virtual bool ShouldRenderFace(Level level, BlockPos pos, int layer)
     {
-        return !level.HasBlock(pos) || !(Blocks.GetPreset(level.GetBlockId(pos)) is LiquidTile);
+        return !level.HasBlock(pos) && !(Blocks.GetPreset(level.GetBlockId(pos)) is LiquidTile);
     }
     
     public override void RenderFace(Tessellator t, int x, int y, int z, int face)
