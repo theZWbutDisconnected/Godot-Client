@@ -23,7 +23,7 @@ public class Block
         Blocks.SetPreset(Id, this);
     }
 
-    public virtual void Render(Tessellator t, Level level, int layer, BlockPos pos)
+    public virtual void Render(Tessellator t, Level level, BlockPos pos)
     {
         Level = level;
         float c1;
@@ -31,60 +31,60 @@ public class Block
         float c3;
         int x = pos.X, y = pos.Y, z = pos.Z;
 
-        if (ShouldRenderFace(level, new BlockPos(x, y - 1, z), layer))
+        if (ShouldRenderFace(level, new BlockPos(x, y - 1, z)))
         {
             c1 = 1.0F;
-            if (level.IsLit(x, y - 1, z) ^ (layer == 0))
+            if (!level.IsLit(x, y - 1, z))
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, -1, 0);
             RenderFace(t, x, y, z, 0);
         }
 
-        if (ShouldRenderFace(level, new BlockPos(x, y + 1, z), layer))
+        if (ShouldRenderFace(level, new BlockPos(x, y + 1, z)))
         {
             c1 = 1.0F;
-            if (level.IsLit(x, y, z) ^ (layer == 0))
+            if (!level.IsLit(x, y, z))
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, 1, 0);
             RenderFace(t, x, y, z, 1);
         }
 
-        if (ShouldRenderFace(level, new BlockPos(x, y, z - 1), layer))
+        if (ShouldRenderFace(level, new BlockPos(x, y, z - 1)))
         {
             c2 = 0.8F;
-            if (level.IsLit(x, y, z - 1) ^ (layer == 0))
+            if (!level.IsLit(x, y, z - 1))
                 c2 *= 0.5F;
             t.Color(c2, c2, c2);
             t.Normal(0, 0, -1);
             RenderFace(t, x, y, z, 2);
         }
 
-        if (ShouldRenderFace(level, new BlockPos(x, y, z + 1), layer))
+        if (ShouldRenderFace(level, new BlockPos(x, y, z + 1)))
         {
             c2 = 0.8F;
-            if (level.IsLit(x, y, z + 1) ^ (layer == 0))
+            if (!level.IsLit(x, y, z + 1))
                 c2 *= 0.5F;
             t.Color(c2, c2, c2);
             t.Normal(0, 0, 1);
             RenderFace(t, x, y, z, 3);
         }
 
-        if (ShouldRenderFace(level, new BlockPos(x - 1, y, z), layer))
+        if (ShouldRenderFace(level, new BlockPos(x - 1, y, z)))
         {
             c3 = 0.6F;
-            if (level.IsLit(x - 1, y, z) ^ (layer == 0))
+            if (!level.IsLit(x - 1, y, z))
                 c3 *= 0.5F;
             t.Color(c3, c3, c3);
             t.Normal(-1, 0, 0);
             RenderFace(t, x, y, z, 4);
         }
 
-        if (ShouldRenderFace(level, new BlockPos(x + 1, y, z), layer))
+        if (ShouldRenderFace(level, new BlockPos(x + 1, y, z)))
         {
             c3 = 0.6F;
-            if (level.IsLit(x + 1, y, z) ^ (layer == 0))
+            if (!level.IsLit(x + 1, y, z))
                 c3 *= 0.5F;
             t.Color(c3, c3, c3);
             t.Normal(1, 0, 0);
@@ -92,7 +92,7 @@ public class Block
         }
     }
 
-    protected virtual bool ShouldRenderFace(Level level, BlockPos pos, int layer)
+    protected virtual bool ShouldRenderFace(Level level, BlockPos pos)
     {
         return !level.HasBlock(pos) || !Blocks.GetPreset(level.GetBlockId(pos)).IsOpaque();
     }

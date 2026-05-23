@@ -25,7 +25,7 @@ public class LiquidTile : Block
         };
     }
 
-    public override void Render(Tessellator t, Level level, int layer, BlockPos pos)
+    public override void Render(Tessellator t, Level level, BlockPos pos)
     {
         Level = level;
         int x = pos.X, y = pos.Y, z = pos.Z;
@@ -35,12 +35,12 @@ public class LiquidTile : Block
         float hSouthEast = GetFluidHeight(level, pos.South().East());
         float hEast = GetFluidHeight(level, pos.East());
 
-        bool up = ShouldRenderFace(level, pos.Up(), layer);
-        bool down = ShouldRenderFace(level, pos.Down(), layer);
-        bool north = ShouldRenderFace(level, pos.North(), layer);
-        bool south = ShouldRenderFace(level, pos.South(), layer);
-        bool west = ShouldRenderFace(level, pos.West(), layer);
-        bool east = ShouldRenderFace(level, pos.East(), layer);
+        bool up = ShouldRenderFace(level, pos.Up());
+        bool down = ShouldRenderFace(level, pos.Down());
+        bool north = ShouldRenderFace(level, pos.North());
+        bool south = ShouldRenderFace(level, pos.South());
+        bool west = ShouldRenderFace(level, pos.West());
+        bool east = ShouldRenderFace(level, pos.East());
 
         if (!up && !down && !north && !south && !west && !east)
             return;
@@ -57,7 +57,7 @@ public class LiquidTile : Block
         if (down)
         {
             float c1 = 1.0F;
-            if (level.IsLit(x, y - 1, z) ^ (layer == 0))
+            if (!level.IsLit(x, y - 1, z))
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, -1, 0);
@@ -77,7 +77,7 @@ public class LiquidTile : Block
             float y_ce = y0 + hEast;     // (x+1, z)   → east
 
             float c1 = 1.0F;
-            if (level.IsLit(x, y, z) ^ (layer == 0))
+            if (!level.IsLit(x, y, z))
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, 1, 0);
@@ -100,7 +100,7 @@ public class LiquidTile : Block
             float vt1 = v0_tex + 0.0624375F * hEast;
 
             float cf = c2;
-            if (level.IsLit(x, y, z - 1) ^ (layer == 0))
+            if (!level.IsLit(x, y, z - 1))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
             t.Normal(0, 0, -1);
@@ -120,7 +120,7 @@ public class LiquidTile : Block
             float vt0 = v0_tex + 0.0624375F * hSouth;
 
             float cf = c2;
-            if (level.IsLit(x, y, z + 1) ^ (layer == 0))
+            if (!level.IsLit(x, y, z + 1))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
             t.Normal(0, 0, 1);
@@ -140,7 +140,7 @@ public class LiquidTile : Block
             float vt0 = v0_tex + 0.0624375F * hCenter;
 
             float cf = c3;
-            if (level.IsLit(x - 1, y, z) ^ (layer == 0))
+            if (!level.IsLit(x - 1, y, z))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
             t.Normal(-1, 0, 0);
@@ -160,7 +160,7 @@ public class LiquidTile : Block
             float vt1 = v0_tex + 0.0624375F * hSouthEast;
 
             float cf = c3;
-            if (level.IsLit(x + 1, y, z) ^ (layer == 0))
+            if (!level.IsLit(x + 1, y, z))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
             t.Normal(1, 0, 0);
@@ -173,7 +173,7 @@ public class LiquidTile : Block
         }
     }
 
-    protected override bool ShouldRenderFace(Level level, BlockPos pos, int layer)
+    protected override bool ShouldRenderFace(Level level, BlockPos pos)
     {
         var tile = Blocks.GetPreset(level.GetBlockId(pos));
         return (!level.HasBlock(pos) || !tile.IsOpaque()) && tile is not LiquidTile;

@@ -90,7 +90,7 @@ public partial class Level : Node3D
             if (chunk.HasBlock(worldX, worldY, worldZ))
             {
                 var block = Blocks.GetPreset(GetBlockId(pos));
-                if (block is not LiquidTile) block.Render(tessellator, this, 0, pos);
+                if (block is not LiquidTile) block.Render(tessellator, this, pos);
             }
         }
 
@@ -109,7 +109,7 @@ public partial class Level : Node3D
             if (chunk.HasBlock(worldX, worldY, worldZ))
             {
                 var block = Blocks.GetPreset(GetBlockId(pos));
-                if (block is LiquidTile) block.Render(tessellator, this, 0, pos);
+                if (block is LiquidTile) block.Render(tessellator, this, pos);
             }
         }
 
