@@ -21,15 +21,20 @@ public class Bush : Block
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
         int x = pos.X, y = pos.Y, z = pos.Z;
-        var tex = GetTexture(0, level.GetMetadata(pos));
+        var meta = level.GetMetadata(pos);
+        uint col = GetBlockColor(level, pos, meta);
+        float r = ((col >> 16) & 0xFF) / 255.0f;
+        float g = ((col >> 8) & 0xFF) / 255.0f;
+        float b = (col & 0xFF) / 255.0f;
+        var tex = GetTexture(0, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
-        t.Color(1.0F, 1.0F, 1.0F);
+        t.Color(r, g, b);
 
-        for (var r = 0; r < rots; ++r)
+        for (var d = 0; d < rots; ++d)
         {
-            var xa = (float)(Math.Sin(r * Math.PI / rots + Math.PI / 4D) * 0.5F);
-            var za = (float)(Math.Cos(r * Math.PI / rots + Math.PI / 4D) * 0.5F);
+            var xa = (float)(Math.Sin(d * Math.PI / rots + Math.PI / 4D) * 0.5F);
+            var za = (float)(Math.Cos(d * Math.PI / rots + Math.PI / 4D) * 0.5F);
             var x0 = x + 0.5F - xa;
             var x1 = x + 0.5F + xa;
             var y0 = y + 0.0F;

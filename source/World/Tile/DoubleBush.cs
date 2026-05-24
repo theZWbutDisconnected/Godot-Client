@@ -2,6 +2,7 @@
 using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
+using TestClient.Source.World.Biome;
 
 namespace TestClient.Source.World.Tile;
 
@@ -15,15 +16,25 @@ public class DoubleBush : Bush
     {
     }
 
+    protected override uint GetBlockColor(Level level, BlockPos pos, int meta)
+    {
+        var down = level.GetMetadata(pos.Down());
+        return meta == 2 || (meta == 10 && down == 2) ? (uint)BiomeColorHelper.GetGrassColorAtPos(level, pos) : 0xFFFFFFFF;
+    }
+
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
         float x = pos.X, y = pos.Y, z = pos.Z;
         var meta = level.GetMetadata(pos);
-        var metadown = level.GetMetadata(pos.Offset(Direction.DOWN));
+        var metadown = level.GetMetadata(pos.Down());
+        uint col = GetBlockColor(level, pos, meta);
+        float r = ((col >> 16) & 0xFF) / 255.0f;
+        float g = ((col >> 8) & 0xFF) / 255.0f;
+        float b = (col & 0xFF) / 255.0f;
         var tex = GetTexture(metadown, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
-        t.Color(1.0F, 1.0F, 1.0F);
+        t.Color(r, g, b);
 
         if (meta == 10 && metadown == 0)
         {
@@ -70,10 +81,10 @@ public class DoubleBush : Bush
         }
 
         if (meta == 10 && metadown == 0) y -= 0.125f;
-        for (var r = 0; r < rots; ++r)
+        for (var d = 0; d < rots; ++d)
         {
-            var xa = (float)(Math.Sin(r * Math.PI / rots + Math.PI / 4D) * 0.5F);
-            var za = (float)(Math.Cos(r * Math.PI / rots + Math.PI / 4D) * 0.5F);
+            var xa = (float)(Math.Sin(d * Math.PI / rots + Math.PI / 4D) * 0.5F);
+            var za = (float)(Math.Cos(d * Math.PI / rots + Math.PI / 4D) * 0.5F);
             var x0 = x + 0.5F - xa;
             var x1 = x + 0.5F + xa;
             var y0 = y + 0.0F;
