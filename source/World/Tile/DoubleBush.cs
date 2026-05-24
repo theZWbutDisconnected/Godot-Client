@@ -72,6 +72,7 @@ public class DoubleBush : Block
             t.VertexUV(hx0, hy0, hZ1 + z, bu1, fv1);
         }
 
+        if (meta == 10 && metadown == 0) y -= 0.125f;
         for (var r = 0; r < rots; ++r)
         {
             var xa = (float)(Math.Sin(r * Math.PI / rots + Math.PI / 4D) * 0.5F);
@@ -80,7 +81,7 @@ public class DoubleBush : Block
             var x1 = x + 0.5F + xa;
             var y0 = y + 0.0F;
             var y1 = y + 1.0F;
-            if (meta == 10) y1 -= 0.25f;
+            if (meta == 10 && metadown == 0 || meta == 0) y1 -= 0.125f;
             var z0 = z + 0.5F - za;
             var z1 = z + 0.5F + za;
             t.VertexUV(x0, y1, z0, u1, v0);
