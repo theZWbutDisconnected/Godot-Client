@@ -203,6 +203,8 @@ public sealed class Tessellator
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Back,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            Roughness = 1.0f,
+            Metallic = 0.0f,
             VertexColorUseAsAlbedo = true
         };
     }
@@ -217,6 +219,8 @@ public sealed class Tessellator
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            Roughness = 1.0f,
+            Metallic = 0.0f,
             VertexColorUseAsAlbedo = true
         };
     }
