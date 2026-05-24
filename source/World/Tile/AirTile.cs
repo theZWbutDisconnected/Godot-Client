@@ -5,21 +5,12 @@ namespace TestClient.Source.World.Tile;
 
 public class AirTile : Block
 {
-    public AirTile(int id) : base(id, 255)
+    public AirTile(int id) : base(id, TextureAtlas.Index("missing_tex"))
     {
-    }
-
-    public override void Render(Tessellator t, Level level, BlockPos pos)
-    {
-    }
-
-    public override AABB GetCollision()
-    {
-        return null;
     }
 
     public override bool IsOpaque()
     {
-        return false;
+        return true;
     }
 }

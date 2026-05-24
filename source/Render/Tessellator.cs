@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 
 namespace TestClient.Source.Render;
@@ -6,12 +7,17 @@ namespace TestClient.Source.Render;
 public sealed class Tessellator
 {
     private const int MaxVertices = 786432 / 3;
-    private VertexAttributes _attrs;
 
+    private static StandardMaterial3D _solidMaterial;
+    private static StandardMaterial3D _liquidMaterial;
+    private static Shader _solidAnimShader;
+    private static Shader _liquidAnimShader;
+    private static readonly Dictionary<AnimMatKey, ShaderMaterial> _animMaterialCache = new();
+
+    private VertexAttributes _attrs;
     private Color _color = Colors.White;
     private int _count;
     private Vector3 _normal = Vector3.Zero;
-
     private SurfaceTool _sfTool;
     private Vector2 _uv = Vector2.Zero;
 
@@ -105,24 +111,69 @@ public sealed class Tessellator
         return mesh;
     }
 
-    private MeshInstance3D BuildInstance(Mesh mesh, BaseMaterial3D material = null)
+    private MeshInstance3D BuildInstance(Mesh mesh, Material material)
     {
         if (mesh == null)
             return null;
 
-        var meshInstance = new MeshInstance3D
+        return new MeshInstance3D
         {
             Mesh = mesh,
-            MaterialOverride = material ?? CreateDefaultMaterial()
+            MaterialOverride = material ?? GetSolidMaterial()
         };
-        
-        return meshInstance;
     }
 
-    public MeshInstance3D BuildMeshInstance(BaseMaterial3D material = null)
+    public MeshInstance3D BuildMeshInstance(Material material = null)
     {
         var mesh = Flush();
         return mesh != null ? BuildInstance(mesh, material) : null;
+    }
+
+    public static StandardMaterial3D GetSolidMaterial()
+    {
+        return _solidMaterial ??= CreateSolidMaterial();
+    }
+
+    public static StandardMaterial3D GetLiquidMaterial()
+    {
+        return _liquidMaterial ??= CreateLiquidMaterial();
+    }
+
+    public static ShaderMaterial GetOrCreateAnimMaterial(int texIndex, TextureAtlas.AnimData data, bool isLiquid)
+    {
+        var key = new AnimMatKey(texIndex, data);
+        if (!_animMaterialCache.TryGetValue(key, out var mat))
+        {
+            mat = CreateAnimMaterial(texIndex, data, isLiquid);
+            _animMaterialCache[key] = mat;
+        }
+        return mat;
+    }
+
+    private static ShaderMaterial CreateAnimMaterial(int texIndex, TextureAtlas.AnimData data, bool isLiquid)
+    {
+        var shader = isLiquid ? GetLiquidAnimShader() : GetSolidAnimShader();
+
+        var mat = new ShaderMaterial { Shader = shader };
+        mat.SetShaderParameter("albedo_tex", TextureAtlas.AtlasTexture);
+        mat.SetShaderParameter("atlas_width", (float)TextureAtlas.AtlasWidth);
+        mat.SetShaderParameter("first_frame_index", texIndex);
+        mat.SetShaderParameter("frame_count", data.FrameCount);
+        mat.SetShaderParameter("frame_time", data.FrameTime);
+        mat.SetShaderParameter("pingpong", data.PingPong);
+        mat.SetShaderParameter("frame_offset", data.FrameOffset);
+
+        return mat;
+    }
+
+    private static Shader GetSolidAnimShader()
+    {
+        return _solidAnimShader ??= GD.Load<Shader>("res://assets/shaders/soild_animated.gdshader");
+    }
+
+    private static Shader GetLiquidAnimShader()
+    {
+        return _liquidAnimShader ??= GD.Load<Shader>("res://assets/shaders/liquid_animated.gdshader");
     }
 
     private void CheckFormatChange(VertexAttributes addFlag = VertexAttributes.None,
@@ -144,7 +195,7 @@ public sealed class Tessellator
 
     public static StandardMaterial3D CreateSolidMaterial()
     {
-        var material = new StandardMaterial3D
+        return new StandardMaterial3D
         {
             Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
@@ -154,12 +205,11 @@ public sealed class Tessellator
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
             VertexColorUseAsAlbedo = true
         };
-        return material;
     }
 
     public static StandardMaterial3D CreateLiquidMaterial()
     {
-        var material = new StandardMaterial3D
+        return new StandardMaterial3D
         {
             Transparency = BaseMaterial3D.TransparencyEnum.AlphaDepthPrePass,
             DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
@@ -169,12 +219,46 @@ public sealed class Tessellator
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
             VertexColorUseAsAlbedo = true
         };
-        return material;
     }
 
     private static StandardMaterial3D CreateDefaultMaterial()
     {
         return CreateSolidMaterial();
+    }
+
+    // === Animation material cache key ===
+    private struct AnimMatKey : IEquatable<AnimMatKey>
+    {
+        private readonly int TexIndex;
+        private readonly int FrameCount;
+        private readonly float FrameTime;
+        private readonly bool PingPong;
+        private readonly int FrameOffset;
+
+        public AnimMatKey(int texIndex, TextureAtlas.AnimData data)
+        {
+            TexIndex = texIndex;
+            FrameCount = data.FrameCount;
+            FrameTime = data.FrameTime;
+            PingPong = data.PingPong;
+            FrameOffset = data.FrameOffset;
+        }
+
+        public bool Equals(AnimMatKey other)
+        {
+            return TexIndex == other.TexIndex
+                && FrameCount == other.FrameCount
+                && Math.Abs(FrameTime - other.FrameTime) < 0.001f
+                && PingPong == other.PingPong
+                && FrameOffset == other.FrameOffset;
+        }
+
+        public override bool Equals(object obj) => obj is AnimMatKey other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(TexIndex, FrameCount, FrameTime.GetHashCode(), PingPong, FrameOffset);
+        }
     }
 
     [Flags]

@@ -5,8 +5,6 @@ namespace TestClient.Source.World.Tile;
 
 public enum LiquidType
 {
-    FlowingWater,
-    FlowingLava,
     Water,
     Lava
 }
@@ -19,8 +17,6 @@ public class LiquidTile : Block
         {
             LiquidType.Water => TextureAtlas.Index("water_still"),
             LiquidType.Lava => TextureAtlas.Index("lava_still"),
-            LiquidType.FlowingWater => TextureAtlas.Index("water_still"),
-            LiquidType.FlowingLava => TextureAtlas.Index("lava_still"),
             _ => 255
         };
     }

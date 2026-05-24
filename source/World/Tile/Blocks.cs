@@ -22,12 +22,13 @@ public class Blocks
     public static readonly Block TallGrass = new Bush(31, TextureAtlas.Index("tallgrass"));
     public static readonly Block Flower = new Bush(38, TextureAtlas.Index("flower_rose"));
     public static readonly Block Clay = new(82, TextureAtlas.Index("clay"));
+    public static readonly Block Reeds = new Bush(83, TextureAtlas.Index("reeds"));
     public static readonly Block DoubleGrass = new DoubleBush(175, TextureAtlas.Index("tallgrass"));
 
     public static Block GetPreset(int id)
     {
         var block = Presets[id];
-        if (block == null) block = Rock;
+        if (block == null) block = Empty;
         return block;
     }
 
