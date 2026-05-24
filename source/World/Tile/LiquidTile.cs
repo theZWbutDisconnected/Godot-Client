@@ -27,7 +27,6 @@ public class LiquidTile : Block
 
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
-        Level = level;
         int x = pos.X, y = pos.Y, z = pos.Z;
 
         float hCenter = GetFluidHeight(level, pos);
@@ -45,7 +44,7 @@ public class LiquidTile : Block
         if (!up && !down && !north && !south && !west && !east)
             return;
 
-        int tex = GetTexture(0);
+        int tex = GetTexture(level, 0);
         TextureAtlas.GetUV(tex, out float u0, out float v0_tex, out float u1, out float v1_full);
         float uvTileHeight = v1_full - v0_tex;
 

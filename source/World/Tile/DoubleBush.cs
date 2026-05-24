@@ -19,13 +19,57 @@ public class DoubleBush : Block
 
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
-        Level = level;
         _pos = pos;
-        int x = pos.X, y = pos.Y, z = pos.Z;
-        var tex = GetTexture(level.GetMetadata(pos));
+        float x = pos.X, y = pos.Y, z = pos.Z;
+        var meta = level.GetMetadata(pos);
+        var tex = GetTexture(level, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
         t.Color(1.0F, 1.0F, 1.0F);
+
+        if (tex == TextureAtlas.Index("double_plant_sunflower_top"))
+        {
+            var frontTex = TextureAtlas.Index("double_plant_sunflower_front");
+            var backTex = TextureAtlas.Index("double_plant_sunflower_back");
+            TextureAtlas.GetUV(backTex, out var fu0, out var fv0, out var fu1, out var fv1);
+            TextureAtlas.GetUV(frontTex, out var bu0, out var bv0, out var bu1, out var bv1);
+
+            float angle = 22.5f * Mathf.Pi / 180f;
+            float cosA = Mathf.Cos(angle);
+            float sinA = Mathf.Sin(angle);
+
+            float cx = 9.6f / 16f - 0.5f;
+            float hY0 = -1f / 16f - 0.5f;
+            float hY1 = 15f / 16f - 0.5f;
+            float hZ0 = 1f / 16f;
+            float hZ1 = 15f / 16f;
+
+            float rx0 = cx * cosA - hY0 * sinA;
+            float ry0 = cx * sinA + hY0 * cosA;
+            float rx1 = cx * cosA - hY1 * sinA;
+            float ry1 = cx * sinA + hY1 * cosA;
+
+            float hx0 = x + 0.5f + rx0;
+            float hy0 = y + 0.5f + ry0;
+            float hx1 = x + 0.5f + rx1;
+            float hy1 = y + 0.5f + ry1;
+
+            t.Color(1.0F, 1.0F, 1.0F);
+
+            t.VertexUV(hx1, hy1, hZ0 + z, fu0, fv0);
+            t.VertexUV(hx1, hy1, hZ1 + z, fu1, fv0);
+            t.VertexUV(hx0, hy0, hZ1 + z, fu1, fv1);
+            t.VertexUV(hx1, hy1, hZ0 + z, fu0, fv0);
+            t.VertexUV(hx0, hy0, hZ1 + z, fu1, fv1);
+            t.VertexUV(hx0, hy0, hZ0 + z, fu0, fv1);
+
+            t.VertexUV(hx1, hy1, hZ1 + z, bu1, fv0);
+            t.VertexUV(hx1, hy1, hZ0 + z, bu0, fv0);
+            t.VertexUV(hx0, hy0, hZ0 + z, bu0, fv1);
+            t.VertexUV(hx1, hy1, hZ1 + z, bu1, fv0);
+            t.VertexUV(hx0, hy0, hZ0 + z, bu0, fv1);
+            t.VertexUV(hx0, hy0, hZ1 + z, bu1, fv1);
+        }
 
         for (var r = 0; r < rots; ++r)
         {
@@ -35,6 +79,7 @@ public class DoubleBush : Block
             var x1 = x + 0.5F + xa;
             var y0 = y + 0.0F;
             var y1 = y + 1.0F;
+            if (meta == 10) y1 -= 0.25f;
             var z0 = z + 0.5F - za;
             var z1 = z + 0.5F + za;
             t.VertexUV(x0, y1, z0, u1, v0);
@@ -57,20 +102,32 @@ public class DoubleBush : Block
         return true;
     }
     
-    protected override int GetTexture(int meta)
+    protected override int GetTexture(Level level, int meta)
     {
-        var id = _pos.Offset(Direction.DOWN);
-        GD.Print(meta);
+        var id = level.GetMetadata(_pos.Offset(Direction.DOWN));
+        var name = GetPlantTexture(meta == 10 ? id : meta);
         return meta switch
         {
-            2 => TextureAtlas.Index("double_plant_grass_bottom"),
-            10 => Level.GetMetadata(id) switch
+            10 => id switch
             {
-                2 => TextureAtlas.Index("double_plant_grass_top"),
-                _ => 0
+                _ => TextureAtlas.Index(name + "_top")
             },
-            _ => 0
+            _=> TextureAtlas.Index(name + "_bottom")
         };
+    }
+
+    protected virtual string GetPlantTexture(int meta)
+    {
+        var plantName = meta switch
+        {
+            0 => "double_plant_sunflower",
+            1 => "double_plant_syringa",
+            2 => "double_plant_grass",
+            3 => "double_plant_fern",
+            4 => "double_plant_rose",
+            _ => "double_plant_paeonia"
+        };
+        return plantName;
     }
 
     public override AABB GetCollision()
