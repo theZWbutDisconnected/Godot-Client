@@ -6,7 +6,7 @@ namespace TestClient.Source.World.Biome;
 
 public class Biome
 {
-    public static readonly Biome Default = new Biome(0)
+    public static readonly Biome Default = new(0)
     {
         Temperature = 0.5f,
         Rainfall = 0.5f,
@@ -16,11 +16,11 @@ public class Biome
     };
 
     public readonly int Id;
-    public float Temperature  = 0.5f;
-    public float Rainfall  = 0.5f;
     public int Color = 0;
-    public int GrassColor = 0;
-    public int FoliageColor = 0;
+    public int FoliageColor;
+    public int GrassColor;
+    public float Rainfall = 0.5f;
+    public float Temperature = 0.5f;
     public int WaterColor = 0x3f76e4;
 
     public Biome(int id)
@@ -30,15 +30,15 @@ public class Biome
 
     public virtual int GetGrassColorAtPos(BlockPos pos)
     {
-        double temp = Math.Clamp(GetFloatTemperature(pos), 0.0, 1.0);
-        double rain = Math.Clamp(GetFloatRainfall(), 0.0, 1.0);
+        var temp = Math.Clamp(GetFloatTemperature(pos), 0.0, 1.0);
+        var rain = Math.Clamp(GetFloatRainfall(), 0.0, 1.0);
         return ColorMap.GetGrassColor(temp, rain);
     }
 
     public virtual int GetFoliageColorAtPos(BlockPos pos)
     {
-        double temp = Math.Clamp(GetFloatTemperature(pos), 0.0, 1.0);
-        double rain = Math.Clamp(GetFloatRainfall(), 0.0, 1.0);
+        var temp = Math.Clamp(GetFloatTemperature(pos), 0.0, 1.0);
+        var rain = Math.Clamp(GetFloatRainfall(), 0.0, 1.0);
         return ColorMap.GetFoliageColor(temp, rain);
     }
 

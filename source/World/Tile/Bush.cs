@@ -22,10 +22,10 @@ public class Bush : Block
     {
         int x = pos.X, y = pos.Y, z = pos.Z;
         var meta = level.GetMetadata(pos);
-        uint col = GetBlockColor(level, pos, meta);
-        float r = ((col >> 16) & 0xFF) / 255.0f;
-        float g = ((col >> 8) & 0xFF) / 255.0f;
-        float b = (col & 0xFF) / 255.0f;
+        var col = GetBlockColor(level, pos, meta);
+        var r = ((col >> 16) & 0xFF) / 255.0f;
+        var g = ((col >> 8) & 0xFF) / 255.0f;
+        var b = (col & 0xFF) / 255.0f;
         var tex = GetTexture(0, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
@@ -68,7 +68,7 @@ public class Bush : Block
 
     public override AABB GetCube()
     {
-        float f = 0.2F;
+        var f = 0.2F;
         return new AABB(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f * 3.0F, 0.5F + f);
     }
 

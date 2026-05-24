@@ -1,6 +1,4 @@
-﻿using System;
-using Godot;
-using TestClient.Source.Physics;
+﻿using TestClient.Source.Physics;
 using TestClient.Source.Render;
 
 namespace TestClient.Source.World.Tile;
@@ -10,12 +8,12 @@ public class FlowerBush : Bush
     public FlowerBush(int id) : base(id, 255)
     {
     }
-    
+
     protected override bool ShouldRenderFace(Level level, BlockPos pos)
     {
         return true;
     }
-    
+
     protected override int GetTexture(int downMeta, int meta)
     {
         return meta switch
@@ -28,7 +26,7 @@ public class FlowerBush : Bush
             5 => TextureAtlas.Index("flower_tulip_orange"),
             6 => TextureAtlas.Index("flower_tulip_white"),
             7 => TextureAtlas.Index("flower_tulip_pink"),
-            _ => TextureAtlas.Index("flower_oxeye_daisy"),
+            _ => TextureAtlas.Index("flower_oxeye_daisy")
         };
     }
 

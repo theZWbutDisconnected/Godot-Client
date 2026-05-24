@@ -4,7 +4,7 @@ namespace TestClient.Source.World.Biome;
 
 public static class BiomeRegistry
 {
-    private static readonly Dictionary<int, Biome> _biomes = new Dictionary<int, Biome>();
+    private static readonly Dictionary<int, Biome> _biomes = new();
 
     static BiomeRegistry()
     {

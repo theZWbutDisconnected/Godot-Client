@@ -1,5 +1,4 @@
 ﻿using System;
-using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
 
@@ -29,10 +28,10 @@ public class Block
         float c2;
         float c3;
         var meta = level.GetMetadata(pos);
-        uint col = GetBlockColor(level, pos, meta);
-        float r = ((col >> 16) & 0xFF) / 255.0f;
-        float g = ((col >> 8) & 0xFF) / 255.0f;
-        float b = (col & 0xFF) / 255.0f;
+        var col = GetBlockColor(level, pos, meta);
+        var r = ((col >> 16) & 0xFF) / 255.0f;
+        var g = ((col >> 8) & 0xFF) / 255.0f;
+        var b = (col & 0xFF) / 255.0f;
         int x = pos.X, y = pos.Y, z = pos.Z;
 
         if (ShouldRenderFace(level, new BlockPos(x, y - 1, z)))
@@ -95,7 +94,7 @@ public class Block
             RenderFace(t, x, y, z, 5);
         }
     }
-    
+
     protected virtual uint GetBlockColor(Level level, BlockPos pos, int meta)
     {
         return 0xFFFFFFFF;
@@ -203,7 +202,7 @@ public class Block
             t.VertexUV(x1, y0, z0, u0, v1);
         }
     }
-    
+
     public virtual void RenderFaceWithTex(Tessellator t, int x, int y, int z, int face, int texId)
     {
         TextureAtlas.GetUV(texId, out var u0, out var v0, out var u1, out var v1);
@@ -270,6 +269,7 @@ public class Block
         }
     }
 
-    public virtual void Tick(Level level, int x, int y, int z, Random random) {
+    public virtual void Tick(Level level, int x, int y, int z, Random random)
+    {
     }
 }

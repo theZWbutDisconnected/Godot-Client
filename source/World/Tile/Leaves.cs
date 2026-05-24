@@ -1,9 +1,8 @@
 ﻿using TestClient.Source.Physics;
+using TestClient.Source.Render;
 using TestClient.Source.World.Biome;
 
 namespace TestClient.Source.World.Tile;
-
-using TestClient.Source.Render;
 
 public class Leaves : Block
 {

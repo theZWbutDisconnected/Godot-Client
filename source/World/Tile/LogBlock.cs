@@ -1,6 +1,6 @@
-﻿namespace TestClient.Source.World.Tile;
+﻿using TestClient.Source.Render;
 
-using TestClient.Source.Render;
+namespace TestClient.Source.World.Tile;
 
 public class LogBlock : Block
 {

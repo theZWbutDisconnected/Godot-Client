@@ -25,31 +25,31 @@ public class LiquidTile : Block
     {
         int x = pos.X, y = pos.Y, z = pos.Z;
 
-        float hCenter = GetFluidHeight(level, pos);
-        float hSouth = GetFluidHeight(level, pos.South());
-        float hSouthEast = GetFluidHeight(level, pos.South().East());
-        float hEast = GetFluidHeight(level, pos.East());
+        var hCenter = GetFluidHeight(level, pos);
+        var hSouth = GetFluidHeight(level, pos.South());
+        var hSouthEast = GetFluidHeight(level, pos.South().East());
+        var hEast = GetFluidHeight(level, pos.East());
 
-        bool up = ShouldRenderFace(level, pos.Up());
-        bool down = ShouldRenderFace(level, pos.Down());
-        bool north = ShouldRenderFace(level, pos.North());
-        bool south = ShouldRenderFace(level, pos.South());
-        bool west = ShouldRenderFace(level, pos.West());
-        bool east = ShouldRenderFace(level, pos.East());
+        var up = ShouldRenderFace(level, pos.Up());
+        var down = ShouldRenderFace(level, pos.Down());
+        var north = ShouldRenderFace(level, pos.North());
+        var south = ShouldRenderFace(level, pos.South());
+        var west = ShouldRenderFace(level, pos.West());
+        var east = ShouldRenderFace(level, pos.East());
 
         if (!up && !down && !north && !south && !west && !east)
             return;
 
-        int tex = GetTexture(0, 0);
-        TextureAtlas.GetUV(tex, out float u0, out float v0_tex, out float u1, out float v1_full);
-        float uvTileHeight = v1_full - v0_tex;
+        var tex = GetTexture(0, 0);
+        TextureAtlas.GetUV(tex, out var u0, out var v0_tex, out var u1, out var v1_full);
+        var uvTileHeight = v1_full - v0_tex;
 
         float x0 = x, x1 = x + 1.0F;
         float y0 = y, z0 = z, z1 = z + 1.0F;
 
         if (down)
         {
-            float c1 = 1.0F;
+            var c1 = 1.0F;
             if (!level.IsLit(x, y - 1, z))
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
@@ -64,12 +64,12 @@ public class LiquidTile : Block
 
         if (up)
         {
-            float y_cc = y0 + hCenter;   // (x,   z)   → center
-            float y_cs = y0 + hSouth;    // (x,   z+1) → south
-            float y_es = y0 + hSouthEast; // (x+1, z+1) → south-east
-            float y_ce = y0 + hEast;     // (x+1, z)   → east
+            var y_cc = y0 + hCenter; // (x,   z)   → center
+            var y_cs = y0 + hSouth; // (x,   z+1) → south
+            var y_es = y0 + hSouthEast; // (x+1, z+1) → south-east
+            var y_ce = y0 + hEast; // (x+1, z)   → east
 
-            float c1 = 1.0F;
+            var c1 = 1.0F;
             if (!level.IsLit(x, y, z))
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
@@ -82,17 +82,17 @@ public class LiquidTile : Block
             t.VertexUV(x0, y_cc, z0, u0, v0_tex);
         }
 
-        float c2 = 0.8F;
-        float c3 = 0.6F;
+        var c2 = 0.8F;
+        var c3 = 0.6F;
 
         if (north)
         {
-            float yn0 = y0 + hCenter;  // (x,   z)
-            float yn1 = y0 + hEast;    // (x+1, z)
-            float vt0 = v0_tex + uvTileHeight * hCenter;
-            float vt1 = v0_tex + uvTileHeight * hEast;
+            var yn0 = y0 + hCenter; // (x,   z)
+            var yn1 = y0 + hEast; // (x+1, z)
+            var vt0 = v0_tex + uvTileHeight * hCenter;
+            var vt1 = v0_tex + uvTileHeight * hEast;
 
-            float cf = c2;
+            var cf = c2;
             if (!level.IsLit(x, y, z - 1))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
@@ -107,12 +107,12 @@ public class LiquidTile : Block
 
         if (south)
         {
-            float ys1 = y0 + hSouthEast; // (x+1, z+1)
-            float ys0 = y0 + hSouth;     // (x,   z+1)
-            float vt1 = v0_tex + uvTileHeight * hSouthEast;
-            float vt0 = v0_tex + uvTileHeight * hSouth;
+            var ys1 = y0 + hSouthEast; // (x+1, z+1)
+            var ys0 = y0 + hSouth; // (x,   z+1)
+            var vt1 = v0_tex + uvTileHeight * hSouthEast;
+            var vt0 = v0_tex + uvTileHeight * hSouth;
 
-            float cf = c2;
+            var cf = c2;
             if (!level.IsLit(x, y, z + 1))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
@@ -127,12 +127,12 @@ public class LiquidTile : Block
 
         if (west)
         {
-            float yw1 = y0 + hSouth;  // (x, z+1)
-            float yw0 = y0 + hCenter; // (x, z)
-            float vt1 = v0_tex + uvTileHeight * hSouth;
-            float vt0 = v0_tex + uvTileHeight * hCenter;
+            var yw1 = y0 + hSouth; // (x, z+1)
+            var yw0 = y0 + hCenter; // (x, z)
+            var vt1 = v0_tex + uvTileHeight * hSouth;
+            var vt0 = v0_tex + uvTileHeight * hCenter;
 
-            float cf = c3;
+            var cf = c3;
             if (!level.IsLit(x - 1, y, z))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
@@ -147,12 +147,12 @@ public class LiquidTile : Block
 
         if (east)
         {
-            float ye0 = y0 + hEast;      // (x+1, z)
-            float ye1 = y0 + hSouthEast; // (x+1, z+1)
-            float vt0 = v0_tex + uvTileHeight * hEast;
-            float vt1 = v0_tex + uvTileHeight * hSouthEast;
+            var ye0 = y0 + hEast; // (x+1, z)
+            var ye1 = y0 + hSouthEast; // (x+1, z+1)
+            var vt0 = v0_tex + uvTileHeight * hEast;
+            var vt1 = v0_tex + uvTileHeight * hSouthEast;
 
-            float cf = c3;
+            var cf = c3;
             if (!level.IsLit(x + 1, y, z))
                 cf *= 0.5F;
             t.Color(cf, cf, cf);
@@ -184,16 +184,16 @@ public class LiquidTile : Block
 
     private float GetFluidHeight(Level level, BlockPos pos)
     {
-        int count = 0;
-        float sum = 0.0F;
+        var count = 0;
+        var sum = 0.0F;
 
-        for (int j = 0; j < 4; ++j)
+        for (var j = 0; j < 4; ++j)
         {
-            int dx = -(j & 1);
-            int dz = -(j >> 1 & 1);
+            var dx = -(j & 1);
+            var dz = -((j >> 1) & 1);
             // j=0: ( 0,  0), j=1: (-1,  0), j=2: ( 0, -1), j=3: (-1, -1)
 
-            BlockPos neighbor = pos.Add(dx, 0, dz);
+            var neighbor = pos.Add(dx, 0, dz);
 
             if (level.HasBlock(neighbor.Up()))
             {
@@ -212,12 +212,13 @@ public class LiquidTile : Block
                 var neighborTile = Blocks.GetPreset(level.GetBlockId(neighbor));
                 if (neighborTile is LiquidTile)
                 {
-                    int meta = level.GetMetadata(neighbor);
+                    var meta = level.GetMetadata(neighbor);
                     if (meta >= 8 || meta == 0)
                     {
                         sum += GetLiquidHeightPercent(meta) * 10.0F;
                         count += 10;
                     }
+
                     sum += GetLiquidHeightPercent(meta);
                     count++;
                 }

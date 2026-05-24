@@ -19,7 +19,9 @@ public class DoubleBush : Bush
     protected override uint GetBlockColor(Level level, BlockPos pos, int meta)
     {
         var down = level.GetMetadata(pos.Down());
-        return meta == 2 || (meta == 10 && down == 2) ? (uint)BiomeColorHelper.GetGrassColorAtPos(level, pos) : 0xFFFFFFFF;
+        return meta == 2 || (meta == 10 && down == 2)
+            ? (uint)BiomeColorHelper.GetGrassColorAtPos(level, pos)
+            : 0xFFFFFFFF;
     }
 
     public override void Render(Tessellator t, Level level, BlockPos pos)
@@ -27,10 +29,10 @@ public class DoubleBush : Bush
         float x = pos.X, y = pos.Y, z = pos.Z;
         var meta = level.GetMetadata(pos);
         var metadown = level.GetMetadata(pos.Down());
-        uint col = GetBlockColor(level, pos, meta);
-        float r = ((col >> 16) & 0xFF) / 255.0f;
-        float g = ((col >> 8) & 0xFF) / 255.0f;
-        float b = (col & 0xFF) / 255.0f;
+        var col = GetBlockColor(level, pos, meta);
+        var r = ((col >> 16) & 0xFF) / 255.0f;
+        var g = ((col >> 8) & 0xFF) / 255.0f;
+        var b = (col & 0xFF) / 255.0f;
         var tex = GetTexture(metadown, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
@@ -43,25 +45,25 @@ public class DoubleBush : Bush
             TextureAtlas.GetUV(backTex, out var fu0, out var fv0, out var fu1, out var fv1);
             TextureAtlas.GetUV(frontTex, out var bu0, out var bv0, out var bu1, out var bv1);
 
-            float angle = 22.5f * Mathf.Pi / 180f;
-            float cosA = Mathf.Cos(angle);
-            float sinA = Mathf.Sin(angle);
+            var angle = 22.5f * Mathf.Pi / 180f;
+            var cosA = Mathf.Cos(angle);
+            var sinA = Mathf.Sin(angle);
 
-            float cx = 9.6f / 16f - 0.5f;
-            float hY0 = -1f / 16f - 0.5f;
-            float hY1 = 15f / 16f - 0.5f;
-            float hZ0 = 1f / 16f;
-            float hZ1 = 15f / 16f;
+            var cx = 9.6f / 16f - 0.5f;
+            var hY0 = -1f / 16f - 0.5f;
+            var hY1 = 15f / 16f - 0.5f;
+            var hZ0 = 1f / 16f;
+            var hZ1 = 15f / 16f;
 
-            float rx0 = cx * cosA - hY0 * sinA;
-            float ry0 = cx * sinA + hY0 * cosA;
-            float rx1 = cx * cosA - hY1 * sinA;
-            float ry1 = cx * sinA + hY1 * cosA;
+            var rx0 = cx * cosA - hY0 * sinA;
+            var ry0 = cx * sinA + hY0 * cosA;
+            var rx1 = cx * cosA - hY1 * sinA;
+            var ry1 = cx * sinA + hY1 * cosA;
 
-            float hx0 = x + 0.5f + rx0;
-            float hy0 = y + 0.5f + ry0;
-            float hx1 = x + 0.5f + rx1;
-            float hy1 = y + 0.5f + ry1;
+            var hx0 = x + 0.5f + rx0;
+            var hy0 = y + 0.5f + ry0;
+            var hx1 = x + 0.5f + rx1;
+            var hy1 = y + 0.5f + ry1;
 
             t.Color(1.0F, 1.0F, 1.0F);
 
@@ -89,7 +91,7 @@ public class DoubleBush : Bush
             var x1 = x + 0.5F + xa;
             var y0 = y + 0.0F;
             var y1 = y + 1.0F;
-            if (meta == 10 && metadown == 0 || meta == 0) y1 -= 0.125f;
+            if ((meta == 10 && metadown == 0) || meta == 0) y1 -= 0.125f;
             var z0 = z + 0.5F - za;
             var z1 = z + 0.5F + za;
             t.VertexUV(x0, y1, z0, u1, v0);
@@ -111,7 +113,7 @@ public class DoubleBush : Bush
     {
         return true;
     }
-    
+
     protected override int GetTexture(int downMeta, int meta)
     {
         var name = GetPlantTexture(meta == 10 ? downMeta : meta);
@@ -121,7 +123,7 @@ public class DoubleBush : Bush
             {
                 _ => TextureAtlas.Index(name + "_top")
             },
-            _=> TextureAtlas.Index(name + "_bottom")
+            _ => TextureAtlas.Index(name + "_bottom")
         };
     }
 
@@ -146,7 +148,7 @@ public class DoubleBush : Bush
 
     public override AABB GetCube()
     {
-        float f = 0.4F;
+        var f = 0.4F;
         return new AABB(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.8F, 0.5F + f);
     }
 
