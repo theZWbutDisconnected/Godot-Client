@@ -8,7 +8,7 @@ public class LogBlock : Block
     {
     }
 
-    protected override int GetTexture(Level level, int face)
+    protected override int GetTexture(int downMeta, int face)
     {
         if (face == 0 || face == 1) return TextureAtlas.Index("log_oak_top");
         return TextureAtlas.Index("log_oak");

@@ -36,7 +36,7 @@ public class Block
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, -1, 0);
-            RenderFace(t, level, x, y, z, 0);
+            RenderFace(t, x, y, z, 0);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y + 1, z)))
@@ -46,7 +46,7 @@ public class Block
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, 1, 0);
-            RenderFace(t, level, x, y, z, 1);
+            RenderFace(t, x, y, z, 1);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z - 1)))
@@ -56,7 +56,7 @@ public class Block
                 c2 *= 0.5F;
             t.Color(c2, c2, c2);
             t.Normal(0, 0, -1);
-            RenderFace(t, level, x, y, z, 2);
+            RenderFace(t, x, y, z, 2);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z + 1)))
@@ -66,7 +66,7 @@ public class Block
                 c2 *= 0.5F;
             t.Color(c2, c2, c2);
             t.Normal(0, 0, 1);
-            RenderFace(t, level, x, y, z, 3);
+            RenderFace(t, x, y, z, 3);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x - 1, y, z)))
@@ -76,7 +76,7 @@ public class Block
                 c3 *= 0.5F;
             t.Color(c3, c3, c3);
             t.Normal(-1, 0, 0);
-            RenderFace(t, level, x, y, z, 4);
+            RenderFace(t, x, y, z, 4);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x + 1, y, z)))
@@ -86,7 +86,7 @@ public class Block
                 c3 *= 0.5F;
             t.Color(c3, c3, c3);
             t.Normal(1, 0, 0);
-            RenderFace(t, level, x, y, z, 5);
+            RenderFace(t, x, y, z, 5);
         }
     }
 
@@ -110,14 +110,14 @@ public class Block
         return true;
     }
 
-    protected virtual int GetTexture(Level level, int face)
+    protected virtual int GetTexture(int bottomMeta, int face)
     {
         return TexId;
     }
 
-    public virtual void RenderFace(Tessellator t, Level level, int x, int y, int z, int face)
+    public virtual void RenderFace(Tessellator t, int x, int y, int z, int face)
     {
-        var tex = GetTexture(level, face);
+        var tex = GetTexture(0, face);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var x0 = x + 0.0F;
         var x1 = x + 1.0F;

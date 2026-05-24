@@ -22,12 +22,13 @@ public class DoubleBush : Block
         _pos = pos;
         float x = pos.X, y = pos.Y, z = pos.Z;
         var meta = level.GetMetadata(pos);
-        var tex = GetTexture(level, meta);
+        var metadown = level.GetMetadata(_pos.Offset(Direction.DOWN));
+        var tex = GetTexture(metadown, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
         t.Color(1.0F, 1.0F, 1.0F);
 
-        if (tex == TextureAtlas.Index("double_plant_sunflower_top"))
+        if (meta == 10 && metadown == 0)
         {
             var frontTex = TextureAtlas.Index("double_plant_sunflower_front");
             var backTex = TextureAtlas.Index("double_plant_sunflower_back");
@@ -102,13 +103,12 @@ public class DoubleBush : Block
         return true;
     }
     
-    protected override int GetTexture(Level level, int meta)
+    protected override int GetTexture(int downMeta, int meta)
     {
-        var id = level.GetMetadata(_pos.Offset(Direction.DOWN));
-        var name = GetPlantTexture(meta == 10 ? id : meta);
+        var name = GetPlantTexture(meta == 10 ? downMeta : meta);
         return meta switch
         {
-            10 => id switch
+            10 => downMeta switch
             {
                 _ => TextureAtlas.Index(name + "_top")
             },

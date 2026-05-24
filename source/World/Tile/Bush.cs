@@ -21,7 +21,7 @@ public class Bush : Block
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
         int x = pos.X, y = pos.Y, z = pos.Z;
-        var tex = GetTexture(level, TexId);
+        var tex = GetTexture(0, TexId);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
         t.Color(1.0F, 1.0F, 1.0F);

@@ -44,7 +44,7 @@ public class LiquidTile : Block
         if (!up && !down && !north && !south && !west && !east)
             return;
 
-        int tex = GetTexture(level, 0);
+        int tex = GetTexture(0, 0);
         TextureAtlas.GetUV(tex, out float u0, out float v0_tex, out float u1, out float v1_full);
         float uvTileHeight = v1_full - v0_tex;
 

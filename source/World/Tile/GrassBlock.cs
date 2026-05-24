@@ -8,7 +8,7 @@ public class GrassBlock : Block
     {
     }
 
-    protected override int GetTexture(Level level, int face)
+    protected override int GetTexture(int downMeta, int face)
     {
         if (face == 1) return TextureAtlas.Index("grass_top");
         return face == 0 ? TextureAtlas.Index("dirt") : TextureAtlas.Index("grass_side");
