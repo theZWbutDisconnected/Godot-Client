@@ -5,12 +5,10 @@ using TestClient.Source.Render;
 
 namespace TestClient.Source.World.Tile;
 
-public class DoubleBush : Block
+public class DoubleBush : Bush
 {
-    private BlockPos _pos;
-    public DoubleBush(int id, int texId) : base(id, 15)
+    public DoubleBush(int id, int texId) : base(id, texId)
     {
-        TexId = texId;
     }
 
     public override void Tick(Level level, int x, int y, int z, Random random)
@@ -19,10 +17,9 @@ public class DoubleBush : Block
 
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
-        _pos = pos;
         float x = pos.X, y = pos.Y, z = pos.Z;
         var meta = level.GetMetadata(pos);
-        var metadown = level.GetMetadata(_pos.Offset(Direction.DOWN));
+        var metadown = level.GetMetadata(pos.Offset(Direction.DOWN));
         var tex = GetTexture(metadown, meta);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;

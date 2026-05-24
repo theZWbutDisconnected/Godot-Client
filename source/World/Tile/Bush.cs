@@ -21,7 +21,7 @@ public class Bush : Block
     public override void Render(Tessellator t, Level level, BlockPos pos)
     {
         int x = pos.X, y = pos.Y, z = pos.Z;
-        var tex = GetTexture(0, TexId);
+        var tex = GetTexture(0, level.GetMetadata(pos));
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var rots = 2;
         t.Color(1.0F, 1.0F, 1.0F);
@@ -59,6 +59,12 @@ public class Bush : Block
     public override AABB GetCollision()
     {
         return null;
+    }
+
+    public override AABB GetCube()
+    {
+        float f = 0.2F;
+        return new AABB(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f * 3.0F, 0.5F + f);
     }
 
     public override bool IsOpaque()
