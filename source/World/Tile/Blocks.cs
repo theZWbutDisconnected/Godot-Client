@@ -9,6 +9,7 @@ public class Blocks
     public static readonly Block Rock = new(1, TextureAtlas.Index("stone"));
     public static readonly Block Grass = new GrassBlock(2);
     public static readonly Block Dirt = new(3, TextureAtlas.Index("dirt"));
+    public static readonly Block CobbleStone = new(4, TextureAtlas.Index("cobblestone"));
     public static readonly Block Bush = new Bush(6, TextureAtlas.Index("sapling_oak"));
     public static readonly Block Bedrock = new(7, TextureAtlas.Index("bedrock"));
     public static readonly Block FlowingWater = new LiquidTile(8, LiquidType.Water);
