@@ -129,6 +129,11 @@ public partial class Game : Node3D
 		Camera.RotationDegrees = new Vector3(-Player.RotX, 180 - Player.RotY, 0.0F);
 	}
 
+	private void ClickMouse()
+	{
+		Player.Swing();
+	}
+
 	public override void _Input(InputEvent @event)
 	{
 		base._Input(@event);
@@ -150,6 +155,16 @@ public partial class Game : Node3D
 			{
 				var zombie = new Zombie(Level);
 				Level.AddEntity(zombie);
+			}
+		}
+
+		if (@event is InputEventMouseButton but)
+		{
+			if (but.IsPressed()) {
+				if (but.ButtonIndex == MouseButton.Left)
+				{
+					ClickMouse();
+				}
 			}
 		}
 	}

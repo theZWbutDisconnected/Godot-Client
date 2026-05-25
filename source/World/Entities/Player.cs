@@ -21,6 +21,12 @@ public class Player : Entity
         SendQueue = netHandler;
     }
 
+    public override void Swing()
+    {
+        base.Swing();
+        SendQueue.SendPacket(new C0AAnimation());
+    }
+
     public override void Tick()
     {
         if (Level.IsBlockLoaded(new BlockPos(PosX, 0.0D, PosZ)))
