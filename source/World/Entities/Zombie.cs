@@ -79,7 +79,7 @@ public class Zombie : Entity
         if (f5 > 1.0F) f5 = 1.0F;
 
         var f4 = 0.0625F;
-        _renderer.Update(f6, f5, TicksExisted + a, f2, f7, f4, this);
+        _renderer.Update(f6, f5, TicksExisted + a, -f2, f7, f4, this);
     }
 
     protected override float UpdateDistance(float p_110146_1_, float p_110146_2_)
