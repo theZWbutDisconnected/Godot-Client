@@ -5,6 +5,7 @@ namespace TestClient.Source.Network.NetHandler;
 public interface INetHandlerPlayClient : INetHandler
 {
     void HandleKeepAlive(S00KeepAlive @in);
+    void HandleAnimation(S0BAnimation @in);
     void HandleSpawnMob(S0FSpawnMob @in);
     void HandleJoinGame(S01JoinGame @in);
     void HandlePlayerPosLook(S08PlayerPosLook @in);

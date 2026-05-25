@@ -10,22 +10,18 @@ public class S0FSpawnMob : IPacket
     public int X { get; private set; }
     public int Y { get; private set; }
     public int Z { get; private set; }
-    public byte Yaw { get; private set; }
-    public byte Pitch { get; private set; }
-    public byte HeadYaw { get; private set; }
+    public sbyte Yaw { get; private set; }
+    public sbyte Pitch { get; private set; }
+    public sbyte HeadYaw { get; private set; }
     public short VelocityX { get; private set; }
     public short VelocityY { get; private set; }
     public short VelocityZ { get; private set; }
     public List<DataWatcher.WatchableObject> Watcher { get; private set; }
 
-    public S0FSpawnMob()
-    {
-    }
-
     public void Read(PacketBuffer buf)
     {
         EntityId = buf.ReadVarInt();
-        Type = buf.ReadByte() & 255;
+        Type = buf.ReadUnsignedByte();
         X = buf.ReadInt();
         Y = buf.ReadInt();
         Z = buf.ReadInt();

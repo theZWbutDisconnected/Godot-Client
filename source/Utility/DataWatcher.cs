@@ -198,7 +198,7 @@ public class DataWatcher
     {
         List<WatchableObject> list = null;
 
-        for (var i = buffer.ReadByte(); i != 127; i = buffer.ReadByte())
+        for (var i = buffer.ReadUnsignedByte(); i != 127; i = buffer.ReadUnsignedByte())
         {
             if (list == null)
                 list = new List<WatchableObject>();
@@ -210,7 +210,7 @@ public class DataWatcher
             switch (j)
             {
                 case 0:
-                    watchableObject = new WatchableObject(j, k, buffer.ReadByte());
+                    watchableObject = new WatchableObject(j, k, buffer.ReadUnsignedByte());
                     break;
                 case 1:
                     watchableObject = new WatchableObject(j, k, buffer.ReadShort());

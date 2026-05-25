@@ -44,6 +44,9 @@ public class Entity
     public double XDelta;
     public double YDelta;
     public double ZDelta;
+    public int HurtTime;
+    private bool isSwingInProgress;
+    private int swingProgressInt;
 
     public DataWatcher DataWatcher { get; private set; }
 
@@ -128,8 +131,8 @@ public class Entity
     {
         var f = RotX;
         var f1 = RotY;
-        RotY = (float)(RotY + xo * 0.15D);
-        RotX = (float)(RotX - yo * 0.15D);
+        RotY += xo * 0.15F;
+        RotX -= yo * 0.15F;
         RotX = Mathf.Clamp(RotX, -90.0F, 90.0F);
         PrevRotX += RotX - f;
         PrevRotY += RotY - f1;
@@ -142,21 +145,22 @@ public class Entity
         PrevZ = PosZ;
         PrevRotY = RotY;
         PrevRotX = RotX;
-        PrevRotYHead = RotYHead;
         PrevRotYBody = RotYBody;
+        PrevRotYHead = RotYHead;
         PrevMovedDistance = MovedDistance;
+        PrevSwingProgress = SwingProgress;
 
         LivingTick();
 
         var d0 = PosX - PrevX;
         var d1 = PosZ - PrevZ;
-        var f = (float)(d0 * d0 + d1 * d1);
+        var f = d0 * d0 + d1 * d1;
         var f1 = RotYBody;
         var f2 = 0.0F;
         if (f > 0.0025000002F)
         {
-            f2 = (float)Mathf.Sqrt((double)f) * 3.0F;
-            f1 = (float)Mathf.Atan2(d1, d0) * 180.0F / (float)Math.PI - 90.0F;
+            f2 = Mathf.Sqrt((float)f) * 3.0F;
+            f1 = Mathf.Atan2((float)d1, (float)d0) * 180.0F / MathF.PI - 90.0F;
         }
         if (SwingProgress > 0.0F) f1 = RotY;
         f2 = UpdateDistance(f1, f2);
@@ -175,6 +179,8 @@ public class Entity
 
     public virtual void LivingTick()
     {
+        --HurtTime;
+        UpdateSwing();
     }
 
     public virtual void Render(float a)
@@ -220,9 +226,9 @@ public class Entity
             xa *= dist;
             za *= dist;
 
-            var rad = RotY * (float)(Math.PI / 180.0);
-            var sin = (float)Math.Sin(rad);
-            var cos = (float)Math.Cos(rad);
+            var rad = RotY * (Math.PI / 180.0);
+            var sin = Math.Sin(rad);
+            var cos = Math.Cos(rad);
 
             XDelta -= xa * cos - za * sin;
             ZDelta -= za * cos + xa * sin;
@@ -257,5 +263,46 @@ public class Entity
 
     public void OnDataWatcherUpdate(int dataID)
     {
+    }
+
+    public virtual void HurtAnimation()
+    {
+        HurtTime = 10;
+    }
+    
+    protected virtual void UpdateSwing()
+    {
+        int i = SwingDuration();
+
+        if (isSwingInProgress)
+        {
+            ++swingProgressInt;
+
+            if (swingProgressInt >= i)
+            {
+                swingProgressInt = 0;
+                isSwingInProgress = false;
+            }
+        }
+        else
+        {
+            swingProgressInt = 0;
+        }
+
+        SwingProgress = swingProgressInt / (float)i;
+    }
+
+    public virtual void Swing()
+    {
+        if (!isSwingInProgress || swingProgressInt >= SwingDuration() / 2 || swingProgressInt < 0)
+        {
+            swingProgressInt = -1;
+            isSwingInProgress = true;
+        }
+    }
+    
+    private int SwingDuration()
+    {
+        return 6;
     }
 }

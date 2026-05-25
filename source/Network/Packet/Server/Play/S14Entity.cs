@@ -40,9 +40,9 @@ public class S14Entity : IPacket
         public override void Read(PacketBuffer buf)
         {
             base.Read(buf);
-            PosX = buf.ReadSignedByte();
-            PosY = buf.ReadSignedByte();
-            PosZ = buf.ReadSignedByte();
+            PosX = buf.ReadByte();
+            PosY = buf.ReadByte();
+            PosZ = buf.ReadByte();
             OnGround = buf.ReadBoolean();
         }
     }
@@ -57,8 +57,8 @@ public class S14Entity : IPacket
         public override void Read(PacketBuffer buf)
         {
             base.Read(buf);
-            Yaw = buf.ReadSignedByte();
-            Pitch = buf.ReadSignedByte();
+            Yaw = buf.ReadByte();
+            Pitch = buf.ReadByte();
             OnGround = buf.ReadBoolean();
         }
     }
@@ -73,11 +73,11 @@ public class S14Entity : IPacket
         public override void Read(PacketBuffer buf)
         {
             base.Read(buf);
-            PosX = buf.ReadSignedByte();
-            PosY = buf.ReadSignedByte();
-            PosZ = buf.ReadSignedByte();
-            Yaw = buf.ReadSignedByte();
-            Pitch = buf.ReadSignedByte();
+            PosX = buf.ReadByte();
+            PosY = buf.ReadByte();
+            PosZ = buf.ReadByte();
+            Yaw = buf.ReadByte();
+            Pitch = buf.ReadByte();
             OnGround = buf.ReadBoolean();
         }
     }

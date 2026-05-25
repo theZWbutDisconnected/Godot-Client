@@ -14,12 +14,12 @@ public class S01JoinGame : IPacket
 	public void Read(PacketBuffer buf)
 	{
 		EntityId = buf.ReadInt();
-		var raw = buf.ReadByte() & 0xFF;
+		var raw = buf.ReadUnsignedByte() & 0xFF;
 		HardcoreMode = (raw & 8) == 8;
 		GameType = raw & ~8;
-		Dimension = buf.ReadSignedByte();
-		Difficulty = buf.ReadByte() & 0xFF;
-		MaxPlayers = buf.ReadByte() & 0xFF;
+		Dimension = buf.ReadByte();
+		Difficulty = buf.ReadUnsignedByte() & 0xFF;
+		MaxPlayers = buf.ReadUnsignedByte() & 0xFF;
 		WorldType = buf.ReadString(16) ?? "default";
 		ReducedDebugInfo = buf.ReadBoolean();
 	}

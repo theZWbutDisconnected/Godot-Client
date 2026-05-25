@@ -8,7 +8,7 @@ public class S19EntityHeadLook : IPacket
     public void Read(PacketBuffer buf)
     {
         EntityId = buf.ReadVarInt();
-        Yaw = buf.ReadByte();
+        Yaw = buf.ReadUnsignedByte();
     }
 
     public void Write(PacketBuffer stream)

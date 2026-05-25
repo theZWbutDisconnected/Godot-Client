@@ -11,7 +11,7 @@ public class S39PlayerAbilities : IPacket
 
     public void Read(PacketBuffer buf)
     {
-        var flags = buf.ReadByte();
+        var flags = buf.ReadUnsignedByte();
         Invulnerable = (flags & 0x01) != 0;
         Flying       = (flags & 0x02) != 0;
         AllowFlying  = (flags & 0x04) != 0;

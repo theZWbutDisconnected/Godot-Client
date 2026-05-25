@@ -30,7 +30,7 @@ public class S26MapChunkBulk : IPacket
         for (var i = 0; i < chunkCount; i++)
         {
             var dataSize = CalculateDataSize(dataSizes[i], IsOverworld, true);
-            var data = buf.ReadBytes(dataSize);
+            var data = buf.ReadByteArray(dataSize);
 
             var chunk = S21ChunkData.ParseChunkData(xPositions[i], zPositions[i],
                 dataSizes[i], true, data);

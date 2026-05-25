@@ -26,9 +26,14 @@ public class PacketBuffer(Stream stream)
 		stream.WriteByte((byte)value);
 	}
 
-	public byte ReadByte()
+	public byte ReadUnsignedByte()
 	{
 		return (byte)stream.ReadByte();
+	}
+
+	public sbyte ReadByte()
+	{
+		return (sbyte)stream.ReadByte();
 	}
 
 	public void WriteBytes(byte[] array)
@@ -49,7 +54,7 @@ public class PacketBuffer(Stream stream)
 		return bytes;
 	}
 
-	public byte[] ReadBytes(int length)
+	public byte[] ReadByteArray(int length)
 	{
 		var array = new byte[length];
 		stream.ReadExactly(array, 0, length);
@@ -111,7 +116,7 @@ public class PacketBuffer(Stream stream)
 		if (i < 0)
 			throw new InvalidDataException(
 				"The received encoded string buffer length is less than zero! Weird string!");
-		var bytes = ReadBytes(i);
+		var bytes = ReadByteArray(i);
 		var s = Encoding.UTF8.GetString(bytes);
 
 		if (s.Length > maxLength)
@@ -143,25 +148,20 @@ public class PacketBuffer(Stream stream)
 
 	public short ReadShort()
 	{
-		var bytes = ReadBytes(2);
+		var bytes = ReadByteArray(2);
 		return (short)((bytes[0] << 8) | bytes[1]);
 	}
 
 	public ushort ReadUnsignedShort()
 	{
-		var bytes = ReadBytes(2);
+		var bytes = ReadByteArray(2);
 		return (ushort)((bytes[0] << 8) | bytes[1]);
 	}
 
 	public int ReadInt()
 	{
-		var bytes = ReadBytes(4);
+		var bytes = ReadByteArray(4);
 		return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
-	}
-
-	public sbyte ReadSignedByte()
-	{
-		return (sbyte)stream.ReadByte();
 	}
 
 	public bool ReadBoolean()
@@ -179,7 +179,7 @@ public class PacketBuffer(Stream stream)
 
 	public double ReadDouble()
 	{
-		var bytes = ReadBytes(8);
+		var bytes = ReadByteArray(8);
 		if (BitConverter.IsLittleEndian)
 			Array.Reverse(bytes);
 		return BitConverter.ToDouble(bytes, 0);
@@ -195,7 +195,7 @@ public class PacketBuffer(Stream stream)
 
 	public float ReadFloat()
 	{
-		var bytes = ReadBytes(4);
+		var bytes = ReadByteArray(4);
 		if (BitConverter.IsLittleEndian)
 			Array.Reverse(bytes);
 		return BitConverter.ToSingle(bytes, 0);
@@ -211,7 +211,7 @@ public class PacketBuffer(Stream stream)
 
 	public long ReadLong()
 	{
-		var bytes = ReadBytes(8);
+		var bytes = ReadByteArray(8);
 		if (BitConverter.IsLittleEndian)
 			Array.Reverse(bytes);
 		return BitConverter.ToInt64(bytes, 0);

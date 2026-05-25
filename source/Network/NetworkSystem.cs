@@ -74,6 +74,7 @@ public class NetworkSystem
 			{
 				{ typeof(S00KeepAlive), p => h.HandleKeepAlive((S00KeepAlive)p) },
 				{ typeof(S01JoinGame), p => h.HandleJoinGame((S01JoinGame)p) },
+				{ typeof(S0BAnimation), p => h.HandleAnimation((S0BAnimation)p) },
 				{ typeof(S0FSpawnMob), p => h.HandleSpawnMob((S0FSpawnMob)p) },
 				{ typeof(S08PlayerPosLook), p => h.HandlePlayerPosLook((S08PlayerPosLook)p) },
 				{ typeof(S12EntityVelocity), p => h.HandleEntityVelocity((S12EntityVelocity)p) },
@@ -104,7 +105,7 @@ public class NetworkSystem
 				var length = _buffer.ReadVarInt();
 				if (length <= 0) return;
 
-				var packetData = _buffer.ReadBytes(length);
+				var packetData = _buffer.ReadByteArray(length);
 				byte[] payload;
 
 				if (_compressionThreshold >= 0)
@@ -114,13 +115,13 @@ public class NetworkSystem
 
 					if (dataLength == 0)
 					{
-						payload = tempBuf.ReadBytes(packetData.Length - PacketBuffer.GetVarIntSize(0));
+						payload = tempBuf.ReadByteArray(packetData.Length - PacketBuffer.GetVarIntSize(0));
 					}
 					else
 					{
 						var headerSize = PacketBuffer.GetVarIntSize(dataLength);
 						var compressedLen = packetData.Length - headerSize;
-						var compressed = tempBuf.ReadBytes(compressedLen);
+						var compressed = tempBuf.ReadByteArray(compressedLen);
 
 						payload = new byte[dataLength];
 						using var deflate = new DeflateStream(

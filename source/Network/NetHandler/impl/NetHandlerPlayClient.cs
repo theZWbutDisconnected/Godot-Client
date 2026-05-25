@@ -42,6 +42,24 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");
     }
+    
+    public void HandleAnimation(S0BAnimation packetIn)
+    {
+        Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        GD.Print("S0B Received ", packetIn.Type, " ", packetIn.EntityId, " ", entity != null);
+
+        if (entity != null)
+        {
+            if (packetIn.Type == 0)
+            {
+                entity.Swing();
+            }
+            else if (packetIn.Type == 1)
+            {
+                entity.HurtAnimation();
+            }
+        }
+    }
 
     public void HandleSpawnMob(S0FSpawnMob packetIn)
     {

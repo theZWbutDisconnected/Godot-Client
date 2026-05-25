@@ -19,7 +19,7 @@ public class S21ChunkData : IPacket
         GroundUpContinuous = buf.ReadBoolean();
         var sectionBitmask = buf.ReadUnsignedShort();
         var dataLength = buf.ReadVarInt();
-        var data = buf.ReadBytes(dataLength);
+        var data = buf.ReadByteArray(dataLength);
 
         Chunk = ParseChunkData(ChunkX, ChunkZ, sectionBitmask, GroundUpContinuous, data);
 
@@ -42,12 +42,12 @@ public class S21ChunkData : IPacket
     {
         try
         {
-            var tagType = buf.ReadSignedByte();
+            var tagType = buf.ReadByte();
             if (tagType == 0) return; // TAG_End
 
             var nameLength = buf.ReadUnsignedShort();
             if (nameLength > 0)
-                buf.ReadBytes(nameLength);
+                buf.ReadByteArray(nameLength);
 
             SkipNbtPayload(buf, tagType);
         }
@@ -62,7 +62,7 @@ public class S21ChunkData : IPacket
         switch (tagType)
         {
             case 1: // TAG_Byte
-                buf.ReadSignedByte();
+                buf.ReadByte();
                 break;
             case 2: // TAG_Short
                 buf.ReadShort();
@@ -82,15 +82,15 @@ public class S21ChunkData : IPacket
             case 7: // TAG_Byte_Array
                 var byteArrayLength = buf.ReadInt();
                 if (byteArrayLength > 0)
-                    buf.ReadBytes(byteArrayLength);
+                    buf.ReadByteArray(byteArrayLength);
                 break;
             case 8: // TAG_String
                 var stringLength = buf.ReadUnsignedShort();
                 if (stringLength > 0)
-                    buf.ReadBytes(stringLength);
+                    buf.ReadByteArray(stringLength);
                 break;
             case 9: // TAG_List
-                var listType = buf.ReadSignedByte();
+                var listType = buf.ReadByte();
                 var listLength = buf.ReadInt();
                 for (var i = 0; i < listLength; i++)
                     SkipNbtPayload(buf, listType);
@@ -98,11 +98,11 @@ public class S21ChunkData : IPacket
             case 10: // TAG_Compound
                 while (true)
                 {
-                    var childType = buf.ReadSignedByte();
+                    var childType = buf.ReadByte();
                     if (childType == 0) break; // TAG_End
                     var childNameLength = buf.ReadUnsignedShort();
                     if (childNameLength > 0)
-                        buf.ReadBytes(childNameLength);
+                        buf.ReadByteArray(childNameLength);
                     SkipNbtPayload(buf, childType);
                 }
 
@@ -110,7 +110,7 @@ public class S21ChunkData : IPacket
             case 11: // TAG_Int_Array
                 var intArrayLength = buf.ReadInt();
                 if (intArrayLength > 0)
-                    buf.ReadBytes(intArrayLength * 4);
+                    buf.ReadByteArray(intArrayLength * 4);
                 break;
             default:
                 throw new InvalidOperationException($"Unknown NBT tag type: {tagType}");

@@ -8,7 +8,7 @@ public class S32ConfirmTransaction : IPacket
 
 	public void Read(PacketBuffer buf)
 	{
-		WindowId = buf.ReadByte();
+		WindowId = buf.ReadUnsignedByte();
 		ActionNumber = buf.ReadShort();
 		Accepted = buf.ReadBoolean();
 	}

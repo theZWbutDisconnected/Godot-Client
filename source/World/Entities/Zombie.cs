@@ -3,6 +3,7 @@ using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render.Model;
 using TestClient.Source.Render.Model.impl;
+using TestClient.Source.Utility;
 
 namespace TestClient.Source.World.Entities;
 
@@ -16,10 +17,11 @@ public class Zombie : Entity
     private double _nextPosZ;
     private double _nextRotationYaw;
     private double _nextRotationPitch;
-    private int _rotationTickCounter;
+    private EntityBodyHelper _bodyHelper;
 
     public Zombie(Level level) : base(level)
     {
+        _bodyHelper = new EntityBodyHelper(this);
         Game.Singleton.NewEntityNode(this,
             _renderer = new ModelRenderer(_model, "res://assets/entity/zombie.png", Game.Singleton, 64, 64));
     }
@@ -82,52 +84,8 @@ public class Zombie : Entity
 
     protected override float UpdateDistance(float p_110146_1_, float p_110146_2_)
     {
-        UpdateRenderAngles();
+        _bodyHelper.UpdateRenderAngles();
         return p_110146_2_;
-    }
-
-    public void UpdateRenderAngles()
-    {
-        var d0 = PosX - PrevX;
-        var d1 = PosZ - PrevZ;
-
-        if (d0 * d0 + d1 * d1 > 2.500000277905201E-7D)
-        {
-            RotYBody = RotY;
-            RotYHead = ComputeAngleWithBound(RotYBody, RotYHead, 75.0F);
-            PrevRotYHead = RotYHead;
-            _rotationTickCounter = 0;
-        }
-        else
-        {
-            var f = 75.0F;
-
-            if (Math.Abs(RotYHead - PrevRotYHead) > 15.0F)
-            {
-                _rotationTickCounter = 0;
-                PrevRotYHead = RotYHead;
-            }
-            else
-            {
-                ++_rotationTickCounter;
-                var i = 10;
-
-                if (_rotationTickCounter > 10) f = Math.Max(1.0F - (_rotationTickCounter - 10) / 10.0F, 0.0F) * 75.0F;
-            }
-
-            RotYBody = ComputeAngleWithBound(RotYHead, RotYBody, f);
-        }
-    }
-
-    private float ComputeAngleWithBound(float p_75665_1_, float p_75665_2_, float p_75665_3_)
-    {
-        var f = Mth.WrapAngle(p_75665_1_ - p_75665_2_);
-
-        if (f < -p_75665_3_) f = -p_75665_3_;
-
-        if (f >= p_75665_3_) f = p_75665_3_;
-
-        return p_75665_1_ - f;
     }
 
     private bool IsChild()

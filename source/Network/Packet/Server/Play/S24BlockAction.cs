@@ -13,8 +13,8 @@ public class S24BlockAction : IPacket
     public void Read(PacketBuffer buf)
     {
         BlockPosition = buf.ReadBlockPos();
-        Instrument = buf.ReadByte();
-        Pitch = buf.ReadByte();
+        Instrument = buf.ReadUnsignedByte();
+        Pitch = buf.ReadUnsignedByte();
         Block = Blocks.GetPreset(buf.ReadVarInt() & 4095);
     }
 
