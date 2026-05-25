@@ -10,8 +10,9 @@ public readonly struct ModelBox
     public readonly int D;
     public readonly int TexU;
     public readonly int TexV;
+    public readonly bool Mirror;
 
-    public ModelBox(float x0, float y0, float z0, int w, int h, int d, int texU, int texV)
+    public ModelBox(float x0, float y0, float z0, int w, int h, int d, int texU, int texV, bool mirror = false)
     {
         X0 = x0;
         Y0 = y0;
@@ -21,5 +22,6 @@ public readonly struct ModelBox
         D = d;
         TexU = texU;
         TexV = texV;
+        Mirror = mirror;
     }
 }

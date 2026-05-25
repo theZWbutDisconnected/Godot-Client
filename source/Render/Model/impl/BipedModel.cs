@@ -32,12 +32,14 @@ public class BipedModel : EntityModel
         Arm0.AddBox(-3f, -2f, -2f, 4, 12, 4, 40, 16);
 
         Arm1 = AddPart("Arm1", 5f, 2f);
+        Arm1.Mirror = true;
         Arm1.AddBox(-1f, -2f, -2f, 4, 12, 4, 40, 16);
 
         Leg0 = AddPart("Leg0", -2f, 12f);
         Leg0.AddBox(-2f, 0f, -2f, 4, 12, 4, 0, 16);
 
         Leg1 = AddPart("Leg1", 2f, 12f);
+        Leg1.Mirror = true;
         Leg1.AddBox(-2f, 0f, -2f, 4, 12, 4, 0, 16);
     }
 

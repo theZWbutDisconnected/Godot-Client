@@ -94,7 +94,7 @@ public partial class Game : Node3D
 			{
 				entity.Render(alpha);
 				var f4 = 0.0625F;
-				model.Scale = new Vector3(-f4, -f4, f4);
+				model.Scale = new Vector3(f4, -f4, f4);
 				model.Position = new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha));
 				model.Position += new Vector3(0.0F, 24F / 16F, 0.0F);
 				model.RotationDegrees = new Vector3(0.0F, 180 - entity.RotYBody, 0.0F);

@@ -12,6 +12,7 @@ public class ModelPart
     public float XRot;
     public float YRot;
     public float ZRot;
+    public bool Mirror;
 
     private readonly List<ModelBox> _boxes = new();
     private ArrayMesh _mesh;
@@ -32,7 +33,7 @@ public class ModelPart
 
     public void AddBox(float x0, float y0, float z0, int w, int h, int d, int texU, int texV)
     {
-        _boxes.Add(new ModelBox(x0, y0, z0, w, h, d, texU, texV));
+        _boxes.Add(new ModelBox(x0, y0, z0, w, h, d, texU, texV, Mirror));
     }
 
     public ArrayMesh BuildMesh(int texWidth, int texHeight)
@@ -72,50 +73,66 @@ public class ModelPart
         float iw = 1f / texW;
         float ih = 1f / texH;
 
+        float ruL, ruR, rvT, rvB;
+        float luL, luR, lvT, lvB;
+        float duL, duR, dvT, dvB;
+        float uuL, uuR, uvT, uvB;
+
+        if (box.Mirror)
+        {
+            ruL = (u + d + w) * iw;        ruR = (u + d + w + d) * iw;
+            rvB = (v + d) * ih;            rvT = (v + d + h) * ih;
+            luL = u * iw;                  luR = (u + d) * iw;
+            lvB = (v + d) * ih;            lvT = (v + d + h) * ih;
+            duL = (u + d) * iw;            duR = (u + d + w) * iw;
+            dvB = v * ih;                  dvT = (v + d) * ih;
+            uuL = (u + d + w + w) * iw;    uuR = (u + d + w) * iw;
+            uvB = v * ih;                  uvT = (v + d) * ih;
+        }
+        else
+        {
+            ruL = (u + d) * iw;            ruR = u * iw;
+            rvB = (v + d) * ih;            rvT = (v + d + h) * ih;
+            luL = (u + d + w + d) * iw;    luR = (u + d + w) * iw;
+            lvB = (v + d) * ih;            lvT = (v + d + h) * ih;
+            duL = (u + d + w) * iw;        duR = (u + d) * iw;
+            dvB = v * ih;                  dvT = (v + d) * ih;
+            uuL = (u + d + w) * iw;        uuR = (u + d + w + w) * iw;
+            uvB = v * ih;                  uvT = (v + d) * ih;
+        }
+
         AddQuad(st,
             new Vector3(x1, y0, z0), new Vector3(x1, y1, z0),
             new Vector3(x1, y1, z1), new Vector3(x1, y0, z1),
             Vector3.Right,
-            (u + d + w) * iw, (v + d) * ih,
-            (u + d + w) * iw, (v + d + h) * ih,
-            (u + d + w + d) * iw, (v + d + h) * ih,
-            (u + d + w + d) * iw, (v + d) * ih);
+            ruL, rvB, ruL, rvT, ruR, rvT, ruR, rvB);
 
         AddQuad(st,
             new Vector3(x0, y0, z1), new Vector3(x0, y1, z1),
             new Vector3(x0, y1, z0), new Vector3(x0, y0, z0),
             Vector3.Left,
-            u * iw, (v + d) * ih,
-            u * iw, (v + d + h) * ih,
-            (u + d) * iw, (v + d + h) * ih,
-            (u + d) * iw, (v + d) * ih);
+            luL, lvB, luL, lvT, luR, lvT, luR, lvB);
 
         AddQuad(st,
             new Vector3(x0, y0, z1), new Vector3(x0, y0, z0),
             new Vector3(x1, y0, z0), new Vector3(x1, y0, z1),
             Vector3.Down,
-            (u + d + w) * iw, v * ih,
-            (u + d + w) * iw, (v + d) * ih,
-            (u + d) * iw, (v + d) * ih,
-            (u + d) * iw, v * ih);
+            duL, dvB, duL, dvT, duR, dvT, duR, dvB);
 
         AddQuad(st,
             new Vector3(x0, y1, z0), new Vector3(x0, y1, z1),
             new Vector3(x1, y1, z1), new Vector3(x1, y1, z0),
             Vector3.Up,
-            (u + d + w) * iw, v * ih,
-            (u + d + w) * iw, (v + d) * ih,
-            (u + d + w + w) * iw, (v + d) * ih,
-            (u + d + w + w) * iw, v * ih);
+            uuL, uvB, uuL, uvT, uuR, uvT, uuR, uvB);
 
         AddQuad(st,
             new Vector3(x0, y1, z0), new Vector3(x0, y0, z0),
             new Vector3(x1, y0, z0), new Vector3(x1, y1, z0),
             Vector3.Back,
-            (u + d) * iw, (v + d + h) * ih,
-            (u + d) * iw, (v + d) * ih,
+            (u + d + w) * iw, (v + d + h) * ih,
             (u + d + w) * iw, (v + d) * ih,
-            (u + d + w) * iw, (v + d + h) * ih);
+            (u + d) * iw, (v + d) * ih,
+            (u + d) * iw, (v + d + h) * ih);
 
         AddQuad(st,
             new Vector3(x1, y1, z1), new Vector3(x1, y0, z1),

@@ -268,6 +268,7 @@ public class Entity
     public virtual void HurtAnimation()
     {
         HurtTime = 10;
+        LimbSwingAmount = 2F;
     }
     
     protected virtual void UpdateSwing()
