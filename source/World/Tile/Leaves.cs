@@ -10,9 +10,9 @@ public class Leaves : Block
     {
     }
 
-    protected override uint GetBlockColor(Level level, BlockPos pos, int meta)
+    protected override int GetBlockColor(Level level, BlockPos pos, int meta)
     {
-        return (uint)BiomeColorHelper.GetFoliageColorAtPos(level, pos);
+        return BiomeColorHelper.GetFoliageColorAtPos(level, pos);
     }
 
     public override bool IsOpaque()

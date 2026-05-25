@@ -16,12 +16,12 @@ public class DoubleBush : Bush
     {
     }
 
-    protected override uint GetBlockColor(Level level, BlockPos pos, int meta)
+    protected override int GetBlockColor(Level level, BlockPos pos, int meta)
     {
         var down = level.GetMetadata(pos.Down());
         return meta == 2 || (meta == 10 && down == 2)
-            ? (uint)BiomeColorHelper.GetGrassColorAtPos(level, pos)
-            : 0xFFFFFFFF;
+            ? BiomeColorHelper.GetGrassColorAtPos(level, pos)
+            : 0xFFFFFF;
     }
 
     public override void Render(Tessellator t, Level level, BlockPos pos)
@@ -82,7 +82,7 @@ public class DoubleBush : Bush
             t.VertexUV(hx0, hy0, hZ1 + z, bu1, fv1);
         }
 
-        if (meta == 10 && metadown == 0) y -= 0.125f;
+        if (meta == 10 && metadown == 0) y -= 0.08f;
         for (var d = 0; d < rots; ++d)
         {
             var xa = (float)(Math.Sin(d * Math.PI / rots + Math.PI / 4D) * 0.5F);
@@ -91,7 +91,7 @@ public class DoubleBush : Bush
             var x1 = x + 0.5F + xa;
             var y0 = y + 0.0F;
             var y1 = y + 1.0F;
-            if ((meta == 10 && metadown == 0) || meta == 0) y1 -= 0.125f;
+            if ((meta == 10 && metadown == 0) || meta == 0) y1 -= 0.08f;
             var z0 = z + 0.5F - za;
             var z1 = z + 0.5F + za;
             t.VertexUV(x0, y1, z0, u1, v0);

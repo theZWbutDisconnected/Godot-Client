@@ -15,9 +15,9 @@ public class Grass : Bush
         return true;
     }
 
-    protected override uint GetBlockColor(Level level, BlockPos pos, int meta)
+    protected override int GetBlockColor(Level level, BlockPos pos, int meta)
     {
-        return (uint)BiomeColorHelper.GetGrassColorAtPos(level, pos);
+        return BiomeColorHelper.GetGrassColorAtPos(level, pos);
     }
 
     public override AABB GetCollision()

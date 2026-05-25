@@ -95,9 +95,9 @@ public class Block
         }
     }
 
-    protected virtual uint GetBlockColor(Level level, BlockPos pos, int meta)
+    protected virtual int GetBlockColor(Level level, BlockPos pos, int meta)
     {
-        return 0xFFFFFFFF;
+        return 0xFFFFFF;
     }
 
     protected virtual bool ShouldRenderFace(Level level, BlockPos pos)
