@@ -5,7 +5,7 @@ using TestClient.Source.Physics;
 
 namespace TestClient.Source.World.Entities;
 
-public partial class Player : Entity
+public class Player : Entity
 {
     public readonly NetworkSystem SendQueue;
     private int _positionUpdateTicks;

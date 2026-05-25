@@ -375,4 +375,12 @@ public partial class Level : Node3D
 			return HashCode.Combine(IsLiquid, TexIndex);
 		}
 	}
+
+	public void Tick()
+	{
+		foreach (var i in _entities)
+		{
+			if (!i.Removed) i.Tick();
+		}
+	}
 }

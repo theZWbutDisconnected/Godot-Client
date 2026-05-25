@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using TestClient.Source.Network;
@@ -5,12 +6,13 @@ using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
 using TestClient.Source.Physics;
+using TestClient.Source.Render.Model;
 using TestClient.Source.World;
 using TestClient.Source.World.Entities;
 
 namespace TestClient.Source;
 
-public partial class Game : Node
+public partial class Game : Node3D
 {
 	private const string ip = "127.0.0.1";
 	private const int port = 25565;
@@ -29,6 +31,8 @@ public partial class Game : Node
 	public Level Level;
 	public Player Player;
 
+	private readonly Dictionary<Entity, ModelRenderer> _entityModels = [];
+
 	public Game()
 	{
 		Singleton = this;
@@ -43,10 +47,7 @@ public partial class Game : Node
 		Level = new Level();
 		Player = new Player(Level, _network);
 		Level.AddEntity(Player);
-
 		AddChild(Level);
-		AddChild(Player);
-
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
 
@@ -79,12 +80,36 @@ public partial class Game : Node
 	private void Tick()
 	{
 		if (_network.IsConnected()) _network.StreamProcess();
-		Player.Tick();
+		Level.Tick();
 	}
 
 	private void Render(float alpha)
 	{
 		SetupCamera(alpha);
+		foreach (var i in _entityModels)
+		{
+			var entity = i.Key;
+			var model = i.Value.Root;
+			if (!entity.Removed)
+			{
+				entity.Render(alpha);
+				float size = 1F / 16F;
+				model.Scale = new Vector3(-size, -size, size);
+				model.Position = new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha));
+				model.Position += new Vector3(0.0F, 24F / 16F, 0.0F);
+				model.RotationDegrees = new Vector3(0.0F, -entity.RotY, 0.0F);
+				if (!model.IsInsideTree()) AddChild(model);
+			}
+			else
+			{
+				i.Value.Free();
+			}
+		}
+	}
+
+	public void NewEntityNode(Entity entity, ModelRenderer renderer)
+	{
+		_entityModels.Add(entity, renderer);
 	}
 
 	private void SetupCamera(float a)
@@ -117,6 +142,15 @@ public partial class Game : Node
 
 			var YMouseAxis = 1;
 			Player.Turn(xo, yo * YMouseAxis);
+		}
+
+		if (@event is InputEventKey key)
+		{
+			if (key.Pressed && key.Keycode == Key.G)
+			{
+				var zombie = new Zombie(Level, Player.PosX, Player.PosY, Player.PosZ);
+				Level.AddEntity(zombie);
+			}
 		}
 	}
 }

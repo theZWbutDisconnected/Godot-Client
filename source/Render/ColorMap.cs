@@ -47,22 +47,17 @@ public static class ColorMap
     public static int GetGrassColor(double temperature, double rainfall)
     {
         rainfall *= temperature;
-        
         int i = (int)((1.0 - temperature) * 255.0);
         int j = (int)((1.0 - rainfall) * 255.0);
         int k = j << 8 | i;
-        
-        return k >= _grassBuffer.Length ? 0x7fb238 : _grassBuffer[k];
+        return k > _grassBuffer.Length ? -65281 : _grassBuffer[k];
     }
     
     public static int GetFoliageColor(double temperature, double rainfall)
     {
         rainfall *= temperature;
-        
-        int i = (int)((1.0 - temperature) * 255.0);
-        int j = (int)((1.0 - rainfall) * 255.0);
-        int k = j << 8 | i;
-        
-        return k >= _foliageBuffer.Length ? 0x5e8c29 : _foliageBuffer[k];
+        int i = (int)((1.0D - temperature) * 255.0D);
+        int j = (int)((1.0D - rainfall) * 255.0D);
+        return _foliageBuffer[j << 8 | i];
     }
 }

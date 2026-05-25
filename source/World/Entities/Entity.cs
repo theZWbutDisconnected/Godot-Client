@@ -4,7 +4,7 @@ using TestClient.Source.Physics;
 
 namespace TestClient.Source.World.Entities;
 
-public partial class Entity : Node3D
+public class Entity
 {
     public AABB BoundingBox;
     public int EntityId = new Random().Next();
@@ -62,6 +62,10 @@ public partial class Entity : Node3D
         RotX = pitch % 360.0F;
     }
 
+    public void Remove() {
+        Removed = true;
+    }
+
     public void SetPosAndRot(double x, double y, double z, float yaw, float pitch)
     {
         PrevX = PosX = x;
@@ -79,8 +83,7 @@ public partial class Entity : Node3D
         SetRot(yaw, pitch);
     }
 
-    public void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements,
-        bool p_180426_10_)
+    public void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, bool p_180426_10_)
     {
         SetPosAndRot(x, y, z, yaw, pitch);
         var list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
@@ -116,6 +119,10 @@ public partial class Entity : Node3D
         PrevZ = PosZ;
         PrevRotY = RotY;
         PrevRotX = RotX;
+    }
+
+    public virtual void Render(float a)
+    {
     }
 
     public void Move(double xa, double ya, double za)
