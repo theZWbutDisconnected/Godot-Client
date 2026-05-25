@@ -45,8 +45,8 @@ public class Entity
     public double YDelta;
     public double ZDelta;
     public int HurtTime;
-    private bool isSwingInProgress;
-    private int swingProgressInt;
+    private bool _isSwingInProgress;
+    private int _swingProgressInt;
 
     public DataWatcher DataWatcher { get; private set; }
 
@@ -274,35 +274,52 @@ public class Entity
     {
         int i = SwingDuration();
 
-        if (isSwingInProgress)
+        if (_isSwingInProgress)
         {
-            ++swingProgressInt;
+            ++_swingProgressInt;
 
-            if (swingProgressInt >= i)
+            if (_swingProgressInt >= i)
             {
-                swingProgressInt = 0;
-                isSwingInProgress = false;
+                _swingProgressInt = 0;
+                _isSwingInProgress = false;
             }
         }
         else
         {
-            swingProgressInt = 0;
+            _swingProgressInt = 0;
         }
 
-        SwingProgress = swingProgressInt / (float)i;
+        SwingProgress = _swingProgressInt / (float)i;
     }
 
     public virtual void Swing()
     {
-        if (!isSwingInProgress || swingProgressInt >= SwingDuration() / 2 || swingProgressInt < 0)
+        if (!_isSwingInProgress || _swingProgressInt >= SwingDuration() / 2 || _swingProgressInt < 0)
         {
-            swingProgressInt = -1;
-            isSwingInProgress = true;
+            _swingProgressInt = -1;
+            _isSwingInProgress = true;
         }
     }
     
     private int SwingDuration()
     {
         return 6;
+    }
+
+    public float GetSwingProgress(float partialTickTime)
+    {
+        float f = SwingProgress - PrevSwingProgress;
+
+        if (f < 0.0F)
+        {
+            ++f;
+        }
+
+        return PrevSwingProgress + f * partialTickTime;
+    }
+
+    public bool IsRiding()
+    {
+        return false;
     }
 }

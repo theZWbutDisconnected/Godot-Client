@@ -48,6 +48,8 @@ public class ModelRenderer
 
     public void Update(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
     {
+        _model.SwingProgress = entityIn.GetSwingProgress(Game.Singleton.Timer.RenderPartialTicks);
+        _model.IsRiding = entityIn.IsRiding();
         _model.Animate(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 
         foreach (var part in _model.GetParts())

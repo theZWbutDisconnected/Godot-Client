@@ -18,8 +18,8 @@ public partial class Game : Node3D
 	private const int port = 25565;
 	private const string username = "LocalPlayer";
 
+	public Timer Timer { get; } = new(20);
 	private readonly NetworkSystem _network = new();
-	private readonly Timer _timer = new(20);
 
 	private string _fpsString = "0 fps";
 	private int _frames;
@@ -64,9 +64,9 @@ public partial class Game : Node3D
 	public override void _Process(double delta)
 	{
 		if (!_isRunning) return;
-		_timer.UpdateTimer();
-		for (var i = 0; i < _timer.ElapsedTicks; ++i) Tick();
-		Render(_timer.RenderPartialTicks);
+		Timer.UpdateTimer();
+		for (var i = 0; i < Timer.ElapsedTicks; ++i) Tick();
+		Render(Timer.RenderPartialTicks);
 		++_frames;
 
 		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))

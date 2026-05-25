@@ -94,6 +94,8 @@ public class BipedModel : EntityModel
             Arm1.PivotX = -MathF.Cos(Body.YRot) * 5.0F;
             Arm0.PivotZ = -MathF.Sin(Body.YRot) * 5.0F;
             Arm0.PivotX = MathF.Cos(Body.YRot) * 5.0F;
+            Arm0.PivotX += 2.0f;
+            Arm1.PivotX -= 2.0f;
             Arm1.YRot += Body.YRot;
             Arm0.YRot += Body.YRot;
             Arm0.XRot += Body.YRot;

@@ -8,7 +8,7 @@ public abstract class EntityModel
 {
     protected readonly List<ModelPart> Parts = new();
 
-    public float SwingProgress = -9990.0F;
+    public float SwingProgress = -9990F;
     public bool IsRiding;
 
     public IReadOnlyList<ModelPart> GetParts() => Parts;
