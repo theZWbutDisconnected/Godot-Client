@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using TestClient.Source.World.Entities;
 
 namespace TestClient.Source.Render.Model;
 
@@ -9,8 +10,8 @@ public class ModelRenderer
     private const int DefaultTexWidth = 64;
     private const int DefaultTexHeight = 32;
 
-    private static StandardMaterial3D s_sharedMaterial;
-    private static string s_loadedTexturePath;
+    private StandardMaterial3D _sharedMaterial;
+    private string _loadedTexturePath;
 
     private readonly EntityModel _model;
     private Node3D _root;
@@ -38,16 +39,16 @@ public class ModelRenderer
             {
                 Name = part.Name,
                 Mesh = mesh,
-                MaterialOverride = s_sharedMaterial
+                MaterialOverride = _sharedMaterial
             };
             _root.AddChild(node);
             _nodes[part.Name] = node;
         }
     }
 
-    public void Update(double time)
+    public void Update(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
     {
-        _model.Animate(time);
+        _model.Animate(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 
         foreach (var part in _model.GetParts())
         {
@@ -71,19 +72,19 @@ public class ModelRenderer
 
     public Node3D Root => _root;
 
-    private static void EnsureMaterial(string texturePath)
+    private void EnsureMaterial(string texturePath)
     {
-        if (s_sharedMaterial != null && s_loadedTexturePath == texturePath)
+        if (_sharedMaterial != null && _loadedTexturePath == texturePath)
             return;
 
-        s_sharedMaterial?.Dispose();
-        s_sharedMaterial = null;
+        _sharedMaterial?.Dispose();
+        _sharedMaterial = null;
 
         var tex = GD.Load<Texture2D>(texturePath);
         if (tex == null)
         {
             GD.PushError($"Failed to load texture: {texturePath}");
-            s_sharedMaterial = new StandardMaterial3D
+            _sharedMaterial = new StandardMaterial3D
             {
                 AlbedoColor = new Color(1f, 0f, 1f),
                 ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded
@@ -91,7 +92,7 @@ public class ModelRenderer
             return;
         }
 
-        s_sharedMaterial = new StandardMaterial3D
+        _sharedMaterial = new StandardMaterial3D
         {
             AlbedoTexture = tex,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
@@ -101,6 +102,6 @@ public class ModelRenderer
             AlphaScissorThreshold = 0.1f
         };
 
-        s_loadedTexturePath = texturePath;
+        _loadedTexturePath = texturePath;
     }
 }

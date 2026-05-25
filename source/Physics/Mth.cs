@@ -39,4 +39,29 @@ public static class Mth
     {
         return value != 0 && (value & (value - 1)) == 0;
     }
+
+    public static float WrapAngle(float value)
+    {
+        value = value % 360.0F;
+
+        if (value >= 180.0F)
+        {
+            value -= 360.0F;
+        }
+
+        if (value < -180.0F)
+        {
+            value += 360.0F;
+        }
+
+        return value;
+    }
+
+    public static float InterpolateRotation(float par1, float par2, float par3)
+    {
+        float f;
+        for (f = par2 - par1; f < -180.0F; f += 360.0F) ;
+        while (f >= 180.0F) f -= 360.0F;
+        return par1 + par3 * f;
+    }
 }

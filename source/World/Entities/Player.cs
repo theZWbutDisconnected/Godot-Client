@@ -9,7 +9,6 @@ public class Player : Entity
 {
     public readonly NetworkSystem SendQueue;
     private int _positionUpdateTicks;
-    public float HeadYaw;
     public float LastPitch;
     public double LastX;
     public double LastY;
@@ -20,11 +19,6 @@ public class Player : Entity
     public Player(Level level, NetworkSystem netHandler) : base(level)
     {
         SendQueue = netHandler;
-    }
-
-    public override void SetHeadYaw(float f)
-    {
-        HeadYaw = f;
     }
 
     public override void Tick()

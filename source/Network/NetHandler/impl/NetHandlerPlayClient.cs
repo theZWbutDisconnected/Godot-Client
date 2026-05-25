@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Godot;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Network.Packet.Server.Play;
+using TestClient.Source.Utility;
+using TestClient.Source.World.Entities;
 
 namespace TestClient.Source.Network.NetHandler.impl;
 
@@ -38,6 +41,34 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");
+    }
+
+    public void HandleSpawnMob(S0FSpawnMob packetIn)
+    {
+        var d0 = packetIn.X / 32.0D;
+        var d1 = packetIn.Y / 32.0D;
+        var d2 = packetIn.Z / 32.0D;
+        var f = packetIn.Yaw * 360 / 256.0F;
+        var f1 = packetIn.Pitch * 360 / 256.0F;
+        var entitylivingbase = EntityList.CreateEntityByID(packetIn.Type, Game.Singleton.Level);
+        if (entitylivingbase == null)
+        {
+            GD.Print("Unhandled entity id: ", packetIn.Type);
+            return;
+        }
+        entitylivingbase.ServerX = packetIn.X;
+        entitylivingbase.ServerY = packetIn.Y;
+        entitylivingbase.ServerZ = packetIn.Z;
+        entitylivingbase.RotYBody = entitylivingbase.RotYHead = packetIn.HeadYaw * 360 / 256.0F;
+
+        entitylivingbase.EntityId = packetIn.EntityId;
+        entitylivingbase.SetPosAndRot(d0, d1, d2, f, f1);
+        entitylivingbase.XDelta = packetIn.VelocityX / 8000.0F;
+        entitylivingbase.YDelta = packetIn.VelocityY / 8000.0F;
+        entitylivingbase.ZDelta = packetIn.VelocityZ / 8000.0F;
+        Game.Singleton.Level.AddEntity(packetIn.EntityId, entitylivingbase);
+        List<DataWatcher.WatchableObject> list = packetIn.Watcher;
+        if (list != null) entitylivingbase.DataWatcher.UpdateWatchedObjectsFromList(list);
     }
 
     public void HandlePlayerPosLook(S08PlayerPosLook packetIn)
@@ -104,6 +135,22 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         else
             entity.SetPosAndRot2(d0, d1, d2, f, f1, 3, true);
 
+        entity.OnGround = packetIn.OnGround;
+    }
+
+    public void HandleEntityMovement(S14Entity packetIn)
+    {
+        var entity = packetIn.GetEntity(Game.Singleton.Level);
+        if (entity == null) return;
+        entity.ServerX += packetIn.PosX;
+        entity.ServerY += packetIn.PosY;
+        entity.ServerZ += packetIn.PosZ;
+        var d0 = entity.ServerX / 32.0D;
+        var d1 = entity.ServerY / 32.0D;
+        var d2 = entity.ServerZ / 32.0D;
+        var f = packetIn.LookChange ? packetIn.Yaw * 360 / 256.0F : entity.RotY;
+        var f1 = packetIn.LookChange ? packetIn.Pitch * 360 / 256.0F : entity.RotX;
+        entity.SetPosAndRot2(d0, d1, d2, f, f1, 3, false);
         entity.OnGround = packetIn.OnGround;
     }
 

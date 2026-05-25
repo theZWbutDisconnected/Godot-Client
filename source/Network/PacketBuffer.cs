@@ -221,4 +221,12 @@ public class PacketBuffer(Stream stream)
 	{
 		return BlockPos.FromLong(ReadLong());
 	}
+
+	internal void WriteInt(int value)
+	{
+		var bytes = BitConverter.GetBytes(value);
+		if (BitConverter.IsLittleEndian)
+			Array.Reverse(bytes);
+		stream.Write(bytes, 0, 4);
+	}
 }

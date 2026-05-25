@@ -93,11 +93,11 @@ public partial class Game : Node3D
 			if (!entity.Removed)
 			{
 				entity.Render(alpha);
-				float size = 1F / 16F;
-				model.Scale = new Vector3(-size, -size, size);
+				var f4 = 0.0625F;
+				model.Scale = new Vector3(-f4, -f4, f4);
 				model.Position = new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha));
 				model.Position += new Vector3(0.0F, 24F / 16F, 0.0F);
-				model.RotationDegrees = new Vector3(0.0F, -entity.RotY, 0.0F);
+				model.RotationDegrees = new Vector3(0.0F, 180 - entity.RotYBody, 0.0F);
 				if (!model.IsInsideTree()) AddChild(model);
 			}
 			else
@@ -148,7 +148,7 @@ public partial class Game : Node3D
 		{
 			if (key.Pressed && key.Keycode == Key.G)
 			{
-				var zombie = new Zombie(Level, Player.PosX, Player.PosY, Player.PosZ);
+				var zombie = new Zombie(Level);
 				Level.AddEntity(zombie);
 			}
 		}

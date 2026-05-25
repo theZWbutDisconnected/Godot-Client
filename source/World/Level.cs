@@ -324,6 +324,12 @@ public partial class Level : Node3D
 		_entities.Add(entity);
 	}
 
+	public void AddEntity(int id, Entity entity)
+	{
+		entity.EntityId = id;
+		_entities.Add(entity);
+	}
+
 	public Entity GetEntityById(int entityId)
 	{
 		Entity target = null;
@@ -380,7 +386,11 @@ public partial class Level : Node3D
 	{
 		foreach (var i in _entities)
 		{
-			if (!i.Removed) i.Tick();
+			if (!i.Removed)
+			{
+				++i.TicksExisted;
+				i.Tick();
+			}
 		}
 	}
 }

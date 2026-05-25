@@ -1,6 +1,7 @@
 ﻿using System;
 using Godot;
 using TestClient.Source.Physics;
+using TestClient.Source.Utility;
 
 namespace TestClient.Source.World.Entities;
 
@@ -9,28 +10,42 @@ public class Entity
     public AABB BoundingBox;
     public int EntityId = new Random().Next();
     public Guid EntityUuid = Guid.NewGuid();
+    public float EyeHeight;
+    public float Height = 1.8F;
     protected Level Level;
+    public float LimbSwing;
+    public float LimbSwingAmount;
+    protected float MovedDistance;
+    protected float PrevMovedDistance;
     public bool OnGround;
-    public bool Removed;
     public double PosX;
     public double PosY;
     public double PosZ;
-    public float PrevRotX;
-    public float PrevRotY;
     public double PrevX;
     public double PrevY;
     public double PrevZ;
     public float RotX;
     public float RotY;
+    public float RotYBody;
+    public float RotYHead;
+    public float PrevRotX;
+    public float PrevRotY;
+    public float PrevRotYBody;
+    public float PrevRotYHead;
+    public float PrevLimbSwingAmount;
+    public float PrevSwingProgress;
+    public bool Removed;
     public int ServerX;
     public int ServerY;
     public int ServerZ;
+    public float SwingProgress;
+    public float TicksExisted;
+    protected float Width = 0.6F;
     public double XDelta;
     public double YDelta;
     public double ZDelta;
-    protected float Width = 0.6F;
-    public float Height = 1.8F;
-    public float EyeHeight;
+
+    public DataWatcher DataWatcher { get; private set; }
 
     public Entity(Level level)
     {
@@ -38,6 +53,12 @@ public class Entity
         SetSize(0.6F, 1.8F);
         SetPos(0.0F, 0.0F, 0.0F);
         EyeHeight = 1.62F;
+        DataWatcher = new DataWatcher(this);
+        DataWatcher.AddObject(0, (byte)0);
+        DataWatcher.AddObject(1, (short)300);
+        DataWatcher.AddObject(3, (byte)0);
+        DataWatcher.AddObject(2, "");
+        DataWatcher.AddObject(4, (byte)0);
     }
 
     protected void SetSize(float w, float h)
@@ -62,11 +83,12 @@ public class Entity
         RotX = pitch % 360.0F;
     }
 
-    public void Remove() {
+    public void Remove()
+    {
         Removed = true;
     }
 
-    public void SetPosAndRot(double x, double y, double z, float yaw, float pitch)
+    public virtual void SetPosAndRot(double x, double y, double z, float yaw, float pitch)
     {
         PrevX = PosX = x;
         PrevY = PosY = y;
@@ -83,7 +105,8 @@ public class Entity
         SetRot(yaw, pitch);
     }
 
-    public void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, bool p_180426_10_)
+    public virtual void SetPosAndRot2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements,
+        bool p_180426_10_)
     {
         SetPosAndRot(x, y, z, yaw, pitch);
         var list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
@@ -119,6 +142,39 @@ public class Entity
         PrevZ = PosZ;
         PrevRotY = RotY;
         PrevRotX = RotX;
+        PrevRotYHead = RotYHead;
+        PrevRotYBody = RotYBody;
+        PrevMovedDistance = MovedDistance;
+
+        LivingTick();
+
+        var d0 = PosX - PrevX;
+        var d1 = PosZ - PrevZ;
+        var f = (float)(d0 * d0 + d1 * d1);
+        var f1 = RotYBody;
+        var f2 = 0.0F;
+        if (f > 0.0025000002F)
+        {
+            f2 = (float)Mathf.Sqrt((double)f) * 3.0F;
+            f1 = (float)Mathf.Atan2(d1, d0) * 180.0F / (float)Math.PI - 90.0F;
+        }
+        if (SwingProgress > 0.0F) f1 = RotY;
+        f2 = UpdateDistance(f1, f2);
+        
+        while (RotY - PrevRotY < -180.0F) PrevRotY -= 360.0F;
+        while (RotY - PrevRotY >= 180.0F) PrevRotY += 360.0F;
+        while (RotYBody - PrevRotYBody < -180.0F) PrevRotYBody -= 360.0F;
+        while (RotYBody - PrevRotYBody >= 180.0F) PrevRotYBody += 360.0F;
+        while (RotX - PrevRotX < -180.0F) PrevRotX -= 360.0F;
+        while (RotX - PrevRotX >= 180.0F) PrevRotX += 360.0F;
+        while (RotYHead - PrevRotYHead < -180.0F) PrevRotYHead -= 360.0F;
+        while (RotYHead - PrevRotYHead >= 180.0F) PrevRotYHead += 360.0F;
+        
+        MovedDistance += f2;
+    }
+
+    public virtual void LivingTick()
+    {
     }
 
     public virtual void Render(float a)
@@ -180,7 +236,26 @@ public class Entity
         ZDelta = z;
     }
 
+    protected virtual float UpdateDistance(float p_110146_1_, float p_110146_2_)
+    {
+        var f = Mth.WrapAngle(p_110146_1_ - RotYBody);
+        RotYBody += f * 0.3F;
+        var f1 = Mth.WrapAngle(RotY - RotYBody);
+        var flag = f1 < -90.0F || f1 >= 90.0F;
+        if (f1 < -75.0F) f1 = -75.0F;
+        if (f1 >= 75.0F) f1 = 75.0F;
+        RotYBody = RotY - f1;
+        if (f1 * f1 > 2500.0F) RotYBody += f1 * 0.2F;
+        if (flag) p_110146_2_ *= -1.0F;
+        return p_110146_2_;
+    }
+
     public virtual void SetHeadYaw(float f)
+    {
+        RotYHead = f;
+    }
+
+    public void OnDataWatcherUpdate(int dataID)
     {
     }
 }

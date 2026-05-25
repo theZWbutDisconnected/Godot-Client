@@ -36,8 +36,13 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Login, 0x03, () => new S03EnableCompression());
 		RegisterInbound(ConnectionState.Play, 0x00, () => new S00KeepAlive());
 		RegisterInbound(ConnectionState.Play, 0x01, () => new S01JoinGame());
+		RegisterInbound(ConnectionState.Play, 0x0F, () => new S0FSpawnMob());
 		RegisterInbound(ConnectionState.Play, 0x08, () => new S08PlayerPosLook());
 		RegisterInbound(ConnectionState.Play, 0x12, () => new S12EntityVelocity());
+		RegisterInbound(ConnectionState.Play, 0x14, () => new S14Entity());
+		RegisterInbound(ConnectionState.Play, 0x15, () => new S14Entity.S15EntityRelMove());
+		RegisterInbound(ConnectionState.Play, 0x16, () => new S14Entity.S16EntityLook());
+		RegisterInbound(ConnectionState.Play, 0x17, () => new S14Entity.S17EntityLookMove());
 		RegisterInbound(ConnectionState.Play, 0x18, () => new S18EntityTeleport());
 		RegisterInbound(ConnectionState.Play, 0x19, () => new S19EntityHeadLook());
 		RegisterInbound(ConnectionState.Play, 0x21, () => new S21ChunkData());

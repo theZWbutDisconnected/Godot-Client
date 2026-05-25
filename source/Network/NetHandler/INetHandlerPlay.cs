@@ -5,9 +5,11 @@ namespace TestClient.Source.Network.NetHandler;
 public interface INetHandlerPlayClient : INetHandler
 {
     void HandleKeepAlive(S00KeepAlive @in);
+    void HandleSpawnMob(S0FSpawnMob @in);
     void HandleJoinGame(S01JoinGame @in);
     void HandlePlayerPosLook(S08PlayerPosLook @in);
     void HandleEntityVelocity(S12EntityVelocity packetIn);
+    void HandleEntityMovement(S14Entity packetIn);
     void HandleEntityTeleport(S18EntityTeleport @in);
     void HandleEntityHeadLook(S19EntityHeadLook @in);
     void HandleChunkData(S21ChunkData @in);

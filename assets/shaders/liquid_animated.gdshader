@@ -10,11 +10,9 @@ uniform bool pingpong = false;
 uniform int frame_offset = 0;
 
 void fragment() {
-    // Calculate current animation frame
     int frame;
     if (pingpong) {
-        // Ping-pong: frame_count = total frames (e.g. lava = 38 = 20 fwd + 18 rev)
-        // Derive unique: total = 2*unique - 2  =>  unique = (total + 2) / 2
+        // total = 2*unique - 2  =>  unique = (total + 2) / 2
         int unique = (frame_count + 2) / 2;
         int raw = int(mod(TIME / frame_time, float(frame_count)));
         frame = raw < unique ? raw : frame_count - raw;
@@ -22,8 +20,6 @@ void fragment() {
         frame = int(mod(TIME / frame_time, float(frame_count)));
     }
 
-    // Vertex UV points to first frame's tile in atlas.
-    // Extract local UV within tile, then offset to current frame.
     float tile_uv = 1.0 / atlas_width;
     vec2 local_uv = fract(UV * atlas_width); // [0,1] within tile
 
