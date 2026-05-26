@@ -77,6 +77,7 @@ public class NetworkSystem
 				{ typeof(ServerboundAnimation), p => h.HandleAnimation((ServerboundAnimation)p) },
 				{ typeof(ServerboundSpawnPlayer), p => h.HandleSpawnPlayer((ServerboundSpawnPlayer)p) },
 				{ typeof(ServerboundSpawnMob), p => h.HandleSpawnMob((ServerboundSpawnMob)p) },
+				{ typeof(ServerboundEntityAttach), p => h.HandleEntityAttach((ServerboundEntityAttach)p) },
 				{ typeof(ServerboundDestroyEntities), p => h.HandleDestroyEntities((ServerboundDestroyEntities)p) },
 				{ typeof(ServerboundTeleport), p => h.HandlePlayerPosLook((ServerboundTeleport)p) },
 				{ typeof(ServerboundEntityMetadata), p => h.HandleEntityMetadata((ServerboundEntityMetadata)p) },

@@ -35,14 +35,9 @@ public class DataWatcher
 
     public void AddObject<T>(int id, T obj)
     {
-        if (!_dataTypes.TryGetValue(typeof(T), out var typeId))
-            throw new ArgumentException("Unknown data type: " + typeof(T));
-
-        if (id > 31)
-            throw new ArgumentException("Data value id is too big with " + id + "! (Max is 31)");
-
-        if (_watchedObjects.ContainsKey(id))
-            throw new ArgumentException("Duplicate id value for " + id + "!");
+        if (!_dataTypes.TryGetValue(typeof(T), out var typeId))        throw new ArgumentException("Unknown data type: " + typeof(T));
+        if (id > 31)                                                       throw new ArgumentException("Data value id is too big with " + id + "! (Max is 31)");
+        if (_watchedObjects.ContainsKey(id))                               throw new ArgumentException("Duplicate id value for " + id + "!");
 
         var watchableObject = new WatchableObject(typeId, id, obj);
         _lock.EnterWriteLock();
@@ -58,29 +53,9 @@ public class DataWatcher
         _isBlank = false;
     }
 
-    public byte GetWatchableObjectByte(int id)
+    public byte GetWatched(int id)
     {
         return (byte)GetWatchedObject(id).GetObject();
-    }
-
-    public short GetWatchableObjectShort(int id)
-    {
-        return (short)GetWatchedObject(id).GetObject();
-    }
-
-    public int GetWatchableObjectInt(int id)
-    {
-        return (int)GetWatchedObject(id).GetObject();
-    }
-
-    public float GetWatchableObjectFloat(int id)
-    {
-        return (float)GetWatchedObject(id).GetObject();
-    }
-
-    public string GetWatchableObjectString(int id)
-    {
-        return (string)GetWatchedObject(id).GetObject();
     }
 
     private WatchableObject GetWatchedObject(int id)
@@ -88,9 +63,7 @@ public class DataWatcher
         _lock.EnterReadLock();
         try
         {
-            if (_watchedObjects.TryGetValue(id, out var obj))
-                return obj;
-            return null;
+            return _watchedObjects.GetValueOrDefault(id);
         }
         finally
         {

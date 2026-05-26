@@ -53,15 +53,20 @@ public abstract class ServerEntity : Entity
         }
         
         PrevLimbSwingAmount = LimbSwingAmount;
+        
+        if (IsRiding())
+        {
+            SetLocationAndAngles(Vehicle.PosX, Vehicle.BoundingBox.Y0 + Vehicle.Height / 2, Vehicle.PosZ, RotY, RotX);
+        } else {
+            var d0 = PosX - PrevX;
+            var d1 = PosZ - PrevZ;
+            var f = (float)Math.Sqrt(d0 * d0 + d1 * d1) * 4.0F;
 
-        var d0 = PosX - PrevX;
-        var d1 = PosZ - PrevZ;
-        var f = (float)Math.Sqrt(d0 * d0 + d1 * d1) * 4.0F;
+            if (f > 1.0F) f = 1.0F;
 
-        if (f > 1.0F) f = 1.0F;
-
-        LimbSwingAmount += (f - LimbSwingAmount) * 0.4F;
-        LimbSwing += LimbSwingAmount;
+            LimbSwingAmount += (f - LimbSwingAmount) * 0.4F;
+            LimbSwing += LimbSwingAmount;
+        }
     }
 
     public override void Render(float a)
@@ -78,7 +83,7 @@ public abstract class ServerEntity : Entity
 
         var f4 = 0.0625F;
         
-        GetModelRenderer().Update(f6, f5, TicksExisted + a, -f2, f7, f4, this);
+        GetModelRenderer().Update(f6, f5, TicksExisted + a, f2, f7, f4, this);
     }
 
     protected T GetModel<T>() where T : EntityModel

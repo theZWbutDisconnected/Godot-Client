@@ -281,6 +281,25 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
+    public void HandleEntityAttach(ServerboundEntityAttach packetIn)
+    {
+        var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        var vehicle = Game.Singleton.Level.GetEntityById(packetIn.VehicleEntityId);
+        if (entity == null) return;
+        GD.Print("Attach packet: " + packetIn.EntityId, " ", packetIn.VehicleEntityId, " ", packetIn.Leash);
+        if (packetIn.Leash == 0)
+        {
+            if (packetIn.VehicleEntityId != -1)
+            {
+                entity.MountEntity(vehicle);
+            }
+            else
+            {
+                entity.Dismount();
+            }
+        }
+    }
+
     public void Disconnected(string reason)
     {
         GD.PrintErr($"Play connection lost: {reason}");

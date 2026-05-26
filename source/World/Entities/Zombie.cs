@@ -23,7 +23,7 @@ public class Zombie : ServerLiving
 
     public override bool IsChild()
     {
-        return DataWatcher.GetWatchableObjectByte(12) == 1;
+        return DataWatcher.GetWatched(12) == 1;
     }
 
     protected override ModelRenderer GetModelRenderer()

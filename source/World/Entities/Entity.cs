@@ -15,6 +15,7 @@ public class Entity
     protected Level Level;
     public float LimbSwing;
     public float LimbSwingAmount;
+    protected Entity Vehicle;
     protected float MovedDistance;
     protected float PrevMovedDistance;
     public bool OnGround;
@@ -83,6 +84,13 @@ public class Entity
         var w = Width / 2.0F;
         var h = Height;
         BoundingBox = new AABB(x - w, y, z - w, x + w, y + h, z + w);
+    }
+
+    public virtual void SetLocationAndAngles(double x, double y, double z, float yaw, float pitch)
+    {
+        RotY = yaw;
+        RotX = pitch;
+        SetPos(PosX = x, PosY = y, PosZ = z);
     }
 
     public void SetRot(float yaw, float pitch)
@@ -326,7 +334,7 @@ public class Entity
 
     protected bool GetFlag(int flag)
     {
-        return (DataWatcher.GetWatchableObjectByte(0) & 1 << flag) != 0;
+        return (DataWatcher.GetWatched(0) & 1 << flag) != 0;
     }
 
     
@@ -337,11 +345,23 @@ public class Entity
 
     public virtual bool IsRiding()
     {
-        return false;
+        return Vehicle != null;
     }
 
     public virtual bool IsChild()
     {
         return false;
+    }
+
+    public void MountEntity(Entity vehicle)
+    {
+        LimbSwing = 0f;
+        LimbSwingAmount = 0f;
+        Vehicle = vehicle;
+    }
+
+    public void Dismount()
+    {
+        Vehicle = null;
     }
 }

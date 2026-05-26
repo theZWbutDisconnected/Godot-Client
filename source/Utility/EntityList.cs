@@ -10,7 +10,7 @@ public class EntityList
         return packetInEntityType switch
         {
             54 => new Zombie(singletonLevel),
-            _ => null
+            _ => new Zombie(singletonLevel)
         };
     }
 }
