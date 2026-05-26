@@ -229,4 +229,10 @@ public class PacketBuffer(Stream stream)
 			Array.Reverse(bytes);
 		stream.Write(bytes, 0, 4);
 	}
+
+	public Guid ReadUuid()
+	{
+		var bytes = ReadByteArray(16);
+		return new Guid(bytes);
+	}
 }

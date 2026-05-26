@@ -14,11 +14,9 @@ public abstract class ServerEntity : Entity
     private double _nextPosZ;
     private double _nextRotationYaw;
     private double _nextRotationPitch;
-    private EntityBodyHelper _bodyHelper;
 
     public ServerEntity(Level level) : base(level)
     {
-        _bodyHelper = new EntityBodyHelper(this);
     }
 
     protected override void Initialize()
@@ -80,12 +78,6 @@ public abstract class ServerEntity : Entity
 
         var f4 = 0.0625F;
         GetModelRenderer().Update(f6, f5, TicksExisted + a, -f2, f7, f4, this);
-    }
-
-    protected override float UpdateDistance(float p_110146_1_, float p_110146_2_)
-    {
-        _bodyHelper.UpdateRenderAngles();
-        return p_110146_2_;
     }
 
     protected abstract ModelRenderer GetModelRenderer();

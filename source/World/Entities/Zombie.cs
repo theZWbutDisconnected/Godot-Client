@@ -7,9 +7,8 @@ using TestClient.Source.Utility;
 
 namespace TestClient.Source.World.Entities;
 
-public class Zombie : ServerEntity
+public class Zombie : ServerLiving
 {
-
     public Zombie(Level level) : base(level)
     {
     }

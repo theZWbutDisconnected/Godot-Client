@@ -75,6 +75,7 @@ public class NetworkSystem
 				{ typeof(ServerboundKeepAlive), p => h.HandleKeepAlive((ServerboundKeepAlive)p) },
 				{ typeof(ServerboundJoinGame), p => h.HandleJoinGame((ServerboundJoinGame)p) },
 				{ typeof(ServerboundAnimation), p => h.HandleAnimation((ServerboundAnimation)p) },
+				{ typeof(ServerboundSpawnPlayer), p => h.HandleSpawnPlayer((ServerboundSpawnPlayer)p) },
 				{ typeof(ServerboundSpawnMob), p => h.HandleSpawnMob((ServerboundSpawnMob)p) },
 				{ typeof(ServerboundTeleport), p => h.HandlePlayerPosLook((ServerboundTeleport)p) },
 				{ typeof(ServerboundVelocity), p => h.HandleEntityVelocity((ServerboundVelocity)p) },
@@ -90,7 +91,7 @@ public class NetworkSystem
 				{ typeof(ServerboundMapChunkBulk), p => h.HandleMapChunkBulk((ServerboundMapChunkBulk)p) },
 				{ typeof(ServerboundConfirmTransaction), p => h.HandleConfirmTransaction((ServerboundConfirmTransaction)p) },
 				{ typeof(ServerboundAbilities), p => h.HandlePlayerAbilities((ServerboundAbilities)p) },
-				{ typeof(Packet.Server.Play.ServerboundDisconnect), p => h.HandleDisconnect((Packet.Server.Play.ServerboundDisconnect)p) }
+				{ typeof(ServerboundDisconnect), p => h.HandleDisconnect((ServerboundDisconnect)p) }
 			},
 			_ => _handlers
 		};

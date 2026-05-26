@@ -244,6 +244,26 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         _networkSystem.Disconnect();
     }
 
+    public void HandleSpawnPlayer(ServerboundSpawnPlayer packetIn)
+    {
+        var d0 = packetIn.X / 32.0D;
+        var d1 = packetIn.Y / 32.0D;
+        var d2 = packetIn.Z / 32.0D;
+        var f = packetIn.Yaw * 360 / 256.0F;
+        var f1 = packetIn.Pitch * 360 / 256.0F;
+
+        var player = new ServerPlayer(Game.Singleton.Level);
+        player.ServerX = packetIn.X;
+        player.ServerY = packetIn.Y;
+        player.ServerZ = packetIn.Z;
+        player.SetPosAndRot(d0, d1, d2, f, f1);
+
+        Game.Singleton.Level.AddEntity(packetIn.EntityId, player);
+
+        List<DataWatcher.WatchableObject> list = packetIn.Watcher;
+        if (list != null) player.DataWatcher.UpdateWatchedObjectsFromList(list);
+    }
+
     public void Disconnected(string reason)
     {
         GD.PrintErr($"Play connection lost: {reason}");

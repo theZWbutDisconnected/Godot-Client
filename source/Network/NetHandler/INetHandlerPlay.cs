@@ -20,4 +20,5 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleConfirmTransaction(ServerboundConfirmTransaction @in);
     void HandlePlayerAbilities(ServerboundAbilities @in);
     void HandleDisconnect(ServerboundDisconnect @in);
+    void HandleSpawnPlayer(ServerboundSpawnPlayer @in);
 }

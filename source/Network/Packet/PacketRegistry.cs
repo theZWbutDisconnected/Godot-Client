@@ -38,6 +38,7 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x00, () => new ServerboundKeepAlive());
 		RegisterInbound(ConnectionState.Play, 0x01, () => new ServerboundJoinGame());
 		RegisterInbound(ConnectionState.Play, 0x0B, () => new ServerboundAnimation());
+		RegisterInbound(ConnectionState.Play, 0x0C, () => new ServerboundSpawnPlayer());
 		RegisterInbound(ConnectionState.Play, 0x0F, () => new ServerboundSpawnMob());
 		RegisterInbound(ConnectionState.Play, 0x08, () => new ServerboundTeleport());
 		RegisterInbound(ConnectionState.Play, 0x12, () => new ServerboundVelocity());
@@ -54,7 +55,7 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x26, () => new ServerboundMapChunkBulk());
 		RegisterInbound(ConnectionState.Play, 0x32, () => new ServerboundConfirmTransaction());
 		RegisterInbound(ConnectionState.Play, 0x39, () => new ServerboundAbilities());
-		RegisterInbound(ConnectionState.Play, 0x40, () => new Server.Play.ServerboundDisconnect());
+		RegisterInbound(ConnectionState.Play, 0x40, () => new ServerboundDisconnect());
 	}
 
 	private static void RegisterOutbound(ConnectionState state, string className, int packetId)
