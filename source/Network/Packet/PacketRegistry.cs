@@ -42,6 +42,7 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x0F, () => new ServerboundSpawnMob());
 		RegisterInbound(ConnectionState.Play, 0x08, () => new ServerboundTeleport());
 		RegisterInbound(ConnectionState.Play, 0x12, () => new ServerboundVelocity());
+		RegisterInbound(ConnectionState.Play, 0x13, () => new ServerboundDestroyEntities());
 		RegisterInbound(ConnectionState.Play, 0x14, () => new ServerboundEntityStatus());
 		RegisterInbound(ConnectionState.Play, 0x15, () => new ServerboundEntityStatus.ServerboundEntityMove());
 		RegisterInbound(ConnectionState.Play, 0x16, () => new ServerboundEntityStatus.ServerboundEntityLook());

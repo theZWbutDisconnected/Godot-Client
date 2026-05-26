@@ -264,6 +264,14 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         if (list != null) player.DataWatcher.UpdateWatchedObjectsFromList(list);
     }
 
+    public void HandleDestroyEntities(ServerboundDestroyEntities packetIn)
+    {
+        for (int i = 0; i < packetIn.EntityIds.Count; ++i)
+        {
+            Game.Singleton.Level.RemoveEntity(packetIn.EntityIds[i]);
+        }
+    }
+
     public void Disconnected(string reason)
     {
         GD.PrintErr($"Play connection lost: {reason}");

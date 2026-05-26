@@ -10,6 +10,7 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleJoinGame(ServerboundJoinGame @in);
     void HandlePlayerPosLook(ServerboundTeleport @in);
     void HandleEntityVelocity(ServerboundVelocity packetIn);
+    void HandleDestroyEntities(ServerboundDestroyEntities packetIn);
     void HandleEntityMovement(ServerboundEntityStatus packetIn);
     void HandleEntityTeleport(ServerboundEntityTeleport @in);
     void HandleEntityHeadLook(ServerboundHeadLook @in);

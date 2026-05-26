@@ -393,4 +393,11 @@ public partial class Level : Node3D
 			}
 		}
 	}
+
+	public void RemoveEntity(int packetInEntityId)
+	{
+		var entity = GetEntityById(packetInEntityId);
+		entity.Remove();
+		_entities.Remove(entity);
+	}
 }
