@@ -83,21 +83,6 @@ public class ModelPart
 
         if (box.Mirror)
         {
-            ruL = (u + d + w) * iw;            ruR = (u + d + w + d) * iw;
-            rvB = (v + d) * ih;                rvT = (v + d + h) * ih;
-            luL = u * iw;                      luR = (u + d) * iw;
-            lvB = (v + d) * ih;                lvT = (v + d + h) * ih;
-            duL = (u + d) * iw;                duR = (u + d + w) * iw;
-            dvB = v * ih;                      dvT = (v + d) * ih;
-            uuL = (u + d + w + w) * iw;        uuR = (u + d + w) * iw;
-            uvB = v * ih;                      uvT = (v + d) * ih;
-            buL = (u + d) * iw;                buR = (u + d + w) * iw;
-            bvB = (v + d) * ih;                bvT = (v + d + h) * ih;
-            fuL = (u + d + w + d + w) * iw;    fuR = (u + d + w + d) * iw;
-            fvB = (v + d) * ih;                fvT = (v + d + h) * ih;
-        }
-        else
-        {
             ruL = (u + d) * iw;            ruR = u * iw;
             rvB = (v + d) * ih;            rvT = (v + d + h) * ih;
             luL = (u + d + w + d) * iw;    luR = (u + d + w) * iw;
@@ -110,6 +95,21 @@ public class ModelPart
             bvB = (v + d) * ih;            bvT = (v + d + h) * ih;
             fuL = (u + d + w + d) * iw;    fuR = (u + d + w + d + w) * iw;
             fvB = (v + d) * ih;            fvT = (v + d + h) * ih;
+        }
+        else
+        {
+            ruL = (u + d + w) * iw;            ruR = (u + d + w + d) * iw;
+            rvB = (v + d) * ih;                rvT = (v + d + h) * ih;
+            luL = u * iw;                      luR = (u + d) * iw;
+            lvB = (v + d) * ih;                lvT = (v + d + h) * ih;
+            duL = (u + d) * iw;                duR = (u + d + w) * iw;
+            dvB = v * ih;                      dvT = (v + d) * ih;
+            uuL = (u + d + w + w) * iw;        uuR = (u + d + w) * iw;
+            uvB = v * ih;                      uvT = (v + d) * ih;
+            buL = (u + d) * iw;                buR = (u + d + w) * iw;
+            bvB = (v + d) * ih;                bvT = (v + d + h) * ih;
+            fuL = (u + d + w + d + w) * iw;    fuR = (u + d + w + d) * iw;
+            fvB = (v + d) * ih;                fvT = (v + d + h) * ih;
         }
 
         AddQuad(st,
