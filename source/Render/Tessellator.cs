@@ -57,10 +57,10 @@ public sealed class Tessellator
 
     public void Normal(float x, float y, float z)
     {
-        if (!_attrs.HasFlag(VertexAttributes.Normal))
-            CheckFormatChange(VertexAttributes.Normal);
-        _attrs |= VertexAttributes.Normal;
-        _normal = new Vector3(x, y, z);
+        // if (!_attrs.HasFlag(VertexAttributes.Normal))
+        //     CheckFormatChange(VertexAttributes.Normal);
+        // _attrs |= VertexAttributes.Normal;
+        // _normal = new Vector3(x, y, z);
     }
 
     public void Vertex(float x, float y, float z)
@@ -105,6 +105,7 @@ public sealed class Tessellator
             return null;
 
         _sfTool.Index();
+        _sfTool.GenerateNormals();
         Mesh mesh = _sfTool.Commit();
 
         Initialize();
@@ -202,7 +203,7 @@ public sealed class Tessellator
             AlbedoTexture = TextureAtlas.AtlasTexture,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Back,
-            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel,
             Roughness = 1.0f,
             Metallic = 0.0f,
             VertexColorUseAsAlbedo = true
@@ -218,7 +219,7 @@ public sealed class Tessellator
             AlbedoTexture = TextureAtlas.AtlasTexture,
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
-            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel,
             Roughness = 1.0f,
             Metallic = 0.0f,
             VertexColorUseAsAlbedo = true
