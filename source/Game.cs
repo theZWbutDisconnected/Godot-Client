@@ -100,6 +100,7 @@ public partial class Game : Node3D
 					f4 *= 0.5f;
 					heightOffset *= 0.5f;
 				}
+				if (entity.IsSneaking()) heightOffset *= 0.88f;
 				model.Scale = new Vector3(f4, -f4, f4);
 				model.Position = new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha));
 				model.Position += new Vector3(0.0F, heightOffset, 0.0F);
