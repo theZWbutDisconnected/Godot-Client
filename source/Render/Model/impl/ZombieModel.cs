@@ -9,6 +9,10 @@ public class ZombieModel : BipedModel
     public override void Animate(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
         float headPitch, float scaleFactor, Entity entityIn)
     {
+        if (entityIn.IsChild())
+        {
+            Head.Scale = 1.5f;
+        }
         base.Animate(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         float f = MathF.Sin(SwingProgress * (float)Math.PI);
         float f1 = MathF.Sin((1.0F - (1.0F - SwingProgress) * (1.0F - SwingProgress)) * (float)Math.PI);

@@ -57,6 +57,7 @@ public class ModelRenderer
             if (!_nodes.TryGetValue(part.Name, out var node))
                 continue;
 
+            node.Scale = new Vector3(part.Scale, part.Scale, part.Scale);
             node.Position = new Vector3(part.PivotX, part.PivotY, part.PivotZ);
             node.Rotation = Vector3.Zero;
             node.RotateX(part.XRot);

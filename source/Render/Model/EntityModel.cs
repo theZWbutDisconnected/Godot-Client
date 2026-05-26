@@ -30,5 +30,6 @@ public abstract class EntityModel
         dest.PivotX = source.PivotX;
         dest.PivotY = source.PivotY;
         dest.PivotZ = source.PivotZ;
+        dest.Scale = source.Scale;
     }
 }

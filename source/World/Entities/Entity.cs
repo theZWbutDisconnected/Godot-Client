@@ -62,6 +62,11 @@ public class Entity
         DataWatcher.AddObject(3, (byte)0);
         DataWatcher.AddObject(2, "");
         DataWatcher.AddObject(4, (byte)0);
+        Initialize();
+    }
+
+    protected virtual void Initialize()
+    {
     }
 
     protected void SetSize(float w, float h)
@@ -319,7 +324,12 @@ public class Entity
         return PrevSwingProgress + f * partialTickTime;
     }
 
-    public bool IsRiding()
+    public virtual bool IsRiding()
+    {
+        return false;
+    }
+
+    public virtual bool IsChild()
     {
         return false;
     }

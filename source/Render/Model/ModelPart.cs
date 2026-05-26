@@ -12,6 +12,7 @@ public class ModelPart
     public float XRot;
     public float YRot;
     public float ZRot;
+    public float Scale = 1f;
     public bool Mirror;
 
     private readonly List<ModelBox> _boxes = new();

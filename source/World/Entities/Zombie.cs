@@ -26,6 +26,14 @@ public class Zombie : Entity
             _renderer = new ModelRenderer(_model, "res://assets/entity/zombie.png", Game.Singleton, 64, 64));
     }
 
+    protected override void Initialize()
+    {
+        base.Initialize();
+        DataWatcher.AddObject(12, (byte)0);
+        DataWatcher.AddObject(13, (byte)0);
+        DataWatcher.AddObject(14, (byte)0);
+    }
+
     public override void SetPosAndRot2(double x, double y, double z, float yaw, float pitch,
         int posRotationIncrements, bool p_180426_10_)
     {
@@ -88,8 +96,8 @@ public class Zombie : Entity
         return p_110146_2_;
     }
 
-    private bool IsChild()
+    public override bool IsChild()
     {
-        return false;
+        return DataWatcher.GetWatchableObjectByte(12) == 1;
     }
 }
