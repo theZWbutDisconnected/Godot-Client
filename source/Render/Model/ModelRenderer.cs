@@ -13,7 +13,7 @@ public class ModelRenderer
     private StandardMaterial3D _sharedMaterial;
     private string _loadedTexturePath;
 
-    private readonly EntityModel _model;
+    public readonly EntityModel Model;
     private Node3D _root;
 
     private readonly Dictionary<string, MeshInstance3D> _nodes = new();
@@ -21,7 +21,7 @@ public class ModelRenderer
     public ModelRenderer(EntityModel model, string texturePath, Node3D parent,
         int texWidth = DefaultTexWidth, int texHeight = DefaultTexHeight)
     {
-        _model = model;
+        Model = model;
         Build(texturePath, parent, texWidth, texHeight);
     }
 
@@ -29,10 +29,10 @@ public class ModelRenderer
     {
         EnsureMaterial(texturePath);
 
-        _root = new Node3D { Name = $"{_model.GetType().Name}_Root" };
+        _root = new Node3D { Name = $"{Model.GetType().Name}_Root" };
         parent.AddChild(_root);
 
-        foreach (var part in _model.GetParts())
+        foreach (var part in Model.GetParts())
         {
             var mesh = part.BuildMesh(texW, texH);
             var node = new MeshInstance3D
@@ -48,11 +48,11 @@ public class ModelRenderer
 
     public void Update(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
     {
-        _model.SwingProgress = entityIn.GetSwingProgress(Game.Singleton.Timer.RenderPartialTicks);
-        _model.IsRiding = entityIn.IsRiding();
-        _model.Animate(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+        Model.SwingProgress = entityIn.GetSwingProgress(Game.Singleton.Timer.RenderPartialTicks);
+        Model.IsRiding = entityIn.IsRiding();
+        Model.Animate(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 
-        foreach (var part in _model.GetParts())
+        foreach (var part in Model.GetParts())
         {
             if (!_nodes.TryGetValue(part.Name, out var node))
                 continue;

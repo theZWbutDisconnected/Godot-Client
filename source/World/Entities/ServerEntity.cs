@@ -77,7 +77,13 @@ public abstract class ServerEntity : Entity
         if (f5 > 1.0F) f5 = 1.0F;
 
         var f4 = 0.0625F;
+        
         GetModelRenderer().Update(f6, f5, TicksExisted + a, -f2, f7, f4, this);
+    }
+
+    protected T GetModel<T>() where T : EntityModel
+    {
+        return (T)GetModelRenderer().Model;
     }
 
     protected abstract ModelRenderer GetModelRenderer();

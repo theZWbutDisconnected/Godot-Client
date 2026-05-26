@@ -5,11 +5,16 @@ namespace TestClient.Source.World.Entities;
 
 public class ServerPlayer : ServerEntity
 {
-
     public ServerPlayer(Level level) : base(level)
     {
     }
-    
+
+    public override void LivingTick()
+    {
+        GetModel<BipedModel>().IsSneak = IsSneaking();
+        base.LivingTick();
+    }
+
     protected override ModelRenderer GetModelRenderer()
     {
         return Renderer ??= new ModelRenderer(new BipedModel(), "res://assets/entity/steve.png", Game.Singleton, 64, 64);

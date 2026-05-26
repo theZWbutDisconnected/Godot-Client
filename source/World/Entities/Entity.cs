@@ -324,6 +324,17 @@ public class Entity
         return PrevSwingProgress + f * partialTickTime;
     }
 
+    protected bool GetFlag(int flag)
+    {
+        return (DataWatcher.GetWatchableObjectByte(0) & 1 << flag) != 0;
+    }
+
+    
+    public virtual bool IsSneaking()
+    {
+        return GetFlag(1);
+    }
+
     public virtual bool IsRiding()
     {
         return false;

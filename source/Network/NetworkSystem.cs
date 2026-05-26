@@ -79,6 +79,7 @@ public class NetworkSystem
 				{ typeof(ServerboundSpawnMob), p => h.HandleSpawnMob((ServerboundSpawnMob)p) },
 				{ typeof(ServerboundDestroyEntities), p => h.HandleDestroyEntities((ServerboundDestroyEntities)p) },
 				{ typeof(ServerboundTeleport), p => h.HandlePlayerPosLook((ServerboundTeleport)p) },
+				{ typeof(ServerboundEntityMetadata), p => h.HandleEntityMetadata((ServerboundEntityMetadata)p) },
 				{ typeof(ServerboundVelocity), p => h.HandleEntityVelocity((ServerboundVelocity)p) },
 				{ typeof(ServerboundEntityStatus), p => h.HandleEntityMovement((ServerboundEntityStatus)p) },
 				{ typeof(ServerboundEntityStatus.ServerboundEntityMove), p => h.HandleEntityMovement((ServerboundEntityStatus.ServerboundEntityMove)p) },

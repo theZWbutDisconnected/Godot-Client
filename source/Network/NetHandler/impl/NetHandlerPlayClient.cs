@@ -272,6 +272,15 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
+    public void HandleEntityMetadata(ServerboundEntityMetadata packetIn)
+    {
+        Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        if (entity != null && packetIn.WatchableObjects != null)
+        {
+            entity.DataWatcher.UpdateWatchedObjectsFromList(packetIn.WatchableObjects);
+        }
+    }
+
     public void Disconnected(string reason)
     {
         GD.PrintErr($"Play connection lost: {reason}");
