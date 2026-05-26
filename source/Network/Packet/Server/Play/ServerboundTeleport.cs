@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S08PlayerPosLook : IPacket
+public class ServerboundTeleport : IPacket
 {
     public enum EnumFlags
     {

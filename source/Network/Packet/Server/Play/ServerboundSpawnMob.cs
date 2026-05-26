@@ -3,7 +3,7 @@ using TestClient.Source.Utility;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S0FSpawnMob : IPacket
+public class ServerboundSpawnMob : IPacket
 {
     public int EntityId { get; private set; }
     public int Type { get; private set; }

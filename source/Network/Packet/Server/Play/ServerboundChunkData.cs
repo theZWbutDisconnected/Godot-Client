@@ -5,7 +5,7 @@ using TestClient.Source.World;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S21ChunkData : IPacket
+public class ServerboundChunkData : IPacket
 {
     public int ChunkX { get; private set; }
     public int ChunkZ { get; private set; }

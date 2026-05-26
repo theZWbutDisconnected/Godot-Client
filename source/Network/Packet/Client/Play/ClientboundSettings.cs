@@ -1,6 +1,6 @@
 ﻿namespace TestClient.Source.Network.Packet.Client.Play;
 
-public class C15ClientSettings : IPacket
+public class ClientboundSettings : IPacket
 {
     public string Language { get; set; } = "en_US";
     public byte ViewDistance { get; set; } = 10;

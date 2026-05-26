@@ -1,6 +1,6 @@
 ﻿namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S19EntityHeadLook : IPacket
+public class ServerboundHeadLook : IPacket
 {
     public int EntityId { get; private set; }
     public byte Yaw { get; private set; }

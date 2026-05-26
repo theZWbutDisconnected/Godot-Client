@@ -1,6 +1,6 @@
 ﻿namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S18EntityTeleport : IPacket
+public class ServerboundEntityTeleport : IPacket
 {
     public int EntityId { get; private set; }
     public int PosX { get; private set; }

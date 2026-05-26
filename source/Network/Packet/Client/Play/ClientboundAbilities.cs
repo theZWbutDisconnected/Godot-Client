@@ -1,7 +1,7 @@
 ﻿namespace TestClient.Source.Network.Packet.Client.Play;
 
 
-public class C13PlayerAbilities : IPacket
+public class ClientboundAbilities : IPacket
 {
     public bool Invulnerable { get; set; }
     public bool Flying { get; set; }
@@ -10,9 +10,9 @@ public class C13PlayerAbilities : IPacket
     public float FlySpeed { get; set; }
     public float WalkSpeed { get; set; }
 
-    public C13PlayerAbilities() { }
+    public ClientboundAbilities() { }
 
-    public C13PlayerAbilities(Capabilities capabilities)
+    public ClientboundAbilities(Capabilities capabilities)
     {
         Invulnerable = capabilities.DisableDamage;
         Flying = capabilities.IsFlying;

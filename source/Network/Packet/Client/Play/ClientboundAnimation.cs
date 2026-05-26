@@ -1,7 +1,7 @@
 ﻿namespace TestClient.Source.Network.Packet.Client.Play;
 
 
-public class C0AAnimation : IPacket
+public class ClientboundAnimation : IPacket
 {
     public void Read(PacketBuffer stream)
     {

@@ -3,7 +3,7 @@ using TestClient.Source.World;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S22MultiBlockChange : IPacket
+public class ServerboundMultiBlockChange : IPacket
 {
     public ChunkCoordIntPair ChunkPos { get; private set; }
     public BlockUpdateData[] ChangedBlocks { get; private set; }

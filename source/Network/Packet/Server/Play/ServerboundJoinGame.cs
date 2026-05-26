@@ -1,6 +1,6 @@
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S01JoinGame : IPacket
+public class ServerboundJoinGame : IPacket
 {
 	public int EntityId { get; private set; }
 	public int GameType { get; private set; }

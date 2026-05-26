@@ -4,7 +4,7 @@ using TestClient.Source.World;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S26MapChunkBulk : IPacket
+public class ServerboundMapChunkBulk : IPacket
 {
     public bool IsOverworld { get; private set; }
     public List<ChunkData> Chunks { get; } = new();
@@ -32,7 +32,7 @@ public class S26MapChunkBulk : IPacket
             var dataSize = CalculateDataSize(dataSizes[i], IsOverworld, true);
             var data = buf.ReadByteArray(dataSize);
 
-            var chunk = S21ChunkData.ParseChunkData(xPositions[i], zPositions[i],
+            var chunk = ServerboundChunkData.ParseChunkData(xPositions[i], zPositions[i],
                 dataSizes[i], true, data);
             Chunks.Add(chunk);
         }

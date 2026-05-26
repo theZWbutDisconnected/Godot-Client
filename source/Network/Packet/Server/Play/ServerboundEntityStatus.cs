@@ -3,7 +3,7 @@ using TestClient.Source.World.Entities;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S14Entity : IPacket
+public class ServerboundEntityStatus : IPacket
 {
     public int EntityId { get; private set; }
     public bool OnGround { get; private set; }
@@ -35,7 +35,7 @@ public class S14Entity : IPacket
         return worldIn.GetEntityById(EntityId);
     }
 
-    public class S15EntityRelMove : S14Entity
+    public class ServerboundEntityMove : ServerboundEntityStatus
     {
         public override void Read(PacketBuffer buf)
         {
@@ -47,9 +47,9 @@ public class S14Entity : IPacket
         }
     }
 
-    public class S16EntityLook : S14Entity
+    public class ServerboundEntityLook : ServerboundEntityStatus
     {
-        public S16EntityLook()
+        public ServerboundEntityLook()
         {
             LookChange = true;
         }
@@ -63,9 +63,9 @@ public class S14Entity : IPacket
         }
     }
 
-    public class S17EntityLookMove : S14Entity
+    public class ServerboundEntityLookMove : ServerboundEntityStatus
     {
-        public S17EntityLookMove()
+        public ServerboundEntityLookMove()
         {
             LookChange = true;
         }

@@ -1,6 +1,6 @@
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S0BAnimation : IPacket
+public class ServerboundAnimation : IPacket
 {
     public int EntityId { get; private set; }
     public int Type { get; private set; }

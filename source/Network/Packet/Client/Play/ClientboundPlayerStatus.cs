@@ -1,6 +1,6 @@
 ﻿namespace TestClient.Source.Network.Packet.Client.Play;
 
-public class C03Player : IPacket
+public class ClientboundPlayerStatus : IPacket
 {
     protected bool Moving;
     protected bool OnGround;
@@ -11,11 +11,11 @@ public class C03Player : IPacket
     protected float Yaw;
     protected double Z;
 
-    public C03Player()
+    public ClientboundPlayerStatus()
     {
     }
 
-    public C03Player(bool isOnGround)
+    public ClientboundPlayerStatus(bool isOnGround)
     {
         OnGround = isOnGround;
     }
@@ -31,9 +31,9 @@ public class C03Player : IPacket
     }
 }
 
-public class C04PlayerPosition : C03Player
+public class ClientboundPlayerMove : ClientboundPlayerStatus
 {
-    public C04PlayerPosition(double posX, double posY, double posZ, bool isOnGround)
+    public ClientboundPlayerMove(double posX, double posY, double posZ, bool isOnGround)
     {
         X = posX;
         Y = posY;
@@ -51,9 +51,9 @@ public class C04PlayerPosition : C03Player
     }
 }
 
-public class C05PlayerLook : C03Player
+public class ClientboundPlayerLook : ClientboundPlayerStatus
 {
-    public C05PlayerLook(float playerYaw, float playerPitch, bool isOnGround)
+    public ClientboundPlayerLook(float playerYaw, float playerPitch, bool isOnGround)
     {
         Yaw = playerYaw;
         Pitch = playerPitch;
@@ -69,9 +69,9 @@ public class C05PlayerLook : C03Player
     }
 }
 
-public class C06PlayerPosLook : C03Player
+public class ClientboundPlayerPosLook : ClientboundPlayerStatus
 {
-    public C06PlayerPosLook(double playerX, double playerY, double playerZ,
+    public ClientboundPlayerPosLook(double playerX, double playerY, double playerZ,
         float playerYaw, float playerPitch, bool playerIsOnGround)
     {
         X = playerX;

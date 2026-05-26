@@ -20,30 +20,30 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         _username = networkSystem.Username;
     }
 
-    public void HandleKeepAlive(S00KeepAlive packetIn)
+    public void HandleKeepAlive(ServerboundKeepAlive packetIn)
     {
-        _networkSystem.SendPacket(new C00KeepAlive(packetIn.KeepAliveId));
+        _networkSystem.SendPacket(new ClientboundKeepAlive(packetIn.KeepAliveId));
     }
 
-    public void HandleConfirmTransaction(S32ConfirmTransaction packetIn)
+    public void HandleConfirmTransaction(ServerboundConfirmTransaction packetIn)
     {
         // if (!packetIn.Accepted)
         //     _networkSystem.SendPacket(new C0FConfirmTransaction(packetIn.WindowId, packetIn.ActionNumber, true));
     }
 
-    public void HandleJoinGame(S01JoinGame packetIn)
+    public void HandleJoinGame(ServerboundJoinGame packetIn)
     {
-        _networkSystem.SendPacket(new C15ClientSettings());
+        _networkSystem.SendPacket(new ClientboundSettings());
         var brandBuf = new PacketBuffer(new MemoryStream());
         brandBuf.WriteString("vanilla");
-        _networkSystem.SendPacket(new C17CustomPayload("MC|Brand", brandBuf));
+        _networkSystem.SendPacket(new ClientboundCustomPayload("MC|Brand", brandBuf));
         Game.Singleton.Player.EntityId = packetIn.EntityId;
         GD.Print($"EntityId={packetIn.EntityId}, GameType={packetIn.GameType}, " +
                  $"Dimension={packetIn.Dimension}, Difficulty={packetIn.Difficulty}, " +
                  $"MaxPlayers={packetIn.MaxPlayers}, WorldType={packetIn.WorldType}");
     }
     
-    public void HandleAnimation(S0BAnimation packetIn)
+    public void HandleAnimation(ServerboundAnimation packetIn)
     {
         Entity entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         GD.Print("S0B Received ", packetIn.Type, " ", packetIn.EntityId, " ", entity != null);
@@ -61,7 +61,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
-    public void HandleSpawnMob(S0FSpawnMob packetIn)
+    public void HandleSpawnMob(ServerboundSpawnMob packetIn)
     {
         var d0 = packetIn.X / 32.0D;
         var d1 = packetIn.Y / 32.0D;
@@ -89,7 +89,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         if (list != null) entitylivingbase.DataWatcher.UpdateWatchedObjectsFromList(list);
     }
 
-    public void HandlePlayerPosLook(S08PlayerPosLook packetIn)
+    public void HandlePlayerPosLook(ServerboundTeleport packetIn)
     {
         var entityplayer = Game.Singleton.Player;
         var d0 = packetIn.X;
@@ -98,28 +98,28 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         var f = packetIn.Yaw;
         var f1 = packetIn.Pitch;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.X))
+        if (packetIn.Flags.Contains(ServerboundTeleport.EnumFlags.X))
             d0 += entityplayer.PosX;
         else
             entityplayer.XDelta = 0.0D;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Y))
+        if (packetIn.Flags.Contains(ServerboundTeleport.EnumFlags.Y))
             d1 += entityplayer.PosY;
         else
             entityplayer.YDelta = 0.0D;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Z))
+        if (packetIn.Flags.Contains(ServerboundTeleport.EnumFlags.Z))
             d2 += entityplayer.PosZ;
         else
             entityplayer.ZDelta = 0.0D;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Pitch)) f1 += entityplayer.RotX;
+        if (packetIn.Flags.Contains(ServerboundTeleport.EnumFlags.Pitch)) f1 += entityplayer.RotX;
 
-        if (packetIn.Flags.Contains(S08PlayerPosLook.EnumFlags.Yaw)) f += entityplayer.RotY;
+        if (packetIn.Flags.Contains(ServerboundTeleport.EnumFlags.Yaw)) f += entityplayer.RotY;
 
         entityplayer.SetPosAndRot(d0, d1, d2, f, f1);
 
-        _networkSystem.SendPacket(new C06PlayerPosLook(entityplayer.PosX, entityplayer.BoundingBox.Y0,
+        _networkSystem.SendPacket(new ClientboundPlayerPosLook(entityplayer.PosX, entityplayer.BoundingBox.Y0,
             entityplayer.PosZ,
             entityplayer.RotY, entityplayer.RotX, false));
         GD.Print("Server position set: x - ", entityplayer.PosX, " y - ", entityplayer.PosY, " z - ", entityplayer.PosZ,
@@ -127,14 +127,14 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
             entityplayer.RotY, " pitch - ", entityplayer.RotX);
     }
 
-    public void HandleEntityVelocity(S12EntityVelocity packetIn)
+    public void HandleEntityVelocity(ServerboundVelocity packetIn)
     {
         var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         if (entity == null) return;
         entity.SetVelocity(packetIn.MotionX / 8000.0D, packetIn.MotionY / 8000.0D, packetIn.MotionZ / 8000.0D);
     }
 
-    public void HandleEntityTeleport(S18EntityTeleport packetIn)
+    public void HandleEntityTeleport(ServerboundEntityTeleport packetIn)
     {
         var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         if (entity == null) return;
@@ -156,7 +156,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         entity.OnGround = packetIn.OnGround;
     }
 
-    public void HandleEntityMovement(S14Entity packetIn)
+    public void HandleEntityMovement(ServerboundEntityStatus packetIn)
     {
         var entity = packetIn.GetEntity(Game.Singleton.Level);
         if (entity == null) return;
@@ -172,7 +172,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         entity.OnGround = packetIn.OnGround;
     }
 
-    public void HandleEntityHeadLook(S19EntityHeadLook packetIn)
+    public void HandleEntityHeadLook(ServerboundHeadLook packetIn)
     {
         var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
         if (entity != null)
@@ -182,19 +182,19 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
-    public void HandleChunkData(S21ChunkData @in)
+    public void HandleChunkData(ServerboundChunkData @in)
     {
         var level = Game.Singleton.Level;
         if (@in.Chunk != null) level.AddChunk(@in.Chunk);
     }
 
-    public void HandleMapChunkBulk(S26MapChunkBulk @in)
+    public void HandleMapChunkBulk(ServerboundMapChunkBulk @in)
     {
         var level = Game.Singleton.Level;
         foreach (var chunk in @in.Chunks) level.AddChunk(chunk);
     }
 
-    public void HandleMultiBlockChange(S22MultiBlockChange @in)
+    public void HandleMultiBlockChange(ServerboundMultiBlockChange @in)
     {
         var level = Game.Singleton.Level;
         var chunkCoord = @in.ChunkPos;
@@ -213,7 +213,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
-    public void HandleBlockChange(S23BlockChange @in)
+    public void HandleBlockChange(ServerboundBlockChange @in)
     {
         var level = Game.Singleton.Level;
         var pos = @in.BlockPos;
@@ -226,7 +226,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         GD.Print("S23 Block changed at (" + pos.X + ", " + pos.Y + ", " + pos.Z + ") to state: " + blockStateId);
     }
 
-    public void HandlePlayerAbilities(S39PlayerAbilities packetIn)
+    public void HandlePlayerAbilities(ServerboundAbilities packetIn)
     {
         var player = Game.Singleton.Player;
         player.Capabilities.IsFlying = packetIn.Flying;
@@ -237,7 +237,7 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         player.Capabilities.WalkSpeed = packetIn.WalkSpeed;
     }
 
-    public void HandleDisconnect(S40Disconnect packetIn)
+    public void HandleDisconnect(ServerboundDisconnect packetIn)
     {
         var reason = packetIn.Reason;
         GD.Print("[Disconnect] Server kicked with reason: " + reason);

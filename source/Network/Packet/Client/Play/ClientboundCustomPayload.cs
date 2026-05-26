@@ -3,21 +3,21 @@ using System.IO;
 
 namespace TestClient.Source.Network.Packet.Client.Play;
 
-public class C17CustomPayload : IPacket
+public class ClientboundCustomPayload : IPacket
 {
-    public C17CustomPayload()
+    public ClientboundCustomPayload()
     {
         Channel = "";
         Data = Array.Empty<byte>();
     }
 
-    public C17CustomPayload(string channel, byte[] data)
+    public ClientboundCustomPayload(string channel, byte[] data)
     {
         Channel = channel;
         Data = data;
     }
 
-    public C17CustomPayload(string channel, PacketBuffer dataBuffer)
+    public ClientboundCustomPayload(string channel, PacketBuffer dataBuffer)
     {
         Channel = channel;
         Data = ((MemoryStream)dataBuffer.GetInternalStream()).ToArray();

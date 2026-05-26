@@ -1,6 +1,6 @@
 ﻿namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S39PlayerAbilities : IPacket
+public class ServerboundAbilities : IPacket
 {
     public bool Invulnerable { get; private set; }
     public bool Flying { get; private set; }

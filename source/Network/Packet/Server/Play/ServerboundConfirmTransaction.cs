@@ -1,6 +1,6 @@
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S32ConfirmTransaction : IPacket
+public class ServerboundConfirmTransaction : IPacket
 {
 	public int WindowId { get; private set; }
 	public int ActionNumber { get; private set; }

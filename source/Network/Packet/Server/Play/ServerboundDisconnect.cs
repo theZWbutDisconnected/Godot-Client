@@ -1,12 +1,12 @@
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S00KeepAlive : IPacket
+public class ServerboundDisconnect : IPacket
 {
-	public int KeepAliveId { get; private set; }
+	public string Reason { get; private set; }
 
 	public void Read(PacketBuffer buf)
 	{
-		KeepAliveId = buf.ReadVarInt();
+		Reason = buf.ReadChatComponent();
 	}
 
 	public void Write(PacketBuffer buf)

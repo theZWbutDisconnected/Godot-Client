@@ -3,7 +3,7 @@ using TestClient.Source.World.Tile;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S24BlockAction : IPacket
+public class ServerboundBlockAction : IPacket
 {
     public BlockPos BlockPosition { get; private set; }
     public int Instrument { get; private set; }

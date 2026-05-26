@@ -24,7 +24,7 @@ public class Player : Entity
     public override void Swing()
     {
         base.Swing();
-        SendQueue.SendPacket(new C0AAnimation());
+        SendQueue.SendPacket(new ClientboundAnimation());
     }
 
     public override void Tick()
@@ -68,10 +68,10 @@ public class Player : Entity
                 var rotReported = delta3 != 0.0D || delta4 != 0.0D;
 
                 if (posReported && rotReported)
-                    SendQueue.SendPacket(new C06PlayerPosLook(PosX, BoundingBox.Y0, PosZ, RotY, RotX, OnGround));
-                else if (posReported) SendQueue.SendPacket(new C04PlayerPosition(PosX, BoundingBox.Y0, PosZ, OnGround));
-                else if (rotReported) SendQueue.SendPacket(new C05PlayerLook(RotY, RotX, OnGround));
-                else SendQueue.SendPacket(new C03Player(OnGround));
+                    SendQueue.SendPacket(new ClientboundPlayerPosLook(PosX, BoundingBox.Y0, PosZ, RotY, RotX, OnGround));
+                else if (posReported) SendQueue.SendPacket(new ClientboundPlayerMove(PosX, BoundingBox.Y0, PosZ, OnGround));
+                else if (rotReported) SendQueue.SendPacket(new ClientboundPlayerLook(RotY, RotX, OnGround));
+                else SendQueue.SendPacket(new ClientboundPlayerStatus(OnGround));
 
                 ++_positionUpdateTicks;
                 if (posReported)
@@ -93,6 +93,6 @@ public class Player : Entity
 
     public void SendAbilities()
     {
-        SendQueue.SendPacket(new C13PlayerAbilities(Capabilities));
+        SendQueue.SendPacket(new ClientboundAbilities(Capabilities));
     }
 }

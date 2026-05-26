@@ -1,12 +1,12 @@
 ﻿namespace TestClient.Source.Network.Packet.Client.Play;
 
-public class C0FConfirmTransaction : IPacket
+public class ClientboundConfirmTransaction : IPacket
 {
-    public C0FConfirmTransaction()
+    public ClientboundConfirmTransaction()
     {
     }
 
-    public C0FConfirmTransaction(int windowId, int uid, bool accepted)
+    public ClientboundConfirmTransaction(int windowId, int uid, bool accepted)
     {
         WindowId = windowId;
         Uid = uid;

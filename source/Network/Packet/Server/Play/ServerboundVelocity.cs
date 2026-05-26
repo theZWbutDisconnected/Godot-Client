@@ -4,7 +4,7 @@ using TestClient.Source.World.Entities;
 
 namespace TestClient.Source.Network.Packet.Server.Play;
 
-public class S12EntityVelocity : IPacket
+public class ServerboundVelocity : IPacket
 {
     public int EntityId { get; private set; }
     public int MotionX { get; private set; }

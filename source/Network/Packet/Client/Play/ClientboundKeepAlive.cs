@@ -1,6 +1,6 @@
 namespace TestClient.Source.Network.Packet.Client.Play;
 
-public class C00KeepAlive(int keepAliveId) : IPacket
+public class ClientboundKeepAlive(int keepAliveId) : IPacket
 {
     public int KeepAliveId { get; } = keepAliveId;
 
