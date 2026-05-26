@@ -48,7 +48,7 @@ public class Entity
     private bool _isSwingInProgress;
     private int _swingProgressInt;
 
-    public DataWatcher DataWatcher { get; private set; }
+    public DataWatcher DataWatcher { get; }
 
     public Entity(Level level)
     {

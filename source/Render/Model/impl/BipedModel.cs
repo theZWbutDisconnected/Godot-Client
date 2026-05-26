@@ -156,6 +156,11 @@ public class BipedModel : EntityModel
             Arm0.XRot -= MathF.Sin(ageInTicks * 0.067F) * 0.05F;
         }
 
+        if (entityIn.IsChild())
+        {
+            Head.Scale = 1.5f;
+        }
+        
         CopyModelAngles(Head, Headwear);
     }
 }

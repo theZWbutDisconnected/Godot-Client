@@ -78,6 +78,8 @@ public class ModelPart
         float luL, luR, lvT, lvB;
         float duL, duR, dvT, dvB;
         float uuL, uuR, uvT, uvB;
+        float buL, buR, bvT, bvB;
+        float fuL, fuR, fvT, fvB;
 
         if (box.Mirror)
         {
@@ -89,6 +91,10 @@ public class ModelPart
             dvB = v * ih;                  dvT = (v + d) * ih;
             uuL = (u + d + w + w) * iw;    uuR = (u + d + w) * iw;
             uvB = v * ih;                  uvT = (v + d) * ih;
+            buL = (u + d) * iw;        buR = (u + d + w) * iw;
+            bvB = (v + d) * ih;            bvT = (v + d + h) * ih;
+            fuL = (u + d + w + d) * iw;    fuR = (u + d + w + d + w) * iw;
+            fvB = (v + d) * ih;            fvT = (v + d + h) * ih;
         }
         else
         {
@@ -100,6 +106,10 @@ public class ModelPart
             dvB = v * ih;                  dvT = (v + d) * ih;
             uuL = (u + d + w) * iw;        uuR = (u + d + w + w) * iw;
             uvB = v * ih;                  uvT = (v + d) * ih;
+            buL = (u + d + w) * iw;        buR = (u + d) * iw;
+            bvB = (v + d) * ih;            bvT = (v + d + h) * ih;
+            fuL = (u + d + w + d + w) * iw;    fuR = (u + d + w + d) * iw;
+            fvB = (v + d) * ih;            fvT = (v + d + h) * ih;
         }
 
         AddQuad(st,
@@ -130,19 +140,13 @@ public class ModelPart
             new Vector3(x0, y1, z0), new Vector3(x0, y0, z0),
             new Vector3(x1, y0, z0), new Vector3(x1, y1, z0),
             Vector3.Back,
-            (u + d + w) * iw, (v + d + h) * ih,
-            (u + d + w) * iw, (v + d) * ih,
-            (u + d) * iw, (v + d) * ih,
-            (u + d) * iw, (v + d + h) * ih);
+            buL, bvT, buL, bvB, buR, bvB, buR, bvT);
 
         AddQuad(st,
             new Vector3(x1, y1, z1), new Vector3(x1, y0, z1),
             new Vector3(x0, y0, z1), new Vector3(x0, y1, z1),
             Vector3.Forward,
-            (u + d + w + d + w) * iw, (v + d + h) * ih,
-            (u + d + w + d + w) * iw, (v + d) * ih,
-            (u + d + w + d) * iw, (v + d) * ih,
-            (u + d + w + d) * iw, (v + d + h) * ih);
+            fuR, fvT, fuR, fvB, fuL, fvB, fuL, fvT);
     }
 
     private static void AddQuad(SurfaceTool st,
