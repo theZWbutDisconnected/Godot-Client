@@ -288,7 +288,7 @@ public partial class Level : Node3D
 				if (chunk.HasBlock(x, y, z))
 				{
 					var pos = new BlockPos(x, y, z);
-					var origin = Blocks.GetPreset(GetBlockId(pos)).GetCollision();
+					var origin = Blocks.GetPreset(GetBlockId(pos)).GetCollision(GetMetadata(pos));
 					if (origin == null) continue;
 					var cube = new AABB(origin);
 					cube.Move(x, y, z);

@@ -141,12 +141,12 @@ public class DoubleBush : Bush
         return plantName;
     }
 
-    public override AABB GetCollision()
+    public override AABB GetCollision(int meta)
     {
         return null;
     }
 
-    public override AABB GetCube()
+    public override AABB GetCube(int meta)
     {
         var f = 0.4F;
         return new AABB(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.8F, 0.5F + f);

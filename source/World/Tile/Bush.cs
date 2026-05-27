@@ -61,12 +61,12 @@ public class Bush : Block
         return true;
     }
 
-    public override AABB GetCollision()
+    public override AABB GetCollision(int meta)
     {
         return null;
     }
 
-    public override AABB GetCube()
+    public override AABB GetCube(int meta)
     {
         var f = 0.2F;
         return new AABB(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f * 3.0F, 0.5F + f);

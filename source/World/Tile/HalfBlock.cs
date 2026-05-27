@@ -1,4 +1,5 @@
-﻿using TestClient.Source.Physics;
+﻿using Godot;
+using TestClient.Source.Physics;
 using TestClient.Source.Render;
 using TestClient.Source.World.Biome;
 
@@ -17,12 +18,16 @@ public class HalfBlock : Block
         float c2;
         float c3;
         var meta = level.GetMetadata(pos);
+        GD.Print(meta);
         var col = GetBlockColor(level, pos, meta);
         var r = ((col >> 16) & 0xFF) / 255.0f;
         var g = ((col >> 8) & 0xFF) / 255.0f;
         var b = (col & 0xFF) / 255.0f;
+        
         int x = pos.X, y = pos.Y, z = pos.Z;
-        float y1 = y + 0.5F;
+
+        float y1 = y;
+        if (meta >= 8) y1 += 0.5f;
 
         if (ShouldRenderFace(level, new BlockPos(x, y - 1, z)))
         {
@@ -31,7 +36,7 @@ public class HalfBlock : Block
                 c1 *= 0.5F;
             t.Color(c1 * r, c1 * g, c1 * b);
             t.Normal(0, -1, 0);
-            RenderHalfFace(t, x, y, z, 0, meta);
+            RenderHalfFace(t, x, y1, z, 0, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y + 1, z)))
@@ -41,7 +46,7 @@ public class HalfBlock : Block
                 c1 *= 0.5F;
             t.Color(c1 * r, c1 * g, c1 * b);
             t.Normal(0, 1, 0);
-            RenderHalfFace(t, x, y, z, 1, meta);
+            RenderHalfFace(t, x, y1, z, 1, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z - 1)))
@@ -51,7 +56,7 @@ public class HalfBlock : Block
                 c2 *= 0.5F;
             t.Color(c2 * r, c2 * g, c2 * b);
             t.Normal(0, 0, -1);
-            RenderHalfFace(t, x, y, z, 2, meta);
+            RenderHalfFace(t, x, y1, z, 2, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z + 1)))
@@ -61,7 +66,7 @@ public class HalfBlock : Block
                 c2 *= 0.5F;
             t.Color(c2 * r, c2 * g, c2 * b);
             t.Normal(0, 0, 1);
-            RenderHalfFace(t, x, y, z, 3, meta);
+            RenderHalfFace(t, x, y1, z, 3, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x - 1, y, z)))
@@ -71,7 +76,7 @@ public class HalfBlock : Block
                 c3 *= 0.5F;
             t.Color(c3 * r, c3 * g, c3 * b);
             t.Normal(-1, 0, 0);
-            RenderHalfFace(t, x, y, z, 4, meta);
+            RenderHalfFace(t, x, y1, z, 4, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x + 1, y, z)))
@@ -81,13 +86,13 @@ public class HalfBlock : Block
                 c3 *= 0.5F;
             t.Color(c3 * r, c3 * g, c3 * b);
             t.Normal(1, 0, 0);
-            RenderHalfFace(t, x, y, z, 5, meta);
+            RenderHalfFace(t, x, y1, z, 5, meta);
         }
     }
 
     private void RenderHalfFace(Tessellator t, float x, float y, float z, int face, int meta)
     {
-        var tex = GetTexture(meta, face);
+        var tex = GetTexture(meta >= 8 ? meta - 8 : meta, face);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
         var x0 = x + 0.0F;
         var x1 = x + 1.0F;
@@ -98,6 +103,14 @@ public class HalfBlock : Block
 
         var sideV0 = (v0 + v1) / 2;
         var sideV1 = v1;
+
+        if (meta >= 8)
+        {
+            var org0 = sideV0;
+            var org1 = sideV1;
+            sideV0 -= org1 - org0;
+            sideV1 -= org1 - org0;
+        }
 
         if (face == 0)
         {
@@ -179,7 +192,12 @@ public class HalfBlock : Block
                 3 => TextureAtlas.Index("cobblestone"),
                 4 => TextureAtlas.Index("brick"),
                 5 => TextureAtlas.Index("stonebrick"),
-                _ => TextureAtlas.Index("nether_brick")
+                6 => TextureAtlas.Index("nether_brick"),
+                _ => face switch
+                {
+                    0 | 1 => TextureAtlas.Index("quartz_block_top"),
+                    _ => TextureAtlas.Index("quartz_block_side"),
+                }
             };
         }
 
@@ -204,8 +222,8 @@ public class HalfBlock : Block
         return false;
     }
 
-    public override AABB GetCollision()
+    public override AABB GetCollision(int meta)
     {
-        return new AABB(0, 0, 0, 1, 0.5, 1);
+        return new AABB(0, meta >= 8 ? 0.5 : 0, 0, 1, meta >= 8 ? 1 : 0.5, 1);
     }
 }

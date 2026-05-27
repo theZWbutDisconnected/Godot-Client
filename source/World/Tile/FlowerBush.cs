@@ -30,7 +30,7 @@ public class FlowerBush : Bush
         };
     }
 
-    public override AABB GetCollision()
+    public override AABB GetCollision(int meta)
     {
         return null;
     }

@@ -20,7 +20,7 @@ public class Grass : Bush
         return BiomeColorHelper.GetGrassColorAtPos(level, pos);
     }
 
-    public override AABB GetCollision()
+    public override AABB GetCollision(int meta)
     {
         return null;
     }

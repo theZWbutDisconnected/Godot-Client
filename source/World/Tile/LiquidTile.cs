@@ -172,7 +172,7 @@ public class LiquidTile : Block
         return (!level.HasBlock(pos) || !tile.IsOpaque()) && tile is not LiquidTile;
     }
 
-    public override AABB GetCollision()
+    public override AABB GetCollision(int meta)
     {
         return null;
     }

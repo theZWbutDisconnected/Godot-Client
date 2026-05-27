@@ -106,12 +106,12 @@ public class Block
         return !level.HasBlock(pos) || !block.IsOpaque() || !block.IsFullBlock();
     }
 
-    public virtual AABB GetCube()
+    public virtual AABB GetCube(int meta)
     {
-        return GetCollision();
+        return GetCollision(meta);
     }
 
-    public virtual AABB GetCollision()
+    public virtual AABB GetCollision(int meta)
     {
         return new AABB(0, 0, 0, 1, 1, 1);
     }
