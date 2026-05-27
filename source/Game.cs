@@ -7,6 +7,7 @@ using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
 using TestClient.Source.Physics;
 using TestClient.Source.Render.Model;
+using TestClient.Source.Render.Model.impl;
 using TestClient.Source.World;
 using TestClient.Source.World.Entities;
 
@@ -32,6 +33,7 @@ public partial class Game : Node3D
 	public Player Player;
 
 	private readonly Dictionary<Entity, ModelRenderer> _entityModels = [];
+	private FirstPersonArm _firstPersonArm;
 
 	public Game()
 	{
@@ -48,6 +50,9 @@ public partial class Game : Node3D
 		Player = new Player(Level, _network);
 		Level.AddEntity(Player);
 		AddChild(Level);
+
+		_firstPersonArm = new FirstPersonArm(Camera, "res://assets/entity/steve.png");
+
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
 
@@ -86,6 +91,9 @@ public partial class Game : Node3D
 	private void Render(float alpha)
 	{
 		SetupCamera(alpha);
+
+		_firstPersonArm.Update(Player, alpha);
+
 		foreach (var i in _entityModels)
 		{
 			var entity = i.Key;

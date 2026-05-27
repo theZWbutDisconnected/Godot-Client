@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 using TestClient.Source.Network;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Physics;
@@ -54,6 +55,14 @@ public class Player : Entity
                 XDelta *= 0.7F;
                 ZDelta *= 0.7F;
             }
+
+            var dx0 = PosX - PrevX;
+            var dz0 = PosZ - PrevZ;
+            var limbSpeed = (float)Mathf.Sqrt(dx0 * dx0 + dz0 * dz0) * 4.0F;
+            if (limbSpeed > 1.0F) limbSpeed = 1.0F;
+            PrevLimbSwingAmount = LimbSwingAmount;
+            LimbSwingAmount += (limbSpeed - LimbSwingAmount) * 0.4F;
+            LimbSwing += LimbSwingAmount;
 
             if (SendQueue.IsConnected())
             {
