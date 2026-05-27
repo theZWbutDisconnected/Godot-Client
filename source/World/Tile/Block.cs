@@ -145,17 +145,18 @@ public class Block
         var orgCol = t.CurrentColor();
         int ix = (int)x, iy = (int)y, iz = (int)z;
 
+        var lit = 0.5f;
         if (face == 0)
         {
             float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
             if (IsOpaqueAt(level, ix - 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz))
-                ltLit = 0.5f;
+                ltLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz))
-                rtLit = 0.5f;
+                rtLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz))
-                lbLit = 0.5f;
+                lbLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz))
-                rbLit = 0.5f;
+                rbLit = lit;
 
             t.Normal(0, -1, 0);
             SetVertex(t, orgCol, ltLit, x0, y0, z0, u0, v0);
@@ -169,15 +170,15 @@ public class Block
         {
             float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
             if (IsOpaqueAt(level, ix - 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz))
-                ltLit = 0.5f;
+                ltLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz))
-                rtLit = 0.5f;
+                rtLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz))
-                lbLit = 0.5f;
+                lbLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz))
-                rbLit = 0.5f;
+                rbLit = lit;
             if (IsOpaqueAt(level, ix, iy + 1, iz))
-                ltLit = lbLit = rtLit = rbLit = 0.5f;
+                ltLit = lbLit = rtLit = rbLit = lit;
 
             t.Normal(0, 1, 0);
             SetVertex(t, orgCol, ltLit, x0, y1, z0, u0, v0);
@@ -191,13 +192,13 @@ public class Block
         {
             float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
             if (IsOpaqueAt(level, ix - 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
-                ltLit = 0.5f;
+                ltLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
-                rtLit = 0.5f;
+                rtLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
-                lbLit = 0.5f;
+                lbLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
-                rbLit = 0.5f;
+                rbLit = lit;
 
             t.Normal(0, 0, -1);
             SetVertex(t, orgCol, ltLit, x0, y0, z0, u1, v1);
@@ -211,13 +212,13 @@ public class Block
         {
             float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
             if (IsOpaqueAt(level, ix + 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
-                rtLit = 0.5f;
+                rtLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
-                rbLit = 0.5f;
+                rbLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
-                lbLit = 0.5f;
+                lbLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
-                ltLit = 0.5f;
+                ltLit = lit;
 
             t.Normal(0, 0, 1);
             SetVertex(t, orgCol, rtLit, x1, y1, z1, u1, v0);
@@ -231,13 +232,13 @@ public class Block
         {
             float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
             if (IsOpaqueAt(level, ix - 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
-                ltLit = 0.5f;
+                ltLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
-                rtLit = 0.5f;
+                rtLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
-                lbLit = 0.5f;
+                lbLit = lit;
             if (IsOpaqueAt(level, ix - 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
-                rbLit = 0.5f;
+                rbLit = lit;
 
             t.Normal(-1, 0, 0);
             SetVertex(t, orgCol, ltLit, x0, y0, z1, u0, v1);
@@ -251,13 +252,13 @@ public class Block
         {
             float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
             if (IsOpaqueAt(level, ix + 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
-                ltLit = 0.5f;
+                ltLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
-                rtLit = 0.5f;
+                rtLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
-                lbLit = 0.5f;
+                lbLit = lit;
             if (IsOpaqueAt(level, ix + 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
-                rbLit = 0.5f;
+                rbLit = lit;
 
             t.Normal(1, 0, 0);
             SetVertex(t, orgCol, ltLit, x1, y0, z0, u0, v1);
@@ -342,7 +343,7 @@ public class Block
         t.VertexUV(px, py, pz, u, v);
     }
 
-    protected bool IsOpaqueAt(Level level, int bx, int by, int bz) => level.HasBlock(new BlockPos(bx, by, bz)) && Blocks.GetPreset(level.GetBlockId(new BlockPos(bx, by, bz))).IsOpaque();
+    protected static bool IsOpaqueAt(Level level, int bx, int by, int bz) => level.IsBlockOpaque(bx, by, bz);
 
     public virtual void Tick(Level level, int x, int y, int z, Random random)
     {

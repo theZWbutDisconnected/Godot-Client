@@ -319,6 +319,19 @@ public partial class Level : Node3D
 		return true;
 	}
 
+	public bool IsBlockOpaque(int x, int y, int z)
+	{
+		var cx = ChunkData.WorldToChunk(x);
+		var cz = ChunkData.WorldToChunk(z);
+		var chunk = GetChunk(cx, cz);
+		if (chunk == null) return false;
+
+		var blockId = chunk.GetBlockId(x, y, z);
+		if (blockId == 0) return false;
+
+		return Blocks.GetPreset(blockId).IsOpaque();
+	}
+
 	public void AddEntity(Entity entity)
 	{
 		_entities.Add(entity);
