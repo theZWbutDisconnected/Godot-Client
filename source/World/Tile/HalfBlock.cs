@@ -162,24 +162,41 @@ public class HalfBlock : Block
     
     protected override int GetTexture(int meta, int face)
     {
-        return meta switch
+        if (Id == 44) {
+            return meta switch
+            {
+                0 => face switch
+                {
+                    0 | 1 => TextureAtlas.Index("stone_slab_top"),
+                    _ => TextureAtlas.Index("stone_slab_side"),
+                },
+                1 => face switch
+                {
+                    0 => TextureAtlas.Index("sandstone_bottom"),
+                    1 => TextureAtlas.Index("sandstone_top"),
+                    _ => TextureAtlas.Index("sandstone_normal"),
+                },
+                3 => TextureAtlas.Index("cobblestone"),
+                4 => TextureAtlas.Index("brick"),
+                5 => TextureAtlas.Index("stonebrick"),
+                _ => TextureAtlas.Index("nether_brick")
+            };
+        }
+
+        if (Id == 126)
         {
-            0 => face switch
+            return meta switch
             {
-                0 | 1 => TextureAtlas.Index("stone_slab_top"),
-                _ => TextureAtlas.Index("stone_slab_side"),
-            },
-            1 => face switch
-            {
-                0 => TextureAtlas.Index("sandstone_bottom"),
-                1 => TextureAtlas.Index("sandstone_top"),
-                _ => TextureAtlas.Index("sandstone_normal"),
-            },
-            3 => TextureAtlas.Index("cobblestone"),
-            4 => TextureAtlas.Index("brick"),
-            5 => TextureAtlas.Index("stonebrick"),
-            _ => TextureAtlas.Index("nether_brick")
-        };
+                0 => TextureAtlas.Index("planks_oak"),
+                1 => TextureAtlas.Index("planks_spruce"),
+                2 => TextureAtlas.Index("planks_birch"),
+                3 => TextureAtlas.Index("planks_jungle"),
+                4 => TextureAtlas.Index("planks_acacia"),
+                _ => TextureAtlas.Index("planks_big_oak")
+            };
+        }
+
+        return 0;
     }
 
     public override AABB GetCollision()
