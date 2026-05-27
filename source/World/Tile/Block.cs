@@ -107,7 +107,7 @@ public class Block
 
     public virtual AABB GetCube()
     {
-        return new AABB(0, 0, 0, 1, 1, 1);
+        return GetCollision();
     }
 
     public virtual AABB GetCollision()

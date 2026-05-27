@@ -23,6 +23,7 @@ public class Blocks
     public static readonly Block TallGrass = new Grass(31);
     public static readonly Block YellowFlower = new Bush(37, TextureAtlas.Index("flower_dandelion"));
     public static readonly Block Flower = new FlowerBush(38);
+    public static readonly Block Brick = new HalfBlock(44);
     public static readonly Block Clay = new(82, TextureAtlas.Index("clay"));
     public static readonly Block Reeds = new Bush(83, TextureAtlas.Index("reeds"));
     public static readonly Block DoubleGrass = new DoubleBush(175, TextureAtlas.Index("tallgrass"));
