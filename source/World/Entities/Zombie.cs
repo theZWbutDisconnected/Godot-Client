@@ -26,8 +26,8 @@ public class Zombie : ServerLiving
         return DataWatcher.GetWatched(12) == 1;
     }
 
-    protected override ModelRenderer GetModelRenderer()
+    protected override T GetModelRenderer<T>()
     {
-        return Renderer ??= new ModelRenderer(new ZombieModel(), "res://assets/entity/zombie.png", Game.Singleton, 64, 64);
+        return (T)new ModelRenderer(new ZombieModel(), "res://assets/entity/zombie.png", Game.Singleton, 64, 64);
     }
 }

@@ -21,7 +21,7 @@ public abstract class ServerEntity : Entity
 
     protected override void Initialize()
     {
-        Game.Singleton.NewEntityNode(this, GetModelRenderer());
+        Game.Singleton.NewEntityNode(this, GetRendererLocal());
     }
 
     public override void SetPosAndRot2(double x, double y, double z, float yaw, float pitch,
@@ -83,13 +83,18 @@ public abstract class ServerEntity : Entity
 
         var f4 = 0.0625F;
         
-        GetModelRenderer().Update(f6, f5, TicksExisted + a, f2, f7, f4, this);
+        GetRendererLocal().Update(f6, f5, TicksExisted + a, f2, f7, f4, this);
     }
 
     protected T GetModel<T>() where T : EntityModel
     {
-        return (T)GetModelRenderer().Model;
+        return (T)GetRendererLocal().Model;
     }
 
-    protected abstract ModelRenderer GetModelRenderer();
+    private ModelRenderer GetRendererLocal()
+    {
+        return Renderer ??= GetModelRenderer<ModelRenderer>();
+    }
+
+    protected abstract T GetModelRenderer<T>() where T : ModelRenderer;
 }

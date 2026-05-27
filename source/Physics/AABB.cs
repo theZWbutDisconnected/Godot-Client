@@ -47,6 +47,23 @@ public class AABB
         return new AABB(x0, y0, z0, x1, y1, z1);
     }
 
+    public AABB Offset(double xa, double ya, double za)
+    {
+        var x0 = X0;
+        var y0 = Y0;
+        var z0 = Z0;
+        var x1 = X1;
+        var y1 = Y1;
+        var z1 = Z1;
+        x0 += xa;
+        x1 += xa;
+        y0 += ya;
+        y1 += ya;
+        z0 += za;
+        z1 += za;
+        return new AABB(x0, y0, z0, x1, y1, z1);
+    }
+
     public AABB Grow(double xa, double ya, double za)
     {
         return new AABB(X0 - xa, Y0 - ya, Z0 - za, X1 + xa, Y1 + ya, Z1 + za);

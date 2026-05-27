@@ -15,8 +15,8 @@ public class ServerPlayer : ServerEntity
         base.LivingTick();
     }
 
-    protected override ModelRenderer GetModelRenderer()
+    protected override T GetModelRenderer<T>()
     {
-        return Renderer ??= new ModelRenderer(new BipedModel(), "res://assets/entity/steve.png", Game.Singleton, 64, 64);
+        return (T)new ModelRenderer(new BipedModel(), "res://assets/entity/steve.png", Game.Singleton, 64, 64);
     }
 }

@@ -125,7 +125,7 @@ public class Entity
         bool p_180426_10_)
     {
         SetPosAndRot(x, y, z, yaw, pitch);
-        var list = Level.GetCubes(BoundingBox.Expand(0.03125F, 0.0F, 0.03125F));
+        var list = Level.GetCubes(BoundingBox.Grow(0.03125F, 0.0F, 0.03125F));
 
         if (list.Count > 0)
         {
@@ -177,6 +177,8 @@ public class Entity
         }
         if (SwingProgress > 0.0F) f1 = RotY;
         f2 = UpdateDistance(f1, f2);
+
+        RotX = Mathf.Clamp(RotX, -90, 90);
         
         while (RotY - PrevRotY < -180.0F) PrevRotY -= 360.0F;
         while (RotY - PrevRotY >= 180.0F) PrevRotY += 360.0F;
@@ -205,7 +207,7 @@ public class Entity
         double xaOrg = xa, yaOrg = ya, zaOrg = za;
 
         var bb = BoundingBox;
-        var aABBs = Level.GetCubes(bb.Expand(xa, ya, za));
+        var aABBs = Level.GetCubes(bb.Offset(xa, ya, za));
 
         for (var i = 0; i < aABBs.Count; i++)
             ya = aABBs[i].ClipYCollide(bb, ya);
