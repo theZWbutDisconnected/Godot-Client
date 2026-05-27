@@ -199,6 +199,11 @@ public class HalfBlock : Block
         return 0;
     }
 
+    public override bool IsFullBlock()
+    {
+        return false;
+    }
+
     public override AABB GetCollision()
     {
         return new AABB(0, 0, 0, 1, 0.5, 1);

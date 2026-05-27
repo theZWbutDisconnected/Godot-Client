@@ -8,10 +8,6 @@ namespace TestClient.Source.World.Entities;
 public class Entity
 {
     public AABB BoundingBox;
-    public int EntityId = new Random().Next();
-    public Guid EntityUuid = Guid.NewGuid();
-    public float EyeHeight;
-    public float Height = 1.8F;
     protected Level Level;
     public float LimbSwing;
     public float LimbSwingAmount;
@@ -41,13 +37,19 @@ public class Entity
     public int ServerZ;
     public float SwingProgress;
     public float TicksExisted;
-    protected float Width = 0.6F;
     public double XDelta;
     public double YDelta;
     public double ZDelta;
     public int HurtTime;
     private bool _isSwingInProgress;
     private int _swingProgressInt;
+
+    public int EntityId { get; set; } = new Random().Next();
+    public Guid EntityUuid { get; set; } = Guid.NewGuid();
+    public float EyeHeight { get; set; } = 1.62F;
+    public float Height { get; set; } = 1.8F;
+    protected float Width { get; set; } = 0.6F;
+    public double StepHeight { get; set; } = 0.5F;
 
     public DataWatcher DataWatcher { get; }
 
@@ -56,7 +58,6 @@ public class Entity
         Level = level;
         SetSize(0.6F, 1.8F);
         SetPos(0.0F, 0.0F, 0.0F);
-        EyeHeight = 1.62F;
         DataWatcher = new DataWatcher(this);
         DataWatcher.AddObject(0, (byte)0);
         DataWatcher.AddObject(1, (short)300);
@@ -207,7 +208,7 @@ public class Entity
         double xaOrg = xa, yaOrg = ya, zaOrg = za;
 
         var bb = BoundingBox;
-        var aABBs = Level.GetCubes(bb.Offset(xa, ya, za));
+        var aABBs = Level.GetCubes(bb.Expand(xa, ya, za));
 
         for (var i = 0; i < aABBs.Count; i++)
             ya = aABBs[i].ClipYCollide(bb, ya);
@@ -220,6 +221,51 @@ public class Entity
         for (var i = 0; i < aABBs.Count; i++)
             za = aABBs[i].ClipZCollide(bb, za);
         bb.Move(0.0F, 0.0F, za);
+
+        bool xBlocked = xaOrg != xa;
+        bool zBlocked = zaOrg != za;
+        if (OnGround && (xBlocked || zBlocked))
+        {
+            double xaStep = xaOrg;
+            double yaStep = StepHeight;
+            double zaStep = zaOrg;
+
+            var bbStep = BoundingBox;
+            var aABBsStep = Level.GetCubes(bbStep.Expand(xaOrg, yaStep, zaOrg));
+
+            double ya2 = yaStep;
+            for (var i = 0; i < aABBsStep.Count; i++)
+                ya2 = aABBsStep[i].ClipYCollide(bbStep, ya2);
+            var bbStep2 = new AABB(bbStep);
+            bbStep2.Move(0.0, ya2, 0.0);
+
+            double xa2 = xaOrg;
+            for (var i = 0; i < aABBsStep.Count; i++)
+                xa2 = aABBsStep[i].ClipXCollide(bbStep2, xa2);
+            bbStep2.Move(xa2, 0.0, 0.0);
+
+            double za2 = zaOrg;
+            for (var i = 0; i < aABBsStep.Count; i++)
+                za2 = aABBsStep[i].ClipZCollide(bbStep2, za2);
+            bbStep2.Move(0.0, 0.0, za2);
+
+            double horizOrigSq = xa * xa + za * za;
+            double horizStepSq = xa2 * xa2 + za2 * za2;
+            if (horizStepSq > horizOrigSq)
+            {
+                double ya3 = -yaStep;
+                for (var i = 0; i < aABBsStep.Count; i++)
+                    ya3 = aABBsStep[i].ClipYCollide(bbStep2, ya3);
+                bbStep2.Move(0.0, ya3, 0.0);
+
+                bb.X0 = bbStep2.X0; bb.X1 = bbStep2.X1;
+                bb.Y0 = bbStep2.Y0; bb.Y1 = bbStep2.Y1;
+                bb.Z0 = bbStep2.Z0; bb.Z1 = bbStep2.Z1;
+
+                xa = xa2;
+                za = za2;
+            }
+        }
 
         OnGround = yaOrg != ya && yaOrg < 0.0F;
 

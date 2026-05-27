@@ -102,7 +102,8 @@ public class Block
 
     protected virtual bool ShouldRenderFace(Level level, BlockPos pos)
     {
-        return !level.HasBlock(pos) || !Blocks.GetPreset(level.GetBlockId(pos)).IsOpaque();
+        Block block = Blocks.GetPreset(level.GetBlockId(pos));
+        return !level.HasBlock(pos) || !block.IsOpaque() || !block.IsFullBlock();
     }
 
     public virtual AABB GetCube()
@@ -113,6 +114,11 @@ public class Block
     public virtual AABB GetCollision()
     {
         return new AABB(0, 0, 0, 1, 1, 1);
+    }
+
+    public virtual bool IsFullBlock()
+    {
+        return true;
     }
 
     public virtual bool IsOpaque()
