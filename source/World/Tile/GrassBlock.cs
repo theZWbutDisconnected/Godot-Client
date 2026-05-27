@@ -37,7 +37,7 @@ public class GrassBlock : Block
                 c1 *= 0.5F;
             t.Color(c1, c1, c1);
             t.Normal(0, -1, 0);
-            RenderFace(t, x, y, z, 0);
+            RenderFace(t, level, x, y, z, 0);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y + 1, z)))
@@ -47,7 +47,7 @@ public class GrassBlock : Block
                 c1 *= 0.5F;
             t.Color(gcR * c1, gcG * c1, gcB * c1);
             t.Normal(0, 1, 0);
-            RenderFace(t, x, y, z, 1);
+            RenderFace(t, level, x, y, z, 1);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z - 1)))
@@ -58,7 +58,7 @@ public class GrassBlock : Block
 
             t.Color(c2, c2, c2);
             t.Normal(0, 0, -1);
-            RenderFace(t, x, y, z, 2);
+            RenderFace(t, level, x, y, z, 2);
 
             t.Color(gcR * c2, gcG * c2, gcB * c2);
             RenderFaceWithTex(t, x, y, z, 2, GrassSideOverlayTex);
@@ -72,7 +72,7 @@ public class GrassBlock : Block
 
             t.Color(c2, c2, c2);
             t.Normal(0, 0, 1);
-            RenderFace(t, x, y, z, 3);
+            RenderFace(t, level, x, y, z, 3);
 
             t.Color(gcR * c2, gcG * c2, gcB * c2);
             RenderFaceWithTex(t, x, y, z, 3, GrassSideOverlayTex);
@@ -86,7 +86,7 @@ public class GrassBlock : Block
 
             t.Color(c3, c3, c3);
             t.Normal(-1, 0, 0);
-            RenderFace(t, x, y, z, 4);
+            RenderFace(t, level, x, y, z, 4);
 
             t.Color(gcR * c3, gcG * c3, gcB * c3);
             RenderFaceWithTex(t, x, y, z, 4, GrassSideOverlayTex);
@@ -100,7 +100,7 @@ public class GrassBlock : Block
 
             t.Color(c3, c3, c3);
             t.Normal(1, 0, 0);
-            RenderFace(t, x, y, z, 5);
+            RenderFace(t, level, x, y, z, 5);
 
             t.Color(gcR * c3, gcG * c3, gcB * c3);
             RenderFaceWithTex(t, x, y, z, 5, GrassSideOverlayTex);

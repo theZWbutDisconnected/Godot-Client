@@ -55,6 +55,19 @@ public sealed class Tessellator
         _color = new Color(r, g, b);
     }
 
+    public void ColorMul(float r, float g, float b)
+    {
+        if (!_attrs.HasFlag(VertexAttributes.Color))
+            CheckFormatChange(VertexAttributes.Color);
+        _attrs |= VertexAttributes.Color;
+        _color *= new Color(r, g, b);
+    }
+
+    public Color CurrentColor()
+    {
+        return _color;
+    }
+
     public void Normal(float x, float y, float z)
     {
         if (!_attrs.HasFlag(VertexAttributes.Normal))
