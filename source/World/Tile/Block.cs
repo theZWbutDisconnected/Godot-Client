@@ -131,6 +131,7 @@ public class Block
     {
         return TexId;
     }
+    
     public virtual void RenderFace(Tessellator t, Level level, float x, float y, float z, int face)
     {
         var tex = GetTexture(0, face);
