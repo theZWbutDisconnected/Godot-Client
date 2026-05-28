@@ -20,6 +20,7 @@ public static class PacketRegistry
 		RegisterOutbound(ConnectionState.Login, nameof(C00LoginStart), 0x00);
 		RegisterOutbound(ConnectionState.Login, nameof(C01EncryptionResponse), 0x01);
 		RegisterOutbound(ConnectionState.Play, nameof(ClientboundKeepAlive), 0x00);
+		RegisterOutbound(ConnectionState.Play, nameof(ClientboundUseEntity), 0x02);
 		RegisterOutbound(ConnectionState.Play, nameof(ClientboundAnimation), 0x0A);
 		RegisterOutbound(ConnectionState.Play, nameof(ClientboundPlayerStatus), 0x03);
 		RegisterOutbound(ConnectionState.Play, nameof(ClientboundPlayerMove), 0x04);

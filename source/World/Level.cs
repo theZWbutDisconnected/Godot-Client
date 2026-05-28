@@ -19,6 +19,20 @@ public partial class Level : Node3D
 	private readonly System.Collections.Generic.Dictionary<ChunkCoordIntPair, ChunkData> _chunks = new();
 	private readonly List<(ChunkCoordIntPair coord, int priority)> _dirtyChunks = new();
 	private readonly HashSet<Entity> _entities = new();
+
+	public Entity[] Entities
+	{
+		get
+		{
+			lock (_lockObj)
+			{
+				var arr = new Entity[_entities.Count];
+				_entities.CopyTo(arr);
+				return arr;
+			}
+		}
+	}
+
 	private readonly object _lockObj = new();
 	private bool _isRefreshing;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
@@ -5,6 +6,7 @@ using TestClient.Source.Network;
 using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
+using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
 using TestClient.Source.Render.Model;
@@ -31,6 +33,7 @@ public partial class Game : Node3D
 	[Export] public Camera3D Camera;
 	public Level Level;
 	public Player Player;
+	public MoveObject Mop;
 
 	private readonly Dictionary<Entity, ModelRenderer> _entityModels = [];
 	private FirstPersonArm _armFp;
@@ -70,6 +73,8 @@ public partial class Game : Node3D
 	{
 		if (!_isRunning) return;
 		Timer.UpdateTimer();
+
+		DoRaytrace();
 		for (var i = 0; i < Timer.ElapsedTicks; ++i) Tick();
 		Render(Timer.RenderPartialTicks);
 		_armFp.Setup(Camera, delta);
@@ -81,6 +86,23 @@ public partial class Game : Node3D
 			_lastTime += 1000L;
 			_frames = 0;
 		}
+	}
+
+	private void DoRaytrace()
+	{
+		double startX = Player.PosX;
+		double startY = Player.PosY + Player.EyeHeight;
+		double startZ = Player.PosZ;
+
+		float pitch = (float)(Player.RotX * Math.PI / 180.0);
+		float yaw   = (float)(Player.RotY * Math.PI / 180.0);
+		double reach = 3.0;
+
+		double endX = startX - Math.Sin(yaw) * Math.Cos(pitch) * reach;
+		double endY = startY - Math.Sin(pitch) * reach;
+		double endZ = startZ + Math.Cos(yaw) * Math.Cos(pitch) * reach;
+
+		Mop = Raycast.RayTrace(startX, startY, startZ, endX, endY, endZ, Level, Player);
 	}
 
 	private void Tick()
@@ -147,7 +169,15 @@ public partial class Game : Node3D
 
 	private void ClickMouse()
 	{
-		Player.Swing();
+		if (Mop.Type != MoveObjectType.Entity) Player.Swing();
+		switch (Mop.Type)
+		{
+			case MoveObjectType.Entity:
+				var target = Mop.EntityHit;
+				Player.Swing();
+				_network.SendPacket(new ClientboundUseEntity(target, ClientboundUseEntity.UseEntityAction.Attack));
+				break;
+		}
 	}
 
 	public override void _Input(InputEvent @event)

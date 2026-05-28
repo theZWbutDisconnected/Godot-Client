@@ -193,7 +193,8 @@ public class Entity
 
     public virtual void LivingTick()
     {
-        --HurtTime;
+        if (HurtTime > 0)
+            --HurtTime;
         UpdateSwing();
     }
 

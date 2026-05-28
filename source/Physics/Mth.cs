@@ -73,4 +73,10 @@ public static class Mth
         var y = next.Y - prev.Y;
         return new Vector3(x * f, y * f, prev.Z);
     }
+
+    public static int DoubleToFloorInt(double v)
+    {
+        int i = (int)v;
+        return v < i ? i - 1 : i;
+    }
 }

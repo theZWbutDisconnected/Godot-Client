@@ -75,7 +75,7 @@ public class FirstPersonArm
     public void Setup(Camera3D camera, double delta)
     {
         _bobRoot.Position = camera.Position;
-        _bobRoot.Rotation += Mth.LerpAngle(_bobRoot.Rotation, camera.Rotation, (float)delta * 75f);
+        _bobRoot.Rotation += Mth.LerpAngle(_bobRoot.Rotation, camera.Rotation, (float)delta * 60f);
         _bobRoot.Rotation = new Vector3(_bobRoot.Rotation.X, Mth.WrapAngle(_bobRoot.Rotation.Y), _bobRoot.Rotation.Z);
     }
 
