@@ -4,7 +4,7 @@ To run this application, ensure the following prerequisites are met:
 
 ## Prerequisites
 
-- A **Minecraft 1.8.9 Vanilla Server** must be running in the background.
+- A **Minecraft 1.8.9 Vanilla Server** must be running in the background. (server only, not a single-player world opened to LAN)
 - The server must listen on port `25565` (default).
 
 ## Configuration
