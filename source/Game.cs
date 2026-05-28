@@ -37,6 +37,7 @@ public partial class Game : Node3D
 
 	private readonly Dictionary<Entity, ModelRenderer> _entityModels = [];
 	private FirstPersonArm _armFp;
+	private BlockOutline _outline;
 
 	public Game()
 	{
@@ -55,6 +56,9 @@ public partial class Game : Node3D
 		AddChild(Level);
 
 		_armFp = new FirstPersonArm(this, "res://assets/entity/steve.png");
+
+		_outline = new BlockOutline();
+		AddChild(_outline.Node);
 
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
@@ -78,6 +82,7 @@ public partial class Game : Node3D
 		for (var i = 0; i < Timer.ElapsedTicks; ++i) Tick();
 		Render(Timer.RenderPartialTicks);
 		_armFp.Setup(Camera, delta);
+		_outline.Update(Level, Mop);
 		++_frames;
 
 		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
@@ -96,13 +101,21 @@ public partial class Game : Node3D
 
 		float pitch = (float)(Player.RotX * Math.PI / 180.0);
 		float yaw   = (float)(Player.RotY * Math.PI / 180.0);
-		double reach = 3.0;
+		double reach = 4.5F;
 
 		double endX = startX - Math.Sin(yaw) * Math.Cos(pitch) * reach;
 		double endY = startY - Math.Sin(pitch) * reach;
 		double endZ = startZ + Math.Cos(yaw) * Math.Cos(pitch) * reach;
 
 		Mop = Raycast.RayTrace(startX, startY, startZ, endX, endY, endZ, Level, Player);
+		if (Mop.Type == MoveObjectType.Entity)
+		{
+			reach = 3.0F;
+			endX = startX - Math.Sin(yaw) * Math.Cos(pitch) * reach;
+			endY = startY - Math.Sin(pitch) * reach;
+			endZ = startZ + Math.Cos(yaw) * Math.Cos(pitch) * reach;
+			Mop = Raycast.RayTraceEntities(startX, startY, startZ, endX, endY, endZ, Level, Player);
+		}
 	}
 
 	private void Tick()
