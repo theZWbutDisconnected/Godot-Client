@@ -6,8 +6,8 @@ using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
 using TestClient.Source.Network.Packet.Client.Login;
 using TestClient.Source.Physics;
+using TestClient.Source.Render;
 using TestClient.Source.Render.Model;
-using TestClient.Source.Render.Model.impl;
 using TestClient.Source.World;
 using TestClient.Source.World.Entities;
 
@@ -33,7 +33,7 @@ public partial class Game : Node3D
 	public Player Player;
 
 	private readonly Dictionary<Entity, ModelRenderer> _entityModels = [];
-	private FirstPersonArm _firstPersonArm;
+	private FirstPersonArm _armFp;
 
 	public Game()
 	{
@@ -51,7 +51,7 @@ public partial class Game : Node3D
 		Level.AddEntity(Player);
 		AddChild(Level);
 
-		_firstPersonArm = new FirstPersonArm(Camera, "res://assets/entity/steve.png");
+		_armFp = new FirstPersonArm(this, "res://assets/entity/steve.png");
 
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
@@ -72,6 +72,7 @@ public partial class Game : Node3D
 		Timer.UpdateTimer();
 		for (var i = 0; i < Timer.ElapsedTicks; ++i) Tick();
 		Render(Timer.RenderPartialTicks);
+		_armFp.Setup(Camera, delta);
 		++_frames;
 
 		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
@@ -92,7 +93,7 @@ public partial class Game : Node3D
 	{
 		SetupCamera(alpha);
 
-		_firstPersonArm.Update(Player, alpha);
+		_armFp.Update(Player, alpha);
 
 		foreach (var i in _entityModels)
 		{

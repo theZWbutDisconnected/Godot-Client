@@ -1,8 +1,10 @@
 using System;
 using Godot;
+using TestClient.Source.Physics;
+using TestClient.Source.Render.Model;
 using TestClient.Source.World.Entities;
 
-namespace TestClient.Source.Render.Model.impl;
+namespace TestClient.Source.Render;
 
 public class FirstPersonArm
 {
@@ -10,34 +12,21 @@ public class FirstPersonArm
     private const int TexWidth = 64;
     private const int TexHeight = 64;
 
-    private readonly Node3D _bobNode;
+    private readonly Node3D _bobRoot;
     private readonly Node3D _armRoot;
     private readonly ModelPart _rArm;
-
-    private readonly float _defaultPivotX;
-    private readonly float _defaultPivotY;
-    private readonly float _defaultPivotZ;
-
     private readonly MeshInstance3D _armMesh;
 
-    public float EquipProgress;
-
-    public FirstPersonArm(Camera3D camera, string texturePath)
+    public FirstPersonArm(Game game, string texturePath)
     {
-        _bobNode = new Node3D { Name = "FirstPerson_Bob" };
-        camera.AddChild(_bobNode);
-
-        _armRoot = new Node3D { Name = "FirstPerson_Arm" };
+        _bobRoot = new Node3D { Name = "BobRoot" };
+        game.AddChild(_bobRoot);
+        
+        _armRoot = new Node3D { Name = "ArmRoot" };
         _armRoot.Scale = new Vector3(ModelScale, ModelScale, ModelScale);
-        _armRoot.RotationDegrees = new Vector3(32.0f, 96.0f, -45.0f);
-        _armRoot.Position = new Vector3(0.4f, -0.76f, -0.6f);
-        _bobNode.AddChild(_armRoot);
+        _bobRoot.AddChild(_armRoot);
 
         _rArm = new ModelPart("Arm0", new Vector3(-5f, 2f, 0f));
-        _defaultPivotX = _rArm.PivotX;
-        _defaultPivotY = _rArm.PivotY;
-        _defaultPivotZ = _rArm.PivotZ;
-
         _rArm.AddBox(-3f, -2f, -2f, 4, 12, 4, 40, 16);
 
         var tex = GD.Load<Texture2D>(texturePath);
@@ -47,8 +36,7 @@ public class FirstPersonArm
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor,
-            DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always
+            Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor
         };
 
         var mesh = _rArm.BuildMesh(TexWidth, TexHeight);
@@ -61,17 +49,22 @@ public class FirstPersonArm
         _armRoot.AddChild(_armMesh);
     }
 
-    public void Update(Entity player, float partialTicks)
+    public void Update(Player player, float partialTicks)
     {
         var swingProgress = player.GetSwingProgress(partialTicks);
 
         var bobX = -0.3f * Mathf.Sin(Mathf.Sqrt(swingProgress) * Mathf.Pi);
         var bobY =  0.4f * Mathf.Sin(Mathf.Sqrt(swingProgress) * Mathf.Pi * 2f);
         var bobZ = -0.4f * Mathf.Sin(swingProgress * Mathf.Pi);
+        bobY += player.EquipProgress * -0.6f;
+        
+        if (swingProgress > 0)
+        {
+            bobX += 0.2f * (1f - Mathf.Sin(Mathf.Sqrt(swingProgress * Mathf.Pi) - 0.5f));
+            bobY -= 0.2f * (1f - Mathf.Sin(Mathf.Sqrt(swingProgress * Mathf.Pi * 2f) - 0.5f));
+        }
 
-        bobY += EquipProgress * -0.6f;
-
-        _bobNode.Position = new Vector3(bobX, bobY, bobZ);
+        _armRoot.Position = new Vector3(bobX + 0.4f, bobY - 0.76f, bobZ - 0.6f);
 
         var f3 = Mathf.Sin(swingProgress * swingProgress * Mathf.Pi);
         var f4 = Mathf.Sin(Mathf.Sqrt(swingProgress) * Mathf.Pi);
@@ -79,8 +72,15 @@ public class FirstPersonArm
         _armRoot.RotationDegrees = new Vector3(32f, 96f + f4 * 70f, -45f + f3 * -20f);
     }
 
+    public void Setup(Camera3D camera, double delta)
+    {
+        _bobRoot.Position = camera.Position;
+        _bobRoot.Rotation += Mth.LerpAngle(_bobRoot.Rotation, camera.Rotation, (float)delta * 75f);
+        _bobRoot.Rotation = new Vector3(_bobRoot.Rotation.X, Mth.WrapAngle(_bobRoot.Rotation.Y), _bobRoot.Rotation.Z);
+    }
+
     public void Free()
     {
-        _bobNode?.QueueFree();
+        _armRoot?.QueueFree();
     }
 }

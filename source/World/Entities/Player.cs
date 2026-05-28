@@ -15,6 +15,8 @@ public class Player : Entity
     public double LastY;
     public float LastYaw;
     public double LastZ;
+    public float EquipProgress;
+    
     public Capabilities Capabilities = new();
 
     public Player(Level level, NetworkSystem netHandler) : base(level)

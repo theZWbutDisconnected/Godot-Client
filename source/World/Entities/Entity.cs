@@ -13,7 +13,6 @@ public class Entity
     public float LimbSwingAmount;
     protected Entity Vehicle;
     protected float MovedDistance;
-    protected float PrevMovedDistance;
     public bool OnGround;
     public double PosX;
     public double PosY;
@@ -161,7 +160,6 @@ public class Entity
         PrevRotX = RotX;
         PrevRotYBody = RotYBody;
         PrevRotYHead = RotYHead;
-        PrevMovedDistance = MovedDistance;
         PrevSwingProgress = SwingProgress;
 
         LivingTick();

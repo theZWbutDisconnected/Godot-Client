@@ -1,4 +1,6 @@
-﻿namespace TestClient.Source.Physics;
+﻿using Godot;
+
+namespace TestClient.Source.Physics;
 
 public static class Mth
 {
@@ -63,5 +65,12 @@ public static class Mth
         for (f = par2 - par1; f < -180.0F; f += 360.0F) ;
         while (f >= 180.0F) f -= 360.0F;
         return par1 + par3 * f;
+    }
+
+    public static Vector3 LerpAngle(Vector3 prev, Vector3 next, float f)
+    {
+        var x = next.X - prev.X;
+        var y = next.Y - prev.Y;
+        return new Vector3(x * f, y * f, prev.Z);
     }
 }
