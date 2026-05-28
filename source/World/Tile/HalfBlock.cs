@@ -1,4 +1,4 @@
-﻿using Godot;
+﻿﻿using Godot;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
 using TestClient.Source.World.Biome;
@@ -18,7 +18,6 @@ public class HalfBlock : Block
         float c2;
         float c3;
         var meta = level.GetMetadata(pos);
-        GD.Print(meta);
         var col = GetBlockColor(level, pos, meta);
         var r = ((col >> 16) & 0xFF) / 255.0f;
         var g = ((col >> 8) & 0xFF) / 255.0f;
@@ -36,7 +35,7 @@ public class HalfBlock : Block
                 c1 *= 0.5F;
             t.Color(c1 * r, c1 * g, c1 * b);
             t.Normal(0, -1, 0);
-            RenderHalfFace(t, x, y1, z, 0, meta);
+            RenderHalfFace(t, level, x, y1, z, 0, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y + 1, z)))
@@ -46,7 +45,7 @@ public class HalfBlock : Block
                 c1 *= 0.5F;
             t.Color(c1 * r, c1 * g, c1 * b);
             t.Normal(0, 1, 0);
-            RenderHalfFace(t, x, y1, z, 1, meta);
+            RenderHalfFace(t, level, x, y1, z, 1, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z - 1)))
@@ -56,7 +55,7 @@ public class HalfBlock : Block
                 c2 *= 0.5F;
             t.Color(c2 * r, c2 * g, c2 * b);
             t.Normal(0, 0, -1);
-            RenderHalfFace(t, x, y1, z, 2, meta);
+            RenderHalfFace(t, level, x, y1, z, 2, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z + 1)))
@@ -66,7 +65,7 @@ public class HalfBlock : Block
                 c2 *= 0.5F;
             t.Color(c2 * r, c2 * g, c2 * b);
             t.Normal(0, 0, 1);
-            RenderHalfFace(t, x, y1, z, 3, meta);
+            RenderHalfFace(t, level, x, y1, z, 3, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x - 1, y, z)))
@@ -76,7 +75,7 @@ public class HalfBlock : Block
                 c3 *= 0.5F;
             t.Color(c3 * r, c3 * g, c3 * b);
             t.Normal(-1, 0, 0);
-            RenderHalfFace(t, x, y1, z, 4, meta);
+            RenderHalfFace(t, level, x, y1, z, 4, meta);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x + 1, y, z)))
@@ -86,11 +85,11 @@ public class HalfBlock : Block
                 c3 *= 0.5F;
             t.Color(c3 * r, c3 * g, c3 * b);
             t.Normal(1, 0, 0);
-            RenderHalfFace(t, x, y1, z, 5, meta);
+            RenderHalfFace(t, level, x, y1, z, 5, meta);
         }
     }
 
-    private void RenderHalfFace(Tessellator t, float x, float y, float z, int face, int meta)
+    private void RenderHalfFace(Tessellator t, Level level, float x, float y, float z, int face, int meta)
     {
         var tex = GetTexture(meta >= 8 ? meta - 8 : meta, face);
         TextureAtlas.GetUV(tex, out var u0, out var v0, out var u1, out var v1);
@@ -112,64 +111,136 @@ public class HalfBlock : Block
             sideV1 -= org1 - org0;
         }
 
+        var orgCol = t.CurrentColor();
+        int ix = (int)x, iy = (int)y, iz = (int)z;
+        var lit = 0.5f;
+
         if (face == 0)
         {
-            t.VertexUV(x0, y0, z0, u0, v0);
-            t.VertexUV(x0, y0, z1, u0, v1);
-            t.VertexUV(x1, y0, z1, u1, v1);
-            t.VertexUV(x1, y0, z1, u1, v1);
-            t.VertexUV(x1, y0, z0, u1, v0);
-            t.VertexUV(x0, y0, z0, u0, v0);
+            float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
+            if (IsOpaqueAt(level, ix - 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz))
+                ltLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz))
+                rtLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz))
+                lbLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz))
+                rbLit = lit;
+
+            t.Normal(0, -1, 0);
+            SetVertex(t, orgCol, ltLit, x0, y0, z0, u0, v0);
+            SetVertex(t, orgCol, lbLit, x0, y0, z1, u0, v1);
+            SetVertex(t, orgCol, rbLit, x1, y0, z1, u1, v1);
+            SetVertex(t, orgCol, rbLit, x1, y0, z1, u1, v1);
+            SetVertex(t, orgCol, rtLit, x1, y0, z0, u1, v0);
+            SetVertex(t, orgCol, ltLit, x0, y0, z0, u0, v0);
         }
 
         if (face == 1)
         {
-            t.VertexUV(x0, y1, z0, u0, v0);
-            t.VertexUV(x1, y1, z0, u1, v0);
-            t.VertexUV(x1, y1, z1, u1, v1);
-            t.VertexUV(x1, y1, z1, u1, v1);
-            t.VertexUV(x0, y1, z1, u0, v1);
-            t.VertexUV(x0, y1, z0, u0, v0);
+            float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
+            if (IsOpaqueAt(level, ix - 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz))
+                ltLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz))
+                rtLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz))
+                lbLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz))
+                rbLit = lit;
+            if (IsOpaqueAt(level, ix, iy + 1, iz))
+                ltLit = lbLit = rtLit = rbLit = lit;
+
+            t.Normal(0, 1, 0);
+            SetVertex(t, orgCol, ltLit, x0, y1, z0, u0, v0);
+            SetVertex(t, orgCol, rtLit, x1, y1, z0, u1, v0);
+            SetVertex(t, orgCol, rbLit, x1, y1, z1, u1, v1);
+            SetVertex(t, orgCol, rbLit, x1, y1, z1, u1, v1);
+            SetVertex(t, orgCol, lbLit, x0, y1, z1, u0, v1);
+            SetVertex(t, orgCol, ltLit, x0, y1, z0, u0, v0);
         }
 
         if (face == 2)
         {
-            t.VertexUV(x0, y0, z0, u1, sideV1);
-            t.VertexUV(x1, y0, z0, u0, sideV1);
-            t.VertexUV(x1, y1, z0, u0, sideV0);
-            t.VertexUV(x0, y0, z0, u1, sideV1);
-            t.VertexUV(x1, y1, z0, u0, sideV0);
-            t.VertexUV(x0, y1, z0, u1, sideV0);
+            float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
+            if (IsOpaqueAt(level, ix - 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
+                ltLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix, iy - 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
+                rtLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
+                lbLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix, iy + 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
+                rbLit = lit;
+
+            t.Normal(0, 0, -1);
+            SetVertex(t, orgCol, ltLit, x0, y0, z0, u1, sideV1);
+            SetVertex(t, orgCol, rtLit, x1, y0, z0, u0, sideV1);
+            SetVertex(t, orgCol, rbLit, x1, y1, z0, u0, sideV0);
+            SetVertex(t, orgCol, ltLit, x0, y0, z0, u1, sideV1);
+            SetVertex(t, orgCol, rbLit, x1, y1, z0, u0, sideV0);
+            SetVertex(t, orgCol, lbLit, x0, y1, z0, u1, sideV0);
         }
 
         if (face == 3)
         {
-            t.VertexUV(x1, y1, z1, u1, sideV0);
-            t.VertexUV(x1, y0, z1, u1, sideV1);
-            t.VertexUV(x0, y0, z1, u0, sideV1);
-            t.VertexUV(x1, y1, z1, u1, sideV0);
-            t.VertexUV(x0, y0, z1, u0, sideV1);
-            t.VertexUV(x0, y1, z1, u0, sideV0);
+            float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
+            if (IsOpaqueAt(level, ix + 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
+                rtLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
+                rbLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix, iy - 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
+                lbLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix, iy + 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
+                ltLit = lit;
+
+            t.Normal(0, 0, 1);
+            SetVertex(t, orgCol, rtLit, x1, y1, z1, u1, sideV0);
+            SetVertex(t, orgCol, rbLit, x1, y0, z1, u1, sideV1);
+            SetVertex(t, orgCol, lbLit, x0, y0, z1, u0, sideV1);
+            SetVertex(t, orgCol, rtLit, x1, y1, z1, u1, sideV0);
+            SetVertex(t, orgCol, lbLit, x0, y0, z1, u0, sideV1);
+            SetVertex(t, orgCol, ltLit, x0, y1, z1, u0, sideV0);
         }
 
         if (face == 4)
         {
-            t.VertexUV(x0, y0, z1, u0, sideV1);
-            t.VertexUV(x0, y0, z0, u1, sideV1);
-            t.VertexUV(x0, y1, z0, u1, sideV0);
-            t.VertexUV(x0, y1, z0, u1, sideV0);
-            t.VertexUV(x0, y1, z1, u0, sideV0);
-            t.VertexUV(x0, y0, z1, u0, sideV1);
+            float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
+            if (IsOpaqueAt(level, ix - 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
+                ltLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy - 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
+                rtLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz + 1))
+                lbLit = lit;
+            if (IsOpaqueAt(level, ix - 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix - 1, iy + 1, iz) || IsOpaqueAt(level, ix - 1, iy, iz - 1))
+                rbLit = lit;
+
+            t.Normal(-1, 0, 0);
+            SetVertex(t, orgCol, ltLit, x0, y0, z1, u0, sideV1);
+            SetVertex(t, orgCol, rtLit, x0, y0, z0, u1, sideV1);
+            SetVertex(t, orgCol, rbLit, x0, y1, z0, u1, sideV0);
+            SetVertex(t, orgCol, rbLit, x0, y1, z0, u1, sideV0);
+            SetVertex(t, orgCol, lbLit, x0, y1, z1, u0, sideV0);
+            SetVertex(t, orgCol, ltLit, x0, y0, z1, u0, sideV1);
         }
 
         if (face == 5)
         {
-            t.VertexUV(x1, y0, z0, u0, sideV1);
-            t.VertexUV(x1, y0, z1, u1, sideV1);
-            t.VertexUV(x1, y1, z1, u1, sideV0);
-            t.VertexUV(x1, y1, z1, u1, sideV0);
-            t.VertexUV(x1, y1, z0, u0, sideV0);
-            t.VertexUV(x1, y0, z0, u0, sideV1);
+            float ltLit = 1f, rtLit = 1f, lbLit = 1f, rbLit = 1f;
+            if (IsOpaqueAt(level, ix + 1, iy - 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
+                ltLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy - 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy - 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
+                rtLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy + 1, iz - 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz - 1))
+                lbLit = lit;
+            if (IsOpaqueAt(level, ix + 1, iy + 1, iz + 1) || IsOpaqueAt(level, ix + 1, iy + 1, iz) || IsOpaqueAt(level, ix + 1, iy, iz + 1))
+                rbLit = lit;
+
+            t.Normal(1, 0, 0);
+            SetVertex(t, orgCol, ltLit, x1, y0, z0, u0, sideV1);
+            SetVertex(t, orgCol, rtLit, x1, y0, z1, u1, sideV1);
+            SetVertex(t, orgCol, rbLit, x1, y1, z1, u1, sideV0);
+            SetVertex(t, orgCol, rbLit, x1, y1, z1, u1, sideV0);
+            SetVertex(t, orgCol, lbLit, x1, y1, z0, u0, sideV0);
+            SetVertex(t, orgCol, ltLit, x1, y0, z0, u0, sideV1);
         }
     }
     

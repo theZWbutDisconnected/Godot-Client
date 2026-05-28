@@ -1,4 +1,5 @@
-﻿using TestClient.Source.Physics;
+﻿﻿using Godot;
+using TestClient.Source.Physics;
 using TestClient.Source.Render;
 using TestClient.Source.World.Biome;
 
@@ -61,7 +62,7 @@ public class GrassBlock : Block
             RenderFace(t, level, x, y, z, 2);
 
             t.Color(gcR * c2, gcG * c2, gcB * c2);
-            RenderFaceWithTex(t, x, y, z, 2, GrassSideOverlayTex);
+            RenderFaceWithTex(t, level, x, y, z, 2, GrassSideOverlayTex);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x, y, z + 1)))
@@ -75,7 +76,7 @@ public class GrassBlock : Block
             RenderFace(t, level, x, y, z, 3);
 
             t.Color(gcR * c2, gcG * c2, gcB * c2);
-            RenderFaceWithTex(t, x, y, z, 3, GrassSideOverlayTex);
+            RenderFaceWithTex(t, level, x, y, z, 3, GrassSideOverlayTex);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x - 1, y, z)))
@@ -89,7 +90,7 @@ public class GrassBlock : Block
             RenderFace(t, level, x, y, z, 4);
 
             t.Color(gcR * c3, gcG * c3, gcB * c3);
-            RenderFaceWithTex(t, x, y, z, 4, GrassSideOverlayTex);
+            RenderFaceWithTex(t, level, x, y, z, 4, GrassSideOverlayTex);
         }
 
         if (ShouldRenderFace(level, new BlockPos(x + 1, y, z)))
@@ -103,7 +104,7 @@ public class GrassBlock : Block
             RenderFace(t, level, x, y, z, 5);
 
             t.Color(gcR * c3, gcG * c3, gcB * c3);
-            RenderFaceWithTex(t, x, y, z, 5, GrassSideOverlayTex);
+            RenderFaceWithTex(t, level, x, y, z, 5, GrassSideOverlayTex);
         }
     }
 }
