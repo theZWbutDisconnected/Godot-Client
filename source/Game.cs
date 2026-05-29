@@ -195,6 +195,11 @@ public partial class Game : Node3D
 		_entityModels.Add(entity, renderer);
 	}
 
+	public float GetGuiScale()
+	{
+		return 2f;
+	}
+
 	public void SetCurrentScreen(Screen screen)
 	{
 		if (_currentScreen != null)
@@ -239,6 +244,19 @@ public partial class Game : Node3D
 				Player.Swing();
 				_network.SendPacket(new ClientboundUseEntity(target, ClientboundUseEntity.UseEntityAction.Attack));
 				break;
+		}
+	}
+
+	public override void _Notification(int what)
+	{
+		base._Notification(what);
+		
+		if (what == (int)NotificationWMSizeChanged)
+		{
+			var viewport = Camera.GetViewport();
+			var viewportSize = viewport?.GetVisibleRect().Size ?? Vector2I.Zero;
+			_ingameGui?.Init((int)viewportSize.X, (int)viewportSize.Y);
+			_currentScreen?.Init((int)viewportSize.X, (int)viewportSize.Y);
 		}
 	}
 
@@ -314,10 +332,16 @@ public partial class Game : Node3D
 		_armFp?.Free();
 		_outline?.Free();
 		_guiRenderer?.Free();
+		_ingameGui?.QueueFree();
 		_currentScreen?.OnClose();
+		_currentScreen?.QueueFree();
 		_entityModelsRemoveList.Clear();
 		foreach (var kvp in _entityModels)
 			kvp.Value.Free();
 		_entityModels.Clear();
+		if (Level != null && Level.IsInsideTree())
+		{
+			Level.QueueFree();
+		}
 	}
 }

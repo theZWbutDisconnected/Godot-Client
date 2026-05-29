@@ -25,6 +25,8 @@ public partial class GuiIngame : Screen
 		float v0 = 0.0f;
 		float u1 = iconSize / _iconsTexture.GetWidth();
 		float v1 = iconSize / _iconsTexture.GetHeight();
+
+		iconSize *= Game.Singleton.GetGuiScale();
 			
 		float iconX = centerX - iconSize / 2.0f;
 		float iconY = centerY - iconSize / 2.0f;
