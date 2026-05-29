@@ -79,7 +79,6 @@ public static class GlyphClipping
             var col = idx % AsciiGridCols;
             var row = idx / AsciiGridCols;
 
-            // Handle space character specially
             if (idx == 32)
             {
                 float spaceWidth = GlyphSizes.GetWidthAscii(32);
@@ -105,7 +104,6 @@ public static class GlyphClipping
                 continue;
             }
 
-            // Find bounding box of the character
             var bounds = FindCharacterBounds(image, col, row, AsciiCellW, AsciiCellH, texW, texH);
             
             var hasContent = bounds.Rightmost >= bounds.Leftmost && bounds.Bottommost >= bounds.Topmost;
@@ -173,7 +171,6 @@ public static class GlyphClipping
             var col = cellIdx % UnicodeGridCols;
             var row = cellIdx / UnicodeGridCols;
 
-            // Find bounding box of the character
             var bounds = FindCharacterBounds(image, col, row, UnicodeCellW, UnicodeCellH, texW, texH);
             
             var hasContent = bounds.Rightmost >= bounds.Leftmost && bounds.Bottommost >= bounds.Topmost;
@@ -368,7 +365,6 @@ public static class GlyphClipping
         var originX = col * cellW;
         var originY = row * cellH;
 
-        // Find leftmost pixel
         int leftmost = cellW;
         for (var px = 0; px < cellW && leftmost == cellW; px++)
         {
@@ -382,7 +378,6 @@ public static class GlyphClipping
             }
         }
 
-        // Find topmost pixel
         int topmost = cellH;
         for (var py = 0; py < cellH && topmost == cellH; py++)
         {
@@ -396,7 +391,6 @@ public static class GlyphClipping
             }
         }
 
-        // Find rightmost pixel
         int rightmost = -1;
         for (var px = cellW - 1; px >= leftmost; px--)
         {
@@ -411,7 +405,6 @@ public static class GlyphClipping
             if (rightmost >= 0) break;
         }
 
-        // Find bottommost pixel
         int bottommost = -1;
         for (var py = cellH - 1; py >= topmost; py--)
         {

@@ -41,7 +41,7 @@ public partial class Game : Node3D
 	private readonly List<Entity> _entityModelsRemoveList = [];
 	private FirstPersonArm _armFp;
 	private BlockOutline _outline;
-	private FpsDisplay _fpsDisplay;
+	private GuiRenderer _guiRenderer;
 
 	public Game()
 	{
@@ -64,7 +64,8 @@ public partial class Game : Node3D
 		_outline = new BlockOutline();
 		AddChild(_outline.Node);
 
-		_fpsDisplay = new FpsDisplay(this);
+		_guiRenderer = new GuiRenderer();
+		AddChild(_guiRenderer);
 
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
@@ -89,7 +90,6 @@ public partial class Game : Node3D
 		Render(Timer.RenderPartialTicks);
 		_armFp.Setup(Camera, delta);
 		_outline.Update(Level, Mop);
-		_fpsDisplay.Update(_fpsString);
 		++_frames;
 
 		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
@@ -169,6 +169,10 @@ public partial class Game : Node3D
 		foreach (var entity in _entityModelsRemoveList)
 			_entityModels.Remove(entity);
 		_entityModelsRemoveList.Clear();
+		
+		_guiRenderer.Begin();
+		_guiRenderer.DrawString(_fpsString, 0, 0, 0xFFFFFF);
+		_guiRenderer.End();
 	}
 
 	public void NewEntityNode(Entity entity, ModelRenderer renderer)
@@ -248,7 +252,7 @@ public partial class Game : Node3D
 		Tessellator.ClearAnimCache();
 		_armFp?.Free();
 		_outline?.Free();
-		_fpsDisplay?.Free();
+		_guiRenderer?.Free();
 		_entityModelsRemoveList.Clear();
 		foreach (var kvp in _entityModels)
 			kvp.Value.Free();
