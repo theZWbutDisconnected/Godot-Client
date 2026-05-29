@@ -42,6 +42,8 @@ public partial class Game : Node3D
 	private FirstPersonArm _armFp;
 	private BlockOutline _outline;
 	private GuiRenderer _guiRenderer;
+	private Screen _currentScreen;
+	private Screen _ingameGui;
 
 	public Game()
 	{
@@ -66,6 +68,11 @@ public partial class Game : Node3D
 
 		_guiRenderer = new GuiRenderer();
 		AddChild(_guiRenderer);
+
+		_ingameGui = new GuiIngame();
+		var viewport = Camera.GetViewport();
+		var viewportSize = viewport?.GetVisibleRect().Size ?? Vector2I.Zero;
+		_ingameGui.Init((int)viewportSize.X, (int)viewportSize.Y);
 
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
@@ -171,13 +178,38 @@ public partial class Game : Node3D
 		_entityModelsRemoveList.Clear();
 		
 		_guiRenderer.Begin();
-		_guiRenderer.DrawString(_fpsString, 0, 0, 0xFFFFFF);
+		_ingameGui.Render(_guiRenderer, alpha);
+		if (_currentScreen != null)
+		{
+			_currentScreen.Render(_guiRenderer, alpha);
+		}
+		else
+		{
+			_guiRenderer.DrawString(_fpsString, 0, 0, 0xFFFFFF);
+		}
 		_guiRenderer.End();
 	}
 
 	public void NewEntityNode(Entity entity, ModelRenderer renderer)
 	{
 		_entityModels.Add(entity, renderer);
+	}
+
+	public void SetCurrentScreen(Screen screen)
+	{
+		if (_currentScreen != null)
+		{
+			_currentScreen.OnClose();
+		}
+		
+		_currentScreen = screen;
+		
+		if (_currentScreen != null)
+		{
+			var viewport = Camera.GetViewport();
+			var viewportSize = viewport?.GetVisibleRect().Size ?? Vector2I.Zero;
+			_currentScreen.Init((int)viewportSize.X, (int)viewportSize.Y);
+		}
 	}
 
 	private void SetupCamera(float a)
@@ -214,6 +246,23 @@ public partial class Game : Node3D
 	{
 		base._Input(@event);
 		if (!_isRunning) return;
+		
+		if (_currentScreen != null)
+		{
+			if (@event is InputEventKey keyEvent && keyEvent.Pressed)
+			{
+				_currentScreen.HandleKeyPressed(keyEvent.Keycode);
+				return;
+			}
+			
+			if (@event is InputEventMouseButton mouseButton && mouseButton.Pressed)
+			{
+				Vector2 mousePos = GetViewport().GetMousePosition();
+				_currentScreen.HandleMouseClick((int)mousePos.X, (int)mousePos.Y, mouseButton.ButtonIndex);
+				return;
+			}
+		}
+		
 		if (@event is InputEventMouseMotion motion)
 		{
 			var xo = 0.0F;
@@ -225,9 +274,21 @@ public partial class Game : Node3D
 			Player.Turn(xo, yo * YMouseAxis);
 		}
 
-		if (@event is InputEventKey key)
+		if (@event is InputEventKey key && !key.Echo)
 		{
-			if (key.Pressed && key.Keycode == Key.G)
+			if (key.Pressed && key.Keycode == Key.Escape)
+			{
+				if (_currentScreen != null)
+				{
+					SetCurrentScreen(null);
+					Input.SetMouseMode(Input.MouseModeEnum.Captured);
+				}
+				else
+				{
+					Input.SetMouseMode(Input.MouseModeEnum.Visible);
+				}
+			}
+			else if (key.Pressed && key.Keycode == Key.G)
 			{
 				var zombie = new Zombie(Level);
 				Level.AddEntity(zombie);
@@ -253,6 +314,7 @@ public partial class Game : Node3D
 		_armFp?.Free();
 		_outline?.Free();
 		_guiRenderer?.Free();
+		_currentScreen?.OnClose();
 		_entityModelsRemoveList.Clear();
 		foreach (var kvp in _entityModels)
 			kvp.Value.Free();

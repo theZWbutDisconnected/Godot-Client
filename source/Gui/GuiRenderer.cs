@@ -47,10 +47,16 @@ public partial class GuiRenderer : Control
 	public void DrawTexturedRect(float x, float y, float w, float h,
 		float u0, float v0, float u1, float v1)
 	{
+		DrawTexturedRect(x, y, w, h, u0, v0, u1, v1, Colors.White);
+	}
+	
+	public void DrawTexturedRect(float x, float y, float w, float h,
+		float u0, float v0, float u1, float v1, Color color)
+	{
 		_cmds.Add(new Cmd
 		{
 			Type = CmdType.TexRect, X = x, Y = y, W = w, H = h,
-			U0 = u0, V0 = v0, U1 = u1, V1 = v1, Tex = _boundTex
+			U0 = u0, V0 = v0, U1 = u1, V1 = v1, Tex = _boundTex, C0 = color
 		});
 	}
 
