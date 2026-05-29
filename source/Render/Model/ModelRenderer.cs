@@ -38,7 +38,6 @@ public class ModelRenderer
         };
         _hurtOverlayMaterial ??= new StandardMaterial3D
         {
-            AlbedoColor = new Color(1f, 0f, 0f, 0f),
             TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
@@ -56,7 +55,6 @@ public class ModelRenderer
         } else
         {
             _sharedMaterial.AlbedoTexture = _tex;
-            _hurtOverlayMaterial.AlbedoTexture = _tex;
         }
 
         _root = new Node3D { Name = $"{Model.GetType().Name}_Root" };
@@ -97,7 +95,7 @@ public class ModelRenderer
 
         var a = entityIn.HurtTime;
         float smoothed = Math.Max(0f, a - partialTicks);
-        float alpha = (smoothed / 10f) * 0.5f + 0.5f;
+        float alpha = (smoothed / 10f) * 0.5f + 0.2f;
         if (a < 5) alpha = 0;
         SetHurtAlpha(alpha);
     }
@@ -116,7 +114,7 @@ public class ModelRenderer
         }
         else
         {
-            _hurtOverlayMaterial.AlbedoColor = new Color(1f, 0f, 0f, quantized);
+            _hurtOverlayMaterial.AlbedoColor = new Color(0.75f, 0f, 0f, quantized);
             SetNextPassOnAll(_hurtOverlayMaterial);
         }
     }
