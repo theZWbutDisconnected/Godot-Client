@@ -1,10 +1,11 @@
+using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using TestClient.Source.Network.NetHandler;
 
 namespace TestClient.Source.Network;
 
-public class ClientHandler
+public class ClientHandler : IDisposable
 {
 	private TcpClient _client;
 
@@ -26,8 +27,8 @@ public class ClientHandler
 
 	public void Disconnect()
 	{
-		Stream?.Close();
-		_client?.Close();
+		Stream?.Dispose();
+		_client?.Dispose();
 		Stream = null;
 		_client = null;
 	}
@@ -35,5 +36,10 @@ public class ClientHandler
 	public bool IsConnected()
 	{
 		return _client?.Connected == true && Stream != null;
+	}
+
+	public void Dispose()
+	{
+		Disconnect();
 	}
 }

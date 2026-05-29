@@ -9,11 +9,11 @@ public class Entity
 {
     public AABB BoundingBox;
     protected Level Level;
-    public float LimbSwing;
-    public float LimbSwingAmount;
+    public int DeathTime;
+    public float WalkAnim;
+    public float WalkAnimDelta;
+    public float PrevWalkAnimDelta;
     protected Entity Vehicle;
-    protected float MovedDistance;
-    public bool OnGround;
     public double PosX;
     public double PosY;
     public double PosZ;
@@ -28,20 +28,19 @@ public class Entity
     public float PrevRotY;
     public float PrevRotYBody;
     public float PrevRotYHead;
-    public float PrevLimbSwingAmount;
-    public float PrevSwingProgress;
     public bool Removed;
     public int ServerX;
     public int ServerY;
     public int ServerZ;
     public float SwingProgress;
+    public float PrevSwingProgress;
     public float TicksExisted;
     public double XDelta;
     public double YDelta;
     public double ZDelta;
-    public int HurtTime;
-    private bool _isSwingInProgress;
-    private int _swingProgressInt;
+    public bool OnGround;
+    private bool _inProgress;
+    private int _progress;
 
     public int EntityId { get; set; } = new Random().Next();
     public Guid EntityUuid { get; set; } = Guid.NewGuid();
@@ -49,6 +48,8 @@ public class Entity
     public float Height { get; set; } = 1.8F;
     protected float Width { get; set; } = 0.6F;
     public double StepHeight { get; set; } = 0.5F;
+    public int HurtTime { get; set; }
+    public bool Dead { get; set; }
 
     public DataWatcher DataWatcher { get; }
 
@@ -175,7 +176,7 @@ public class Entity
             f1 = Mathf.Atan2((float)d1, (float)d0) * 180.0F / MathF.PI - 90.0F;
         }
         if (SwingProgress > 0.0F) f1 = RotY;
-        f2 = UpdateDistance(f1, f2);
+        UpdateDistance(f1, f2);
 
         RotX = Mathf.Clamp(RotX, -90, 90);
         
@@ -187,8 +188,6 @@ public class Entity
         while (RotX - PrevRotX >= 180.0F) PrevRotX += 360.0F;
         while (RotYHead - PrevRotYHead < -180.0F) PrevRotYHead -= 360.0F;
         while (RotYHead - PrevRotYHead >= 180.0F) PrevRotYHead += 360.0F;
-        
-        MovedDistance += f2;
     }
 
     public virtual void LivingTick()
@@ -196,6 +195,7 @@ public class Entity
         if (HurtTime > 0)
             --HurtTime;
         UpdateSwing();
+        if (!IsAlive()) DeathUpdate();
     }
 
     public virtual void Render(float a)
@@ -322,44 +322,44 @@ public class Entity
         RotYHead = f;
     }
 
-    public void OnDataWatcherUpdate(int dataID)
+    public virtual void OnDataWatcherUpdate(int dataID)
     {
     }
 
     public virtual void HurtAnimation()
     {
         HurtTime = 10;
-        LimbSwingAmount = 2F;
+        WalkAnimDelta = 2F;
     }
     
     protected virtual void UpdateSwing()
     {
         int i = SwingDuration();
 
-        if (_isSwingInProgress)
+        if (_inProgress)
         {
-            ++_swingProgressInt;
+            ++_progress;
 
-            if (_swingProgressInt >= i)
+            if (_progress >= i)
             {
-                _swingProgressInt = 0;
-                _isSwingInProgress = false;
+                _progress = 0;
+                _inProgress = false;
             }
         }
         else
         {
-            _swingProgressInt = 0;
+            _progress = 0;
         }
 
-        SwingProgress = _swingProgressInt / (float)i;
+        SwingProgress = _progress / (float)i;
     }
 
     public virtual void Swing()
     {
-        if (!_isSwingInProgress || _swingProgressInt >= SwingDuration() / 2 || _swingProgressInt < 0)
+        if (!_inProgress || _progress >= SwingDuration() / 2 || _progress < 0)
         {
-            _swingProgressInt = -1;
-            _isSwingInProgress = true;
+            _progress = -1;
+            _inProgress = true;
         }
     }
     
@@ -401,15 +401,43 @@ public class Entity
         return false;
     }
 
-    public void MountEntity(Entity vehicle)
+    public virtual void MountEntity(Entity vehicle)
     {
-        LimbSwing = 0f;
-        LimbSwingAmount = 0f;
+        WalkAnim = 0f;
+        WalkAnimDelta = 0f;
         Vehicle = vehicle;
     }
 
-    public void Dismount()
+    public virtual void Dismount()
     {
         Vehicle = null;
+    }
+
+    public virtual void StatusTriggered(sbyte id)
+    {
+        if (id == 2)
+        {
+            WalkAnimDelta = 1.5F;
+            HurtTime = 10;
+        }
+        if (id == 3)
+        {
+            OnDeath();
+        }
+    }
+
+    protected virtual void OnDeath()
+    {
+        Dead = true;
+    }
+
+    public virtual bool IsAlive()
+    {
+        return !Dead;
+    }
+
+    public virtual void DeathUpdate()
+    {
+        ++DeathTime;
     }
 }

@@ -43,7 +43,7 @@ public class BipedModel : EntityModel
         LLeg.AddBox(-2f, 0f, -2f, 4, 12, 4, 0, 16);
     }
 
-    public override void Animate(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
+    public override void Animate(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float partialTicks, Entity entityIn)
     {
         Head.YRot = netHeadYaw / (180F / MathF.PI);
         Head.XRot = headPitch / (180F / MathF.PI);

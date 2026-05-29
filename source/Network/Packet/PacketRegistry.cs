@@ -52,6 +52,7 @@ public static class PacketRegistry
 		RegisterInbound(ConnectionState.Play, 0x17, () => new ServerboundEntityStatus.ServerboundEntityLookMove());
 		RegisterInbound(ConnectionState.Play, 0x18, () => new ServerboundEntityTeleport());
 		RegisterInbound(ConnectionState.Play, 0x19, () => new ServerboundHeadLook());
+		RegisterInbound(ConnectionState.Play, 0x1A, () => new ServerboundEntityAnimation());
 		RegisterInbound(ConnectionState.Play, 0x21, () => new ServerboundChunkData());
 		RegisterInbound(ConnectionState.Play, 0x22, () => new ServerboundMultiBlockChange());
 		RegisterInbound(ConnectionState.Play, 0x23, () => new ServerboundBlockChange());

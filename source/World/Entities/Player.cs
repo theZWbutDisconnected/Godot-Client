@@ -10,11 +10,11 @@ public class Player : Entity
 {
     public readonly NetworkSystem SendQueue;
     private int _positionUpdateTicks;
-    public float LastPitch;
     public double LastX;
     public double LastY;
-    public float LastYaw;
     public double LastZ;
+    public float LastYaw;
+    public float LastPitch;
     public float EquipProgress;
     
     public Capabilities Capabilities = new();
@@ -62,9 +62,9 @@ public class Player : Entity
             var dz0 = PosZ - PrevZ;
             var limbSpeed = (float)Mathf.Sqrt(dx0 * dx0 + dz0 * dz0) * 4.0F;
             if (limbSpeed > 1.0F) limbSpeed = 1.0F;
-            PrevLimbSwingAmount = LimbSwingAmount;
-            LimbSwingAmount += (limbSpeed - LimbSwingAmount) * 0.4F;
-            LimbSwing += LimbSwingAmount;
+            PrevWalkAnimDelta = WalkAnimDelta;
+            WalkAnimDelta += (limbSpeed - WalkAnimDelta) * 0.4F;
+            WalkAnim += WalkAnimDelta;
 
             if (SendQueue.IsConnected())
             {

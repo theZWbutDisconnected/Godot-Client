@@ -52,7 +52,7 @@ public abstract class ServerEntity : Entity
             SetRot(RotY, RotX);
         }
         
-        PrevLimbSwingAmount = LimbSwingAmount;
+        PrevWalkAnimDelta = WalkAnimDelta;
         
         if (IsRiding())
         {
@@ -64,8 +64,8 @@ public abstract class ServerEntity : Entity
 
             if (f > 1.0F) f = 1.0F;
 
-            LimbSwingAmount += (f - LimbSwingAmount) * 0.4F;
-            LimbSwing += LimbSwingAmount;
+            WalkAnimDelta += (f - WalkAnimDelta) * 0.4F;
+            WalkAnim += WalkAnimDelta;
         }
     }
 
@@ -76,14 +76,12 @@ public abstract class ServerEntity : Entity
         var f2 = f1 - f;
         var f7 = PrevRotX + (RotX - PrevRotX) * a;
 
-        var f5 = PrevLimbSwingAmount + (LimbSwingAmount - PrevLimbSwingAmount) * a;
-        var f6 = LimbSwing - LimbSwingAmount * (1.0F - a);
+        var f5 = PrevWalkAnimDelta + (WalkAnimDelta - PrevWalkAnimDelta) * a;
+        var f6 = WalkAnim - WalkAnimDelta * (1.0F - a);
         if (IsChild()) f6 *= 3.0F;
         if (f5 > 1.0F) f5 = 1.0F;
 
-        var f4 = 0.0625F;
-        
-        GetRendererLocal().Update(f6, f5, TicksExisted + a, f2, f7, f4, this);
+        GetRendererLocal().Update(f6, f5, TicksExisted + a, f2, f7, a, this);
     }
 
     protected T GetModel<T>() where T : EntityModel

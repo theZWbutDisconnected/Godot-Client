@@ -145,5 +145,7 @@ public class BlockOutline
 	public void Free()
 	{
 		_outlineMesh.QueueFree();
+		_material.Dispose();
+		_immediateMesh.Dispose();
 	}
 }

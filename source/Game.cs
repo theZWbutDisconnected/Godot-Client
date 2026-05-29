@@ -36,6 +36,7 @@ public partial class Game : Node3D
 	public MoveObject Mop;
 
 	private readonly Dictionary<Entity, ModelRenderer> _entityModels = [];
+	private readonly List<Entity> _entityModelsRemoveList = [];
 	private FirstPersonArm _armFp;
 	private BlockOutline _outline;
 
@@ -108,6 +109,7 @@ public partial class Game : Node3D
 		double endZ = startZ + Math.Cos(yaw) * Math.Cos(pitch) * reach;
 
 		Mop = Raycast.RayTrace(startX, startY, startZ, endX, endY, endZ, Level, Player);
+		
 		if (Mop.Type == MoveObjectType.Entity)
 		{
 			reach = 3.0F;
@@ -154,8 +156,13 @@ public partial class Game : Node3D
 			else
 			{
 				i.Value.Free();
+				_entityModelsRemoveList.Add(entity);
 			}
 		}
+
+		foreach (var entity in _entityModelsRemoveList)
+			_entityModels.Remove(entity);
+		_entityModelsRemoveList.Clear();
 	}
 
 	public void NewEntityNode(Entity entity, ModelRenderer renderer)
@@ -226,5 +233,18 @@ public partial class Game : Node3D
 				}
 			}
 		}
+	}
+
+	public override void _ExitTree()
+	{
+		_isRunning = false;
+		_network?.Dispose();
+		Tessellator.ClearAnimCache();
+		_armFp?.Free();
+		_outline?.Free();
+		_entityModelsRemoveList.Clear();
+		foreach (var kvp in _entityModels)
+			kvp.Value.Free();
+		_entityModels.Clear();
 	}
 }

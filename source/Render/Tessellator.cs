@@ -29,6 +29,7 @@ public sealed class Tessellator
     public void Initialize()
     {
         _sfTool?.Clear();
+        _sfTool?.Dispose();
         _sfTool = new SurfaceTool();
         _sfTool.Begin(Mesh.PrimitiveType.Triangles);
         _count = 0;
@@ -182,6 +183,13 @@ public sealed class Tessellator
     private static Shader GetSolidAnimShader()
     {
         return _solidAnimShader ??= GD.Load<Shader>("res://assets/shaders/soild_animated.gdshader");
+    }
+
+    public static void ClearAnimCache()
+    {
+        foreach (var mat in _animMaterialCache.Values)
+            mat?.Dispose();
+        _animMaterialCache.Clear();
     }
 
     private static Shader GetLiquidAnimShader()

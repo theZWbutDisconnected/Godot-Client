@@ -300,6 +300,13 @@ public class NetHandlerPlayClient : INetHandlerPlayClient
         }
     }
 
+    public void HandleEntityStatus(ServerboundEntityAnimation packetIn)
+    {
+        var entity = Game.Singleton.Level.GetEntityById(packetIn.EntityId);
+        if (entity == null) return;
+        entity.StatusTriggered(packetIn.OpCode);
+    }
+
     public void Disconnected(string reason)
     {
         GD.PrintErr($"Play connection lost: {reason}");

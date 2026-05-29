@@ -81,6 +81,9 @@ public class FirstPersonArm
 
     public void Free()
     {
+        _armMesh?.Mesh?.Dispose();
+        _armMesh?.MaterialOverride?.Dispose();
         _armRoot?.QueueFree();
+        _bobRoot?.QueueFree();
     }
 }

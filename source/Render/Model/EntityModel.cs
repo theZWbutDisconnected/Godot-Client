@@ -13,7 +13,7 @@ public abstract class EntityModel
 
     public IReadOnlyList<ModelPart> GetParts() => Parts;
 
-    public abstract void Animate(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn);
+    public abstract void Animate(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float partialTicks, Entity entityIn);
 
     protected ModelPart AddPart(string name, float pivotX = 0f, float pivotY = 0f, float pivotZ = 0f)
     {

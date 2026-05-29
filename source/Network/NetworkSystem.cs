@@ -11,7 +11,7 @@ using TestClient.Source.Network.Packet.Server.Play;
 
 namespace TestClient.Source.Network;
 
-public class NetworkSystem
+public class NetworkSystem : IDisposable
 {
 	private readonly ClientHandler _manager = new();
 	private PacketBuffer _buffer;
@@ -88,6 +88,7 @@ public class NetworkSystem
 				{ typeof(ServerboundEntityStatus.ServerboundEntityLookMove), p => h.HandleEntityMovement((ServerboundEntityStatus.ServerboundEntityLookMove)p) },
 				{ typeof(ServerboundEntityTeleport), p => h.HandleEntityTeleport((ServerboundEntityTeleport)p) },
 				{ typeof(ServerboundHeadLook), p => h.HandleEntityHeadLook((ServerboundHeadLook)p) },
+				{ typeof(ServerboundEntityAnimation), p => h.HandleEntityStatus((ServerboundEntityAnimation)p) },
 				{ typeof(ServerboundChunkData), p => h.HandleChunkData((ServerboundChunkData)p) },
 				{ typeof(ServerboundMultiBlockChange), p => h.HandleMultiBlockChange((ServerboundMultiBlockChange)p) },
 				{ typeof(ServerboundBlockChange), p => h.HandleBlockChange((ServerboundBlockChange)p) },
@@ -114,7 +115,8 @@ public class NetworkSystem
 
 				if (_compressionThreshold >= 0)
 				{
-					var tempBuf = new PacketBuffer(new MemoryStream(packetData));
+					using var tempStream = new MemoryStream(packetData);
+					var tempBuf = new PacketBuffer(tempStream);
 					var dataLength = tempBuf.ReadVarInt();
 
 					if (dataLength == 0)
@@ -128,8 +130,9 @@ public class NetworkSystem
 						var compressed = tempBuf.ReadByteArray(compressedLen);
 
 						payload = new byte[dataLength];
+						using var compressedStream = new MemoryStream(compressed, 2, compressed.Length - 2);
 						using var deflate = new DeflateStream(
-							new MemoryStream(compressed, 2, compressed.Length - 2),
+							compressedStream,
 							CompressionMode.Decompress);
 						deflate.ReadExactly(payload, 0, dataLength);
 					}
@@ -139,7 +142,8 @@ public class NetworkSystem
 					payload = packetData;
 				}
 
-				var reader = new PacketBuffer(new MemoryStream(payload));
+				using var readerStream = new MemoryStream(payload);
+				var reader = new PacketBuffer(readerStream);
 				var packetId = reader.ReadVarInt();
 				var packet = PacketRegistry.CreateInboundPacket(packetId, State);
 				if (packet != null)
@@ -239,5 +243,11 @@ public class NetworkSystem
 		_buffer.WriteVarInt(frameBytes.Length);
 		stream.Write(frameBytes, 0, frameBytes.Length);
 		await stream.FlushAsync();
+	}
+
+	public void Dispose()
+	{
+		_isDead = true;
+		_manager?.Dispose();
 	}
 }

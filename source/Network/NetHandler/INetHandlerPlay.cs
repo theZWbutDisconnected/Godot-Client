@@ -24,4 +24,5 @@ public interface INetHandlerPlayClient : INetHandler
     void HandleDisconnect(ServerboundDisconnect @in);
     void HandleSpawnPlayer(ServerboundSpawnPlayer @in);
     void HandleEntityAttach(ServerboundEntityAttach @in);
+    void HandleEntityStatus(ServerboundEntityAnimation @in);
 }

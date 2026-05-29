@@ -34,7 +34,7 @@ public partial class Level : Node3D
 	}
 
 	private readonly object _lockObj = new();
-	private bool _isRefreshing;
+	private volatile bool _isRefreshing;
 
 	public void AddChunk(ChunkData chunk)
 	{
@@ -150,11 +150,8 @@ public partial class Level : Node3D
 			if (groupKey.TexIndex >= 0)
 			{
 				var animData = TextureAtlas.GetAnimData(groupKey.TexIndex);
-				if (animData.HasValue)
-					material = Tessellator.GetOrCreateAnimMaterial(
-						groupKey.TexIndex, animData.Value, groupKey.IsLiquid);
-				else
-					material = groupKey.IsLiquid ? Tessellator.GetLiquidMaterial() : Tessellator.GetSolidMaterial();
+				if (animData.HasValue) material = Tessellator.GetOrCreateAnimMaterial(groupKey.TexIndex, animData.Value, groupKey.IsLiquid);
+				else material = groupKey.IsLiquid ? Tessellator.GetLiquidMaterial() : Tessellator.GetSolidMaterial();
 			}
 			else
 			{
@@ -178,19 +175,25 @@ public partial class Level : Node3D
 			{
 				_chunkMeshes.Remove(key);
 				if (oldMeshes != null)
+				{
 					foreach (var old in oldMeshes)
+					{
 						if (old != null && IsInstanceValid(old))
 						{
 							RemoveChild(old);
 							old.QueueFree();
 						}
+					}
+				}
 			}
 
 			if (meshes != null && meshes.Count > 0)
 			{
 				foreach (var mesh in meshes)
-					if (mesh != null)
-						AddChild(mesh);
+				{
+					if (mesh == null) continue;
+					AddChild(mesh);
+				}
 				_chunkMeshes[key] = new List<MeshInstance3D>(meshes);
 			}
 		}
@@ -218,9 +221,25 @@ public partial class Level : Node3D
 
 	public void RemoveChunk(int chunkX, int chunkZ)
 	{
+		var key = new ChunkCoordIntPair(chunkX, chunkZ);
 		lock (_lockObj)
 		{
-			_chunks.Remove(new ChunkCoordIntPair(chunkX, chunkZ));
+			_chunks.Remove(key);
+			if (_chunkMeshes.TryGetValue(key, out var oldMeshes))
+			{
+				_chunkMeshes.Remove(key);
+				if (oldMeshes != null)
+				{
+					foreach (var old in oldMeshes)
+					{
+						if (old != null && IsInstanceValid(old))
+						{
+							RemoveChild(old);
+							old.QueueFree();
+						}
+					}
+				}
+			}
 		}
 	}
 
