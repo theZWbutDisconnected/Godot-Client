@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
+using TestClient.Source.Gui;
 using TestClient.Source.Network;
 using TestClient.Source.Network.NetHandler.impl;
 using TestClient.Source.Network.Packet.Client.Handshake;
@@ -9,6 +10,7 @@ using TestClient.Source.Network.Packet.Client.Login;
 using TestClient.Source.Network.Packet.Client.Play;
 using TestClient.Source.Physics;
 using TestClient.Source.Render;
+using TestClient.Source.Render.Font;
 using TestClient.Source.Render.Model;
 using TestClient.Source.World;
 using TestClient.Source.World.Entities;
@@ -39,6 +41,7 @@ public partial class Game : Node3D
 	private readonly List<Entity> _entityModelsRemoveList = [];
 	private FirstPersonArm _armFp;
 	private BlockOutline _outline;
+	private FpsDisplay _fpsDisplay;
 
 	public Game()
 	{
@@ -60,6 +63,8 @@ public partial class Game : Node3D
 
 		_outline = new BlockOutline();
 		AddChild(_outline.Node);
+
+		_fpsDisplay = new FpsDisplay(this);
 
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
@@ -84,11 +89,12 @@ public partial class Game : Node3D
 		Render(Timer.RenderPartialTicks);
 		_armFp.Setup(Camera, delta);
 		_outline.Update(Level, Mop);
+		_fpsDisplay.Update(_fpsString);
 		++_frames;
 
 		while (Time.GetTicksMsec() >= (ulong)(_lastTime + 1000L))
 		{
-			_fpsString = _frames + " fps";
+			_fpsString = _frames + " fps我草泥马";
 			_lastTime += 1000L;
 			_frames = 0;
 		}
@@ -242,6 +248,7 @@ public partial class Game : Node3D
 		Tessellator.ClearAnimCache();
 		_armFp?.Free();
 		_outline?.Free();
+		_fpsDisplay?.Free();
 		_entityModelsRemoveList.Clear();
 		foreach (var kvp in _entityModels)
 			kvp.Value.Free();
