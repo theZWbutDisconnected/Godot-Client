@@ -30,7 +30,7 @@ public partial class GuiIngame : Screen
 			
 		float iconX = centerX - iconSize / 2.0f;
 		float iconY = centerY - iconSize / 2.0f;
-			
+		
 		guiRenderer.DrawTexturedRect(iconX, iconY, iconSize, iconSize, u0, v0, u1, v1);
 	}
 }

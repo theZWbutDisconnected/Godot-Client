@@ -49,7 +49,7 @@ public class Entity
     protected float Width { get; set; } = 0.6F;
     public double StepHeight { get; set; } = 0.5F;
     public int HurtTime { get; set; }
-    public bool Dead { get; set; }
+    private bool Dead { get; set; }
 
     public DataWatcher DataWatcher { get; }
 

@@ -74,7 +74,7 @@ public partial class Game : Node3D
 		_ingameGui.Init(size.X, size.Y);
 
 		GetTree().Root.SizeChanged += NotificationSize;
-		Input.SetMouseMode(Input.MouseModeEnum.Visible);
+		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 	}
 
 	private async Task NetworkInitialize()
@@ -163,7 +163,6 @@ public partial class Game : Node3D
 				model.Transform = Transform3D.Identity;
 				model.Scale = Vector3.One;
 				model.Translate(new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha)));
-				model.RotateY(Mathf.DegToRad(180 - (entity.PrevRotYBody + (entity.RotYBody - entity.PrevRotYBody) * alpha)));
 				if (entity.DeathTime > 0)
 				{
 					var f = (entity.DeathTime + alpha - 1.0F) / 20.0F * 1.6F;
@@ -171,6 +170,7 @@ public partial class Game : Node3D
 					if (f > 1.0F) f = 1.0F;
 					model.RotateZ(Mathf.DegToRad(f * 90F));
 				}
+				model.RotateY(Mathf.DegToRad(180 - (entity.PrevRotYBody + (entity.RotYBody - entity.PrevRotYBody) * alpha)));
 				model.Translate(new Vector3(0.0F, heightOffset, 0.0F));
 				model.SetScale(new Vector3(-f4, -f4, f4));
 				if (!model.IsInsideTree()) AddChild(model);
