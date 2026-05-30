@@ -160,10 +160,19 @@ public partial class Game : Node3D
 					heightOffset *= 0.5f;
 				}
 				if (entity.IsSneaking()) heightOffset *= 0.88f;
-				model.Scale = new Vector3(-f4, -f4, f4);
-				model.Position = new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha));
-				model.Position += new Vector3(0.0F, heightOffset, 0.0F);
-				model.RotationDegrees = new Vector3(0.0F, 180 - (entity.PrevRotYBody + (entity.RotYBody - entity.PrevRotYBody) * alpha), 0.0F);
+				model.Transform = Transform3D.Identity;
+				model.Scale = Vector3.One;
+				model.Translate(new Vector3((float)(entity.PrevX + (entity.PosX - entity.PrevX) * alpha), (float)(entity.PrevY + (entity.PosY - entity.PrevY) * alpha), (float)(entity.PrevZ + (entity.PosZ - entity.PrevZ) * alpha)));
+				model.RotateY(Mathf.DegToRad(180 - (entity.PrevRotYBody + (entity.RotYBody - entity.PrevRotYBody) * alpha)));
+				if (entity.DeathTime > 0)
+				{
+					var f = (entity.DeathTime + alpha - 1.0F) / 20.0F * 1.6F;
+					f = Mathf.Sqrt(f);
+					if (f > 1.0F) f = 1.0F;
+					model.RotateZ(Mathf.DegToRad(f * 90F));
+				}
+				model.Translate(new Vector3(0.0F, heightOffset, 0.0F));
+				model.SetScale(new Vector3(-f4, -f4, f4));
 				if (!model.IsInsideTree()) AddChild(model);
 			}
 			else
@@ -179,13 +188,10 @@ public partial class Game : Node3D
 		
 		_guiRenderer.Begin();
 		_ingameGui.Render(_guiRenderer, alpha);
+		_guiRenderer.DrawString(_fpsString, 0, 0, 0xFFFFFF);
 		if (_currentScreen != null)
 		{
 			_currentScreen.Render(_guiRenderer, alpha);
-		}
-		else
-		{
-			_guiRenderer.DrawString(_fpsString, 0, 0, 0xFFFFFF);
 		}
 		_guiRenderer.End();
 	}
@@ -281,7 +287,7 @@ public partial class Game : Node3D
 			}
 		}
 		
-		if (@event is InputEventMouseMotion motion)
+		if (@event is InputEventMouseMotion motion && _currentScreen == null)
 		{
 			var xo = 0.0F;
 			var yo = 0.0F;
@@ -290,27 +296,6 @@ public partial class Game : Node3D
 
 			var YMouseAxis = 1;
 			Player.Turn(xo, yo * YMouseAxis);
-		}
-
-		if (@event is InputEventKey key && !key.Echo)
-		{
-			if (key.Pressed && key.Keycode == Key.Escape)
-			{
-				if (_currentScreen != null)
-				{
-					SetCurrentScreen(null);
-					Input.SetMouseMode(Input.MouseModeEnum.Captured);
-				}
-				else
-				{
-					Input.SetMouseMode(Input.MouseModeEnum.Visible);
-				}
-			}
-			else if (key.Pressed && key.Keycode == Key.G)
-			{
-				var zombie = new Zombie(Level);
-				Level.AddEntity(zombie);
-			}
 		}
 
 		if (@event is InputEventMouseButton but)

@@ -439,5 +439,7 @@ public class Entity
     public virtual void DeathUpdate()
     {
         ++DeathTime;
+
+        if (DeathTime > 20) Remove();
     }
 }

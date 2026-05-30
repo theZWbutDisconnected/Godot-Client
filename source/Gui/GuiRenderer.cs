@@ -357,25 +357,4 @@ public partial class GuiRenderer : Control
 	{
 		_cmds.Clear();
 	}
-	
-	public struct FontStyle
-	{
-		public Color Color;
-		public bool Shadow, Bold;
-
-		public static readonly FontStyle Default = new()
-			{ Color = Colors.White, Shadow = true, Bold = false };
-
-		public readonly FontStyle WithColor(Color c)
-		{
-			return new FontStyle
-				{ Color = c, Shadow = Shadow, Bold = Bold };
-		}
-
-		public readonly FontStyle WithShadow(bool s)
-		{
-			return new FontStyle
-				{ Color = Color, Shadow = s, Bold = Bold };
-		}
-	}
 }
