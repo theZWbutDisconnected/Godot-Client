@@ -48,7 +48,9 @@ public abstract partial class Screen : Control
 	
 	protected void CenterString(GuiRenderer guiRenderer, string text, float y, int color = 0xFFFFFF)
 	{
-		float width = guiRenderer.GetStringWidth(text);
-		guiRenderer.DrawString(text, (Width - width) / 2, y, color);
+		float scale = Game.Singleton.GetGuiScale();
+		float width = guiRenderer.GetStringWidth(text, scale);
+		float x = (Width - width) / 2;
+		guiRenderer.DrawString(text, x, y, color, scale);
 	}
 }

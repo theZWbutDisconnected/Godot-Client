@@ -87,6 +87,12 @@ public partial class GuiRenderer : Control
 	
 	public float DrawString(string text, float x, float y, int color = 0xFFFFFF)
 	{
+		float guiScale = Game.Singleton.GetGuiScale();
+		return DrawString(text, x, y, color, guiScale);
+	}
+	
+	public float DrawString(string text, float x, float y, int color, float scale)
+	{
 		if (string.IsNullOrEmpty(text)) return x;
 		if (!GlyphClipping.IsInitialized) GlyphClipping.Initialize();
 
@@ -94,6 +100,7 @@ public partial class GuiRenderer : Control
 		var shadowCol = new Color(0.15f, 0.15f, 0.15f, col.A);
 		bool bold = false, italic = false, obfuscated = false;
 		var startX = x;
+		float baseLineHeight = 16f * scale;
 
 		for (var i = 0; i < text.Length;)
 		{
@@ -104,7 +111,7 @@ public partial class GuiRenderer : Control
 				continue;
 			}
 
-			if (c == '\n') { x = startX; y += 16f; i++; continue; }
+			if (c == '\n') { x = startX; y += baseLineHeight; i++; continue; }
 
 			int cp = c;
 			if (char.IsHighSurrogate(c) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
@@ -116,6 +123,11 @@ public partial class GuiRenderer : Control
 			var glyphW = GlyphClipping.GetCharWidth(cp);
 			if (glyphW <= 0f) glyphW = cp < 128 ? 8f : 16f;
 			if (glyphW < 2f && cp == 32) glyphW = 4f;
+
+			bool isUnicode = cp >= 128;
+			if (isUnicode) {
+				glyphW *= 0.5f;
+			}
 
 			var page = cp < 128 ? -1 : cp >> 8;
 
@@ -129,9 +141,10 @@ public partial class GuiRenderer : Control
 			{
 				var clipped = page == -1 ? asciiClipped : unicodeClipped;
 				var tex = page == -1 ? FontTexture.GetAsciiTexture() : FontTexture.GetPageTexture(page);
+				float shadowOffset = isUnicode ? scale * 0.5f : scale;
 				if (tex != null)
 				{
-					_cmds.Add(MakeTexCmd(x + 1, y + 1, clipped, shadowCol, tex));
+					_cmds.Add(MakeTexCmd(x + shadowOffset, y + shadowOffset, clipped, shadowCol, tex, scale));
 				}
 			}
 			
@@ -141,9 +154,10 @@ public partial class GuiRenderer : Control
 				{
 					var clipped = page == -1 ? asciiClipped : unicodeClipped;
 					var tex = page == -1 ? FontTexture.GetAsciiTexture() : FontTexture.GetPageTexture(page);
+					float boldOffset = isUnicode ? scale * 0.5f : scale;
 					if (tex != null)
 					{
-						_cmds.Add(MakeTexCmd(x + 1, y, clipped, col, tex));
+						_cmds.Add(MakeTexCmd(x + boldOffset, y, clipped, col, tex, scale));
 					}
 				}
 			}
@@ -154,17 +168,23 @@ public partial class GuiRenderer : Control
 				var tex = page == -1 ? FontTexture.GetAsciiTexture() : FontTexture.GetPageTexture(page);
 				if (tex != null)
 				{
-					_cmds.Add(MakeTexCmd(x, y, clipped, col, tex));
+					_cmds.Add(MakeTexCmd(x, y, clipped, col, tex, scale));
 				}
 			}
 
-			advance: x += glyphW + (bold ? 1f : 0f);
+			advance: x += (glyphW + (bold ? 1f : 0f)) * scale;
 		}
 
 		return x;
 	}
 
 	public float GetStringWidth(string text)
+	{
+		float guiScale = Game.Singleton.GetGuiScale();
+		return GetStringWidth(text, guiScale);
+	}
+	
+	public float GetStringWidth(string text, float scale)
 	{
 		if (string.IsNullOrEmpty(text)) return 0f;
 		float maxW = 0f, curW = 0f;
@@ -183,9 +203,15 @@ public partial class GuiRenderer : Control
 			else i++;
 			var w = GlyphClipping.GetCharWidth(cp);
 			if (w <= 0f) w = cp < 128 ? 8f : 16f;
-			curW += w;
+			
+			bool isUnicode = cp >= 128;
+			if (isUnicode) {
+				w *= 0.5f;
+			}
+			
+			curW += w * scale;
 		}
-		return Math.Max(maxW, curW);
+		return Math.Max(maxW, curW) * scale;
 	}
 	
 
@@ -287,10 +313,13 @@ public partial class GuiRenderer : Control
 
 
 	private static Cmd MakeTexCmd(float x, float y, GlyphClipping.ClippedGlyph g,
-		Color color, Texture2D tex)
+		Color color, Texture2D tex, float scale = 1.0f)
 	{
-		float actualW = (g.U1 - g.U0) * tex.GetWidth();
-		float actualH = (g.V1 - g.V0) * tex.GetHeight();
+		bool isUnicode = tex.GetWidth() > 128;
+		float adjustedScale = isUnicode ? scale * 0.5f : scale;
+		
+		float actualW = (g.U1 - g.U0) * tex.GetWidth() * adjustedScale;
+		float actualH = (g.V1 - g.V0) * tex.GetHeight() * adjustedScale;
 		
 		return new Cmd
 		{
@@ -299,6 +328,7 @@ public partial class GuiRenderer : Control
 			C0 = color, Tex = tex
 		};
 	}
+	
 
 	private static bool TryParseFmt(string s, int i, out int skip, ref Color col, ref bool bold, ref bool italic, ref bool obfuscated)
 	{

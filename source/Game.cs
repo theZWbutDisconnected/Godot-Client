@@ -70,11 +70,11 @@ public partial class Game : Node3D
 		AddChild(_guiRenderer);
 
 		_ingameGui = new GuiIngame();
-		var viewport = Camera.GetViewport();
-		var viewportSize = viewport?.GetVisibleRect().Size ?? Vector2I.Zero;
-		_ingameGui.Init((int)viewportSize.X, (int)viewportSize.Y);
+		var size = GetWindow().Size;
+		_ingameGui.Init(size.X, size.Y);
 
-		Input.SetMouseMode(Input.MouseModeEnum.Captured);
+		GetTree().Root.SizeChanged += NotificationSize;
+		Input.SetMouseMode(Input.MouseModeEnum.Visible);
 	}
 
 	private async Task NetworkInitialize()
@@ -203,7 +203,15 @@ public partial class Game : Node3D
 
 	public float GetGuiScale()
 	{
-		return 2f;
+		var size = GetWindow().Size;
+		float baseWidth = 864f;
+		float baseHeight = 480f;
+		float scaleX = size.X / baseWidth * 2f;
+		float scaleY = size.Y / baseHeight * 2f;
+		float scale = Math.Min(scaleX, scaleY);
+		float minScale = 1.0f;
+		float maxScale = 4.0f;
+		return Math.Clamp(scale, minScale, maxScale);
 	}
 
 	public void SetCurrentScreen(Screen screen)
@@ -217,9 +225,8 @@ public partial class Game : Node3D
 		
 		if (_currentScreen != null)
 		{
-			var viewport = Camera.GetViewport();
-			var viewportSize = viewport?.GetVisibleRect().Size ?? Vector2I.Zero;
-			_currentScreen.Init((int)viewportSize.X, (int)viewportSize.Y);
+			var size = GetWindow().Size;
+			_currentScreen.Init(size.X, size.Y);
 		}
 	}
 
@@ -253,19 +260,14 @@ public partial class Game : Node3D
 		}
 	}
 
-	public override void _Notification(int what)
+	public void NotificationSize()
 	{
-		base._Notification(what);
-		
-		if (what == (int)NotificationWMSizeChanged)
-		{
-			var viewport = Camera.GetViewport();
-			var viewportSize = viewport?.GetVisibleRect().Size ?? Vector2I.Zero;
-			_ingameGui?.Init((int)viewportSize.X, (int)viewportSize.Y);
-			_currentScreen?.Init((int)viewportSize.X, (int)viewportSize.Y);
-		}
+		GD.Print("Window resized");
+		var size = GetWindow().Size;
+		_ingameGui?.Init(size.X, size.Y);
+		_currentScreen?.Init(size.X, size.Y);
 	}
-
+	
 	public override void _Input(InputEvent @event)
 	{
 		base._Input(@event);
